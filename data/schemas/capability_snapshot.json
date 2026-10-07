@@ -1,0 +1,281 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "snapshot_date": "2026-10-07",
+    "source": "AWS Service Authorization Reference",
+    "services": ["iam", "sts", "lambda", "ec2", "s3", "kms"],
+    "description": "Versioned AWS Action-Resource-Condition Capability Model for Tier 1 Prototype & Thesis"
+  },
+  "global_condition_keys": [
+    "aws:CurrentTime",
+    "aws:EpochTime",
+    "aws:MultiFactorAuthPresent",
+    "aws:PrincipalArn",
+    "aws:PrincipalAccount",
+    "aws:PrincipalOrgID",
+    "aws:PrincipalTag/*",
+    "aws:PrincipalType",
+    "aws:RequestedRegion",
+    "aws:SecureTransport",
+    "aws:SourceArn",
+    "aws:SourceIp",
+    "aws:TagKeys",
+    "aws:TokenIssueTime",
+    "aws:UserAgent",
+    "aws:userId",
+    "aws:username"
+  ],
+  "actions": {
+    "iam:passrole": {
+      "action": "iam:PassRole",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": [
+        "iam:PassedToService",
+        "iam:AssociatedResourceArn"
+      ]
+    },
+    "iam:createaccesskey": {
+      "action": "iam:CreateAccessKey",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["user"],
+      "condition_keys": []
+    },
+    "iam:deleteaccesskey": {
+      "action": "iam:DeleteAccessKey",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["user"],
+      "condition_keys": []
+    },
+    "iam:attachrolepolicy": {
+      "action": "iam:AttachRolePolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": [
+        "iam:PolicyARN"
+      ]
+    },
+    "iam:attachuserpolicy": {
+      "action": "iam:AttachUserPolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["user"],
+      "condition_keys": [
+        "iam:PolicyARN"
+      ]
+    },
+    "iam:detachrolepolicy": {
+      "action": "iam:DetachRolePolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": [
+        "iam:PolicyARN"
+      ]
+    },
+    "iam:putrolepolicy": {
+      "action": "iam:PutRolePolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": []
+    },
+    "iam:putuserpolicy": {
+      "action": "iam:PutUserPolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["user"],
+      "condition_keys": []
+    },
+    "iam:setdefaultpolicyversion": {
+      "action": "iam:SetDefaultPolicyVersion",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["policy"],
+      "condition_keys": []
+    },
+    "iam:createpolicyversion": {
+      "action": "iam:CreatePolicyVersion",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["policy"],
+      "condition_keys": []
+    },
+    "iam:listroles": {
+      "action": "iam:ListRoles",
+      "service": "iam",
+      "wildcard_only": true,
+      "resource_types": [],
+      "condition_keys": []
+    },
+    "iam:getaccountauthorizationdetails": {
+      "action": "iam:GetAccountAuthorizationDetails",
+      "service": "iam",
+      "wildcard_only": true,
+      "resource_types": [],
+      "condition_keys": []
+    },
+    "iam:getuser": {
+      "action": "iam:GetUser",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["user"],
+      "condition_keys": []
+    },
+    "iam:getrole": {
+      "action": "iam:GetRole",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": []
+    },
+    "sts:assumerole": {
+      "action": "sts:AssumeRole",
+      "service": "sts",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": [
+        "sts:RoleSessionName",
+        "sts:ExternalId",
+        "sts:TransitiveTagKeys"
+      ]
+    },
+    "sts:assumerolewithwebidentity": {
+      "action": "sts:AssumeRoleWithWebIdentity",
+      "service": "sts",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": [
+        "sts:RoleSessionName"
+      ]
+    },
+    "sts:getcalleridentity": {
+      "action": "sts:GetCallerIdentity",
+      "service": "sts",
+      "wildcard_only": true,
+      "resource_types": [],
+      "condition_keys": []
+    },
+    "sts:getsessiontoken": {
+      "action": "sts:GetSessionToken",
+      "service": "sts",
+      "wildcard_only": true,
+      "resource_types": [],
+      "condition_keys": []
+    },
+    "lambda:createfunction": {
+      "action": "lambda:CreateFunction",
+      "service": "lambda",
+      "wildcard_only": false,
+      "resource_types": ["function"],
+      "condition_keys": [
+        "lambda:Principal",
+        "lambda:Layer"
+      ]
+    },
+    "lambda:invokefunction": {
+      "action": "lambda:InvokeFunction",
+      "service": "lambda",
+      "wildcard_only": false,
+      "resource_types": ["function"],
+      "condition_keys": [
+        "lambda:Payload"
+      ]
+    },
+    "lambda:updatefunctioncode": {
+      "action": "lambda:UpdateFunctionCode",
+      "service": "lambda",
+      "wildcard_only": false,
+      "resource_types": ["function"],
+      "condition_keys": []
+    },
+    "ec2:runinstances": {
+      "action": "ec2:RunInstances",
+      "service": "ec2",
+      "wildcard_only": false,
+      "resource_types": ["instance", "image", "subnet", "security-group", "key-pair", "volume"],
+      "condition_keys": [
+        "ec2:InstanceType",
+        "ec2:Region",
+        "ec2:Tenancy"
+      ]
+    },
+    "ec2:describeinstances": {
+      "action": "ec2:DescribeInstances",
+      "service": "ec2",
+      "wildcard_only": true,
+      "resource_types": [],
+      "condition_keys": []
+    },
+    "s3:getobject": {
+      "action": "s3:GetObject",
+      "service": "s3",
+      "wildcard_only": false,
+      "resource_types": ["object"],
+      "condition_keys": [
+        "s3:ExistingObjectTag/*",
+        "s3:VersionId"
+      ]
+    },
+    "s3:putobject": {
+      "action": "s3:PutObject",
+      "service": "s3",
+      "wildcard_only": false,
+      "resource_types": ["object"],
+      "condition_keys": [
+        "s3:RequestObjectTag/*",
+        "s3:x-amz-server-side-encryption"
+      ]
+    },
+    "s3:listbucket": {
+      "action": "s3:ListBucket",
+      "service": "s3",
+      "wildcard_only": false,
+      "resource_types": ["bucket"],
+      "condition_keys": [
+        "s3:prefix",
+        "s3:delimiter"
+      ]
+    },
+    "s3:deleteobject": {
+      "action": "s3:DeleteObject",
+      "service": "s3",
+      "wildcard_only": false,
+      "resource_types": ["object"],
+      "condition_keys": [
+        "s3:VersionId"
+      ]
+    },
+    "kms:decrypt": {
+      "action": "kms:Decrypt",
+      "service": "kms",
+      "wildcard_only": false,
+      "resource_types": ["key"],
+      "condition_keys": [
+        "kms:EncryptionContext:*",
+        "kms:ViaService"
+      ]
+    },
+    "kms:generatedatakey": {
+      "action": "kms:GenerateDataKey",
+      "service": "kms",
+      "wildcard_only": false,
+      "resource_types": ["key"],
+      "condition_keys": [
+        "kms:KeySpec",
+        "kms:EncryptionContext:*"
+      ]
+    },
+    "kms:describekey": {
+      "action": "kms:DescribeKey",
+      "service": "kms",
+      "wildcard_only": false,
+      "resource_types": ["key"],
+      "condition_keys": []
+    }
+  }
+}
