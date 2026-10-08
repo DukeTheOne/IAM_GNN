@@ -187,7 +187,7 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 
 #### Step 3.4: Structured Masking Framework Setup (4.0h)
 - [ ] Masking removes **authorization evidence and delegation relationships**, not necessarily literal static IAM edges. For every operator, document in code which AWS object is hidden and how it is represented in the graph.
-  - **Condition A (P0, Random):** Randomly drop $p \in \{10\%, 20\%, 30\%, 40\%\}$ of intermediate trust/delegation relations.
+  - **Condition A (P0, Random):** Randomly drop $p \in \{10\text{\%}, 20\text{\%}, 30\text{\%}, 40\text{\%}\}$ of intermediate trust/delegation relations.
   - **Condition E (P0, Adversarial Bridge):** Hide the bridge relation of the ground-truth escalation path.
   - **Condition B (P1, Cross-Account):** Hide all relations whose evidence lives in a designated unobservable account.
   - **Condition C (P2, Federated IdP):** The cloud-side OIDC/SAML trust policy stays visible; hide the external-principal-to-role delegation evidence, modeled as a distinct federated-delegation relation.
@@ -223,19 +223,35 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 
 #### Step 5.1: Multi-Relational Message Passing Layer (5.5h)
 - [ ] Implement 2-layer `RGCNConv` module using PyG:
-  $$h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)$$
+
+  $$
+  h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+  $$
+
 - [ ] Basis-sharing regularization with $B = 8$ basis matrices to prevent parameter explosion:
-  $$W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}$$
+
+  $$
+  W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}
+  $$
+
 - [ ] Add layer normalization, dropout ($p = 0.2$), and LeakyReLU activations ($d_{hidden} = 128$).
 
 #### Step 5.2: Bilinear Latent Relation Decoder (3.5h)
 - [ ] Implement a bilinear scoring head for hidden-relation triples $(u, r, v)$:
-  $$\hat{y}_{uv} = \sigma \left( h_u^T W_{r} h_v + b_r \right)$$
+
+  $$
+  \hat{y}_{uv} = \sigma \left( h_u^T W_{r} h_v + b_r \right)
+  $$
+
 - [ ] Scope: this head solves **Problem 1, hidden-relation prediction**. Attacker–target reachability (Problem 2) is computed downstream from sampled completions (Step 7.1), **not** by multiplying edge probabilities, because hidden relations can be correlated.
 
 #### Step 5.3: Uncertainty Calibration (P1) (3.5h)
 - [ ] Temperature scaling on held-out validation environments:
-  $$\hat{p}_{uv} = \sigma(z_{uv} / T)$$
+
+  $$
+  \hat{p}_{uv} = \sigma(z_{uv} / T)
+  $$
+
 - [ ] Fit $T$ by negative log-likelihood under the same masking condition used at test time; compute ECE and reliability diagrams.
 
 #### Step 5.4: Loss Formulation & Training Loop (3.5h)
@@ -280,15 +296,23 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 #### Step 7.1: Formulation and Latent-Completion Sampling (P1) (4.0h)
 - [ ] Sample $M$ completions $H_i \sim \mathbb{P}(H \mid G_o)$ from calibrated relation probabilities. Prototype: independent Bernoulli sampling, explicitly labeled as an approximation. Thesis: group-correlated sampling.
 - [ ] Estimate attack probability by Monte Carlo:
-  $$\widehat{\mathbb{P}}[\text{attack}] = \frac{1}{M}\sum_{i=1}^{M}\mathbb{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]$$
+
+  $$
+  \widehat{\mathbb{P}}[\text{attack}] = \frac{1}{M}\sum_{i=1}^{M}\mathbb{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]
+  $$
+
 - [ ] On a few hand-built cases, compare against the naive product of edge probabilities to document the error from the independence assumption.
 - [ ] Repair objective:
-  $$\min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \tfrac{1}{M}\sum_{i=1}^{M}\mathbb{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]$$
+
+  $$
+  \min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \tfrac{1}{M}\sum_{i=1}^{M}\mathbb{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
+  $$
+
   subject to capability validity and log conformance on $\mathcal{D}^{T_1}$.
 
 #### Step 7.2: Uncertainty-Guided Candidate Pruning (P1) (4.0h)
 - [ ] Rank candidate cut relations by their contribution to attack paths across sampled completions; prune to a candidate subgraph.
-- [ ] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $< 3$ s interactive latency is an engineering target only.
+- [ ] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $< 3\text{ s}$ interactive latency is an engineering target only.
 
 #### Step 7.3: Capability-Aware Greedy Repair Engine (P1) (5.0h)
 - [ ] Order candidate cuts by expected risk reduction over cost. Apply only admissible transformations according to $C(a, r, c)$: resource ARN scoping where permitted, otherwise action subtraction. (Condition injection is a P2 / thesis-phase tier.)
@@ -370,7 +394,7 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 #### Step 10.2: Codebase Refactoring & Quality Verification (3.5h)
 - [ ] Ensure 100% adherence to `ruff` linting and formatting.
 - [ ] Complete type annotations across public APIs (`mypy --strict`).
-- [ ] Validate unit test suite (`pytest --cov=src` targeting $> 85\%$ coverage).
+- [ ] Validate unit test suite (`pytest --cov=src` targeting >85% coverage).
 
 #### Step 10.3: Documentation & Automated Reproduction Package (4.5h)
 - [ ] Write comprehensive `README.md`:
@@ -430,8 +454,8 @@ flowchart TD
 | **R-01** | **Invalid AWS ARN Scoping Generated**: Naive solver restricts actions to ARNs that AWS requires to be `"Resource": "*"`. | High | Medium | Enforce Action Capability Model $C(a,r,c)$ during candidate patch generation; reject invalid transformations at the AST layer before solver output. |
 | **R-02** | **Synthetic Generator Overfitting**: RGCN memorizes generator artifacts rather than learning relational IAM semantics. | High | Medium | Split datasets strictly by distinct organizational environments ($\mathcal{D}_{\text{train}} \neq \mathcal{D}_{\text{test}}$); randomize branch factors, departmental compositions, and background noise. |
 | **R-03** | **Z3 Complexity (P2)**: Combinatorial explosion in MaxSAT on large subgraphs. | Medium | Low | Z3 is limited to one canonical example in the prototype; greedy capability-aware repair is the primary engine. Generalized exact solving is a thesis-phase task. |
-| **R-04** | **Extreme Class Imbalance in Latent Links**: Ratio of positive escalation paths to benign pairs is $< 1:1000$. | High | High | Implement focal loss ($\gamma = 2.0$) with hard negative sampling (sampling non-escalating pairs within the same department). |
-| **R-05** | **PyVis Rendering Frame Drops in Browser**: Rendering $> 2000$ nodes in Streamlit causes DOM lag during presentation. | Medium | Medium | Scope graph canvas strictly to the $k \le 2$ hop ego-network around selected high-risk principals. |
+| **R-04** | **Extreme Class Imbalance in Latent Links**: Ratio of positive escalation paths to benign pairs is $\lt 1:1000$. | High | High | Implement focal loss ($\gamma = 2.0$) with hard negative sampling (sampling non-escalating pairs within the same department). |
+| **R-05** | **PyVis Rendering Frame Drops in Browser**: Rendering $\gt 2000$ nodes in Streamlit causes DOM lag during presentation. | Medium | Medium | Scope graph canvas strictly to the $k \le 2$ hop ego-network around selected high-risk principals. |
 | **R-06** | **Scope Explosion**: Building the full architecture before testing the central hypothesis. | High | High | Priority layers P0/P1/P2, thin-slice experiment in Week 5, Go/No-Go gate G0 in Week 6. |
 | **R-07** | **Verifier Blind to Missed Hidden Relations**: A patch is "safe on $G_o$" but the attack persists through a relation the model failed to predict. | High | Medium | Completion-set verification, three-level reporting (observed / completions / ground truth), and explicit residual-risk measurement. |
 | **R-08** | **Edge Probabilities Mistaken for Path Probabilities**: Hidden relations are correlated. | Medium | High | Latent-completion sampling with an explicitly labeled independence approximation in the prototype; correlated sampling in the thesis; compare against the naive product estimator. |
@@ -530,6 +554,6 @@ The thesis answers one research question rigorously, rather than accumulating fe
 * **Optional, not thesis dependencies:** practitioner user study (recruitment, ethics review, and statistical power make it a post-thesis strengthening), Azure/GCP extensions, dashboard polish.
 
 ### 6.8 Target Paper Story
-* Exact methods: $G \to$ exact reachability, strong when information is complete.
-* TAC: $G_o \to$ query $\to G_o' \to$ detection, strong when an operator can supply more information.
-* This work: $G_o \to \mathbb{P}(H \mid G_o) \to$ risk-aware repair $\to$ verification, for when the information cannot be acquired.
+* Exact methods: $G \to \text{exact reachability}$, strong when information is complete.
+* TAC: $G_o \xrightarrow{\text{query}} G_o^{\prime} \to \text{detection}$, strong when an operator can supply more information.
+* This work: $G_o \to \mathbb{P}(H \mid G_o) \to \text{risk-aware repair} \to \text{verification}$, for when the information cannot be acquired.

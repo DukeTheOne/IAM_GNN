@@ -120,7 +120,7 @@
 3. **Testing the Capability Model API**:
    - [x] **Valid patches**: Scoping `iam:PassRole` to a valid role ARN; scoping `iam:CreateAccessKey` to a valid user ARN.
    - [x] **Invalid patches (Should Reject)**: Scoping a wildcard-only action like `iam:ListRoles` to a specific ARN; injecting an unsupported condition key for a specific action.
-   - [x] Use `pytest` for all unit testing, aiming for $>85\%$ coverage on the `src/parser/` module.
+   - [x] Use `pytest` for all unit testing, aiming for >85% coverage on the `src/parser/` module.
 
 **Execution Log & Completed Artifacts**:
 - **Comprehensive Test Harness**:
@@ -130,7 +130,7 @@
   - [`tests/test_environment.py`](file:///Users/duke/IAM/tests/test_environment.py) (7 tests): Core dependency smoke tests (PyTorch MPS/CPU, PyG HeteroData, Z3, SciPy, NetworkX, Pydantic).
 - **Test Metrics & Coverage**:
   - **Total Tests Passed**: **50 / 50 passed** in 1.23s.
-  - **Code Coverage**: Achieved **95% coverage** across `src/iam/parser/` (exceeding the $>85\%$ target):
+  - **Code Coverage**: Achieved **95% coverage** across `src/iam/parser/` (exceeding the >85% target):
     - `capability.py`: 95%
     - `conditions.py`: 96%
     - `evaluator.py`: 94%
