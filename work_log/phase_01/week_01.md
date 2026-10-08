@@ -73,7 +73,7 @@
 
 ---
 
-## Step 1.3: AWS Action–Resource–Condition Capability Model $C(a, r, c)$ (4.5h) - [COMPLETED]
+## Step 1.3: AWS Action–Resource–Condition Capability Model C(a, r, c) (4.5h) - [COMPLETED]
 
 **Objective**: Codify valid AWS authorization semantics so the repair engine never synthesizes illegal policies.
 
@@ -141,4 +141,4 @@
 ---
 
 ## Phase 1 - Week 1 Milestone Status: [ALL STEPS COMPLETED]
-All 4 steps for Week 1 (Step 1.1, Step 1.2, Step 1.3, Step 1.4) have been implemented, tested, and validated. The repository infrastructure, IAM JSON AST parser, and AWS Action Capability Model $C(a,r,c)$ are complete and verified. Ready to proceed to **Week 2: Canonical PE Motifs & Parameterized Enterprise Cloud Generator**.
+All 4 steps for Week 1 (Step 1.1, Step 1.2, Step 1.3, Step 1.4) have been implemented, tested, and validated. The repository infrastructure, IAM JSON AST parser, and AWS Action Capability Model $C(a, r, c)$ are complete and verified. Ready to proceed to **Week 2: Canonical PE Motifs & Parameterized Enterprise Cloud Generator**.

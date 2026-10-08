@@ -42,7 +42,7 @@ pytest --cov=iam
 ```
 
 ### 4. Interactive Live Demo & Manual Verification
-Run the interactive CLI demonstration to manually test and inspect the AST parser, explicit Deny resolution, and AWS Action Capability Model $C(a,r,c)$:
+Run the interactive CLI demonstration to manually test and inspect the AST parser, explicit Deny resolution, and AWS Action Capability Model C(a, r, c):
 ```bash
 python scripts/demo_parser.py
 ```

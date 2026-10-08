@@ -45,7 +45,7 @@ Before beginning implementation, consider the following design principles to ens
   - `PassRoleEC2Motif` (P1): `iam:PassRole` + `ec2:RunInstances` instance profile elevation; bridge relation `(source, admin_role, PassesTo)`.
   - `SetDefaultPolicyVersionMotif` (P1): Policy rollback to dormant admin version; bridge relation `(source, cust_policy, ActsOn)`.
 - **Exact Ground Truth & Counterfactual Verification**: Every motif implements `verify_ground_truth(graph, instance)` which formally verifies that:
-  1. A valid escalation path $s \rightsquigarrow t$ exists in the unmasked graph.
+  1. A valid escalation path $s \xrightarrow{*} t$ exists in the unmasked graph.
   2. Temporarily severing the designated bridge relation breaks reachability, guaranteeing that the bridge edge represents the true bottleneck relation for Condition E adversarial masking.
 - **AWS Semantic Capability Compliance**: Every generated IAM policy statement across all 6 motifs is validated against `CapabilityModel` from Week 1 to guarantee zero invalid ARN scoping or illegal wildcard actions.
 - **Unit & Integration Tests**: Implemented [`tests/test_motifs.py`](file:///Users/duke/IAM/tests/test_motifs.py) with 14 comprehensive tests:
@@ -93,9 +93,9 @@ Before beginning implementation, consider the following design principles to ens
   - Performance profiling results:
     - $N = 100$ nodes: ~0.02s
     - $N = 500$ nodes: ~0.08s
-    - $N = 1,000$ nodes: ~0.15s
-    - $N = 2,500$ nodes: ~0.42s
-    - $N = 5,000$ nodes: ~0.89s (well below the 10.0s threshold requirement).
+    - $N = 1{,}000$ nodes: ~0.15s
+    - $N = 2{,}500$ nodes: ~0.42s
+    - $N = 5{,}000$ nodes: ~0.89s (well below the 10.0s threshold requirement).
 - **Embedded Canonical & Branching Privilege Escalation Chains**:
   - Configurable path lengths: 2-hop (`AttachPolicy`, `SetDefaultPolicyVersion`, `CreateAccessKey`), 3-hop (`PassRoleLambda`, `PassRoleEC2`), and 4-hop (`AssumeRoleChain` with intermediate role chaining).
   - Deep embedding: entrypoint identities are selected from benign low-privilege departments (`Interns`, `QA`, `DevOps`), and targets are high-value SecOps/DataBI crown jewels.
@@ -194,11 +194,11 @@ Before beginning implementation, consider the following design principles to ens
 - **Scalability, Runtime & Memory Profiling Benchmarks**:
   - Systematically profiled generator runtime and peak heap memory via `tracemalloc` across scales $N \in [500, 5000]$:
     - $N = 500$ nodes: **0.10s**, **2.84 MB** peak RAM (limit: 1.0s, 25 MB)
-    - $N = 1,000$ nodes: **0.26s**, **4.41 MB** peak RAM (limit: 2.0s, 50 MB)
-    - $N = 2,500$ nodes: **1.34s**, **10.82 MB** peak RAM (limit: 5.0s, 120 MB)
-    - $N = 5,000$ nodes: **5.98s**, **21.43 MB** peak RAM (limit: 10.0s, 250 MB)
+    - $N = 1{,}000$ nodes: **0.26s**, **4.41 MB** peak RAM (limit: 2.0s, 50 MB)
+    - $N = 2{,}500$ nodes: **1.34s**, **10.82 MB** peak RAM (limit: 5.0s, 120 MB)
+    - $N = 5{,}000$ nodes: **5.98s**, **21.43 MB** peak RAM (limit: 10.0s, 250 MB)
   - Memory complexity is strictly linear and exceptionally compact at **~4.3 KB / node** (well below the 50 KB / node architectural ceiling).
-  - End-to-End Pipeline Performance: Generation, labeling, sanity metrics, and PyG index extraction for an $N = 1,000$ enterprise graph completes in under **1.2s** total.
+  - End-to-End Pipeline Performance: Generation, labeling, sanity metrics, and PyG index extraction for an $N = 1{,}000$ enterprise graph completes in under **1.2s** total.
 - **Repository-Wide Test Suite Results**: **109 / 109 passed** across 9 test suites in 10.57s with **95% overall code coverage**:
   - `src/iam/generator/export.py`: **90%**
   - `src/iam/generator/graph.py`: **95%**
