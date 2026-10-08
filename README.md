@@ -46,3 +46,37 @@ Run the interactive CLI demonstration to manually test and inspect the AST parse
 ```bash
 python scripts/demo_parser.py
 ```
+
+## Development & Git Workflow
+
+Pre-commit hooks are configured (`.pre-commit-config.yaml`) to enforce strict formatting, linting, and type checking.
+
+### 1. Hook Installation (One-Time)
+```bash
+pre-commit install
+```
+
+### 2. Recommended Workflow (Before Commit & Push)
+To prevent commits from being rejected by hook auto-formatting or type errors:
+
+```bash
+# 1. Format and fix linting
+ruff format .
+ruff check --fix .
+
+# 2. Run type checks and test suite
+mypy src tests
+pytest
+
+# 3. Stage changes
+git add <files>   # or git add -u
+
+# 4. (Optional) Run hooks against staged changes
+pre-commit run
+
+# 5. Commit and push
+git commit -m "feat: concise description of changes"
+git push origin <branch>
+```
+
+> **Tip:** If `git commit` is blocked because `ruff-format` adjusted file formatting during the commit attempt, simply re-stage the reformatted files (`git add -u`) and rerun `git commit`.
