@@ -95,3 +95,6 @@ addopts = "-v --strict-markers"
 filterwarnings = [
     "ignore::DeprecationWarning",
 ]
+
+[tool.pyrefly]
+errors = { missing-source-for-stubs = "ignore" }

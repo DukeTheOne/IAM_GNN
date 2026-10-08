@@ -93,8 +93,13 @@ class IAMGraph:
     motif injection, and downstream PyG HeteroData conversion.
     """
 
-    def __init__(self, graph_id: str = "default_iam_graph") -> None:
+    def __init__(
+        self,
+        graph_id: str = "default_iam_graph",
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
         self.graph_id = graph_id
+        self.metadata: dict[str, Any] = metadata if metadata is not None else {}
         self._nx_graph: nx.MultiDiGraph = nx.MultiDiGraph()
         self._nodes: dict[str, GraphNode] = {}
         self._arn_to_id: dict[str, str] = {}
@@ -134,6 +139,11 @@ class IAMGraph:
             obj=node,
         )
 
+    def add_nodes(self, nodes: list[GraphNode]) -> None:
+        """Add multiple typed nodes in batch."""
+        for node in nodes:
+            self.add_node(node)
+
     def add_edge(self, edge: GraphEdge) -> None:
         """Add a directed typed edge between two existing nodes."""
         if edge.source not in self._nodes:
@@ -153,6 +163,11 @@ class IAMGraph:
             metadata=edge.metadata,
             obj=edge,
         )
+
+    def add_edges(self, edges: list[GraphEdge]) -> None:
+        """Add multiple directed typed edges in batch."""
+        for edge in edges:
+            self.add_edge(edge)
 
     def remove_edge(self, source: str, target: str, relation: EdgeRelation) -> bool:
         """Remove an edge matching source, target, and relation."""
@@ -231,7 +246,10 @@ class IAMGraph:
 
     def clone(self) -> IAMGraph:
         """Perform a deep clone of the entire IAM graph."""
-        cloned = IAMGraph(graph_id=f"{self.graph_id}_clone")
+        cloned = IAMGraph(
+            graph_id=f"{self.graph_id}_clone",
+            metadata=dict(self.metadata),
+        )
         for node in self._nodes.values():
             cloned.add_node(node.model_copy(deep=True))
         for edge in self.get_edges():
@@ -253,6 +271,7 @@ class IAMGraph:
 
         return {
             "graph_id": self.graph_id,
+            "metadata": self.metadata,
             "num_nodes": self.num_nodes,
             "num_edges": self.num_edges,
             "nodes": nodes_list,
@@ -262,7 +281,10 @@ class IAMGraph:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> IAMGraph:
         """Deserialize an IAMGraph from a dictionary."""
-        graph = cls(graph_id=data.get("graph_id", "imported_graph"))
+        graph = cls(
+            graph_id=data.get("graph_id", "imported_graph"),
+            metadata=data.get("metadata", {}),
+        )
 
         for n_dict in data.get("nodes", []):
             policy_doc = None

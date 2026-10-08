@@ -80,6 +80,7 @@ class PEMotif(ABC):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         """Inject the motif subgraph into the target IAMGraph.
 
@@ -166,6 +167,7 @@ class PassRoleLambdaMotif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -182,6 +184,11 @@ class PassRoleLambdaMotif(PEMotif):
                 department="DevOps",
             )
             graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
 
         # 2. Target high-value asset
         if target_id is None:
@@ -210,7 +217,7 @@ class PassRoleLambdaMotif(PEMotif):
                 Statement(
                     Effect=Effect.ALLOW,
                     Action=["sts:AssumeRole"],
-                    Principal=Principal(raw={"Service": ["lambda.amazonaws.com"]}),
+                    Principal=Principal.model_validate({"Service": ["lambda.amazonaws.com"]}),
                 )
             ]
         )
@@ -374,6 +381,7 @@ class CreateAccessKeyMotif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -390,6 +398,11 @@ class CreateAccessKeyMotif(PEMotif):
                 department="QA",
             )
             graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
 
         # 2. Target high-value asset
         if target_id is None:
@@ -542,6 +555,7 @@ class AttachPolicyMotif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -694,6 +708,8 @@ class AssumeRoleChainMotif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        num_intermediate_roles: int = 2,
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -710,6 +726,11 @@ class AssumeRoleChainMotif(PEMotif):
                 department="DevOps",
             )
             graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
 
         # 2. Target high-value asset
         if target_id is None:
@@ -730,35 +751,93 @@ class AssumeRoleChainMotif(PEMotif):
                 raise KeyError(f"Target node '{target_id}' not found in graph.")
             target_node = found
 
-        # 3. Intermediate Role 1 (Staging Worker)
-        r1_id = f"role:staging-worker-{uid}"
-        r1_arn = f"arn:aws:iam::{account_id}:role/staging-worker-{uid}"
-        r1_node = GraphNode(
-            id=r1_id,
-            node_type=NodeType.ROLE,
-            arn=r1_arn,
-            name=f"staging-worker-{uid}",
-            account_id=account_id,
-            department="DevOps",
-        )
-        graph.add_node(r1_node)
+        # 3. Intermediate Roles
+        role_nodes: list[GraphNode] = []
+        if num_intermediate_roles == 2:
+            r1_id = f"role:staging-worker-{uid}"
+            r1_arn = f"arn:aws:iam::{account_id}:role/staging-worker-{uid}"
+            r1_trust = PolicyDocument(
+                Statement=[
+                    Statement(
+                        Effect=Effect.ALLOW,
+                        Action=["sts:AssumeRole"],
+                        Principal=Principal.model_validate({"AWS": [source_node.arn]}),
+                    )
+                ]
+            )
+            r1_node = GraphNode(
+                id=r1_id,
+                node_type=NodeType.ROLE,
+                arn=r1_arn,
+                name=f"staging-worker-{uid}",
+                account_id=account_id,
+                department="DevOps",
+                trust_policy=r1_trust,
+            )
+            graph.add_node(r1_node)
+            role_nodes.append(r1_node)
 
-        # 4. Intermediate Role 2 (Ops Supervisor)
-        r2_id = f"role:ops-supervisor-{uid}"
-        r2_arn = f"arn:aws:iam::{account_id}:role/ops-supervisor-{uid}"
-        r2_node = GraphNode(
-            id=r2_id,
-            node_type=NodeType.ROLE,
-            arn=r2_arn,
-            name=f"ops-supervisor-{uid}",
-            account_id=account_id,
-            department="DevOps",
-        )
-        graph.add_node(r2_node)
+            r2_id = f"role:ops-supervisor-{uid}"
+            r2_arn = f"arn:aws:iam::{account_id}:role/ops-supervisor-{uid}"
+            r2_trust = PolicyDocument(
+                Statement=[
+                    Statement(
+                        Effect=Effect.ALLOW,
+                        Action=["sts:AssumeRole"],
+                        Principal=Principal.model_validate({"AWS": [r1_arn]}),
+                    )
+                ]
+            )
+            r2_node = GraphNode(
+                id=r2_id,
+                node_type=NodeType.ROLE,
+                arn=r2_arn,
+                name=f"ops-supervisor-{uid}",
+                account_id=account_id,
+                department="DevOps",
+                trust_policy=r2_trust,
+            )
+            graph.add_node(r2_node)
+            role_nodes.append(r2_node)
+        else:
+            for i in range(1, max(1, num_intermediate_roles) + 1):
+                r_name = f"staging-worker-{i}-{uid}"
+                r_id = f"role:{r_name}"
+                r_arn = f"arn:aws:iam::{account_id}:role/{r_name}"
+                prev_arn = source_node.arn if i == 1 else role_nodes[-1].arn
+                r_trust = PolicyDocument(
+                    Statement=[
+                        Statement(
+                            Effect=Effect.ALLOW,
+                            Action=["sts:AssumeRole"],
+                            Principal=Principal.model_validate({"AWS": [prev_arn]}),
+                        )
+                    ]
+                )
+                r_node = GraphNode(
+                    id=r_id,
+                    node_type=NodeType.ROLE,
+                    arn=r_arn,
+                    name=r_name,
+                    account_id=account_id,
+                    department="DevOps",
+                    trust_policy=r_trust,
+                )
+                graph.add_node(r_node)
+                role_nodes.append(r_node)
 
-        # 5. Target Admin Role
+        # 4. Target Admin Role
         r_admin_id = f"role:prod-superadmin-{uid}"
         r_admin_arn = f"arn:aws:iam::{account_id}:role/prod-superadmin-{uid}"
+        admin_trust = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate({"AWS": [role_nodes[-1].arn]}),
+                )
+            ]
+        )
         r_admin_node = GraphNode(
             id=r_admin_id,
             node_type=NodeType.ROLE,
@@ -767,6 +846,7 @@ class AssumeRoleChainMotif(PEMotif):
             account_id=account_id,
             department="SecOps",
             is_admin=True,
+            trust_policy=admin_trust,
         )
         graph.add_node(r_admin_node)
 
@@ -806,45 +886,68 @@ class AssumeRoleChainMotif(PEMotif):
             )
         )
 
-        # Edges for chain: source -> R1 -> R2 -> R_admin
+        # Edges for chain: source -> R1 ... -> R_admin
         graph.add_edge(
             GraphEdge(
                 source=source_id,
-                target=r1_id,
+                target=role_nodes[0].id,
                 relation=EdgeRelation.ASSUMES_ROLE,
                 actions=["sts:AssumeRole"],
             )
         )
-
-        # Bridge relation: intermediate link between R1 and R2
-        bridge_rel = (r1_id, r2_id, EdgeRelation.ASSUMES_ROLE.value)
-        graph.add_edge(
-            GraphEdge(
-                source=r1_id,
-                target=r2_id,
-                relation=EdgeRelation.ASSUMES_ROLE,
-                is_bridge=True,
-                motif_id=f"assume_role_chain_{uid}",
-                actions=["sts:AssumeRole"],
-            )
-        )
-
-        graph.add_edge(
-            GraphEdge(
-                source=r2_id,
-                target=r_admin_id,
-                relation=EdgeRelation.ASSUMES_ROLE,
-                actions=["sts:AssumeRole"],
-            )
-        )
-
-        path_edges = [
-            (source_id, r1_id, EdgeRelation.ASSUMES_ROLE.value),
-            (r1_id, r2_id, EdgeRelation.ASSUMES_ROLE.value),
-            (r2_id, r_admin_id, EdgeRelation.ASSUMES_ROLE.value),
-            (r_admin_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
-            (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        path_edges: list[tuple[str, str, str]] = [
+            (source_id, role_nodes[0].id, EdgeRelation.ASSUMES_ROLE.value)
         ]
+
+        if len(role_nodes) == 1:
+            bridge_rel = (role_nodes[0].id, r_admin_id, EdgeRelation.ASSUMES_ROLE.value)
+            graph.add_edge(
+                GraphEdge(
+                    source=role_nodes[0].id,
+                    target=r_admin_id,
+                    relation=EdgeRelation.ASSUMES_ROLE,
+                    is_bridge=True,
+                    motif_id=f"assume_role_chain_{uid}",
+                    actions=["sts:AssumeRole"],
+                )
+            )
+            path_edges.append((role_nodes[0].id, r_admin_id, EdgeRelation.ASSUMES_ROLE.value))
+        else:
+            bridge_rel = (role_nodes[0].id, role_nodes[1].id, EdgeRelation.ASSUMES_ROLE.value)
+            for idx in range(len(role_nodes) - 1):
+                is_br = idx == 0
+                graph.add_edge(
+                    GraphEdge(
+                        source=role_nodes[idx].id,
+                        target=role_nodes[idx + 1].id,
+                        relation=EdgeRelation.ASSUMES_ROLE,
+                        is_bridge=is_br,
+                        motif_id=f"assume_role_chain_{uid}" if is_br else None,
+                        actions=["sts:AssumeRole"],
+                    )
+                )
+                path_edges.append(
+                    (role_nodes[idx].id, role_nodes[idx + 1].id, EdgeRelation.ASSUMES_ROLE.value)
+                )
+
+            graph.add_edge(
+                GraphEdge(
+                    source=role_nodes[-1].id,
+                    target=r_admin_id,
+                    relation=EdgeRelation.ASSUMES_ROLE,
+                    actions=["sts:AssumeRole"],
+                )
+            )
+            path_edges.append((role_nodes[-1].id, r_admin_id, EdgeRelation.ASSUMES_ROLE.value))
+
+        path_edges.extend(
+            [
+                (r_admin_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
+                (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+            ]
+        )
+
+        intermediate_ids = [r.id for r in role_nodes] + [r_admin_id, admin_pol_id]
 
         return MotifInstance(
             instance_id=f"assume_role_chain_{uid}",
@@ -852,7 +955,7 @@ class AssumeRoleChainMotif(PEMotif):
             tier=self.tier,
             source_id=source_id,
             target_id=target_id,
-            intermediate_node_ids=[r1_id, r2_id, r_admin_id, admin_pol_id],
+            intermediate_node_ids=intermediate_ids,
             path_edges=path_edges,
             bridge_relation=bridge_rel,
             required_actions=self.required_actions,
@@ -887,6 +990,7 @@ class PassRoleEC2Motif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -903,6 +1007,11 @@ class PassRoleEC2Motif(PEMotif):
                 department="DevOps",
             )
             graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
 
         # 2. Target high-value asset
         if target_id is None:
@@ -926,6 +1035,15 @@ class PassRoleEC2Motif(PEMotif):
         # 3. High-privilege role
         admin_role_id = f"role:ec2-admin-role-{uid}"
         admin_role_arn = f"arn:aws:iam::{account_id}:role/ec2-admin-role-{uid}"
+        ec2_trust_doc = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate({"Service": ["ec2.amazonaws.com"]}),
+                )
+            ]
+        )
         admin_role = GraphNode(
             id=admin_role_id,
             node_type=NodeType.ROLE,
@@ -934,6 +1052,7 @@ class PassRoleEC2Motif(PEMotif):
             account_id=account_id,
             department="SecOps",
             is_admin=True,
+            trust_policy=ec2_trust_doc,
         )
         graph.add_node(admin_role)
 
@@ -1082,6 +1201,7 @@ class SetDefaultPolicyVersionMotif(PEMotif):
         target_id: str | None = None,
         suffix: str = "",
         account_id: str = "123456789012",
+        **_kwargs: Any,
     ) -> MotifInstance:
         cap_model = load_default_capability_model()
         uid = suffix or "default"
@@ -1098,6 +1218,11 @@ class SetDefaultPolicyVersionMotif(PEMotif):
                 department="DevOps",
             )
             graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
 
         # 2. Target high-value asset
         if target_id is None:
