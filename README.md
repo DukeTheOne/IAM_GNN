@@ -62,6 +62,11 @@ uv run python scripts/demo_pipeline.py
 # Or if environment is activated: python scripts/demo_pipeline.py
 ```
 
+Run the Step 5.5 Thin-Slice empirical benchmark comparing 2-Layer RGCN against Deterministic BFS, Random Forest, and Heuristic baselines under Condition E and Condition A:
+```bash
+uv run python scripts/run_thin_slice.py --epochs 25
+```
+
 ---
 
 ### 3. Run Test Suite
