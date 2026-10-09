@@ -174,6 +174,32 @@ class RandomMaskingOperator(BaseMaskingOperator):
         self.mask_ratio: float = mask_ratio
         self.protect_member_of: bool = protect_member_of
 
+    def apply_to_graph(
+        self,
+        graph: IAMGraph,
+        seed: int = 42,
+    ) -> tuple[IAMGraph, list[GraphEdge]]:
+        """Apply random edge masking at the IAMGraph symbolic level."""
+        masked_graph = IAMGraph(
+            graph_id=f"{graph.graph_id}_masked_{self.condition.value}",
+            metadata=dict(graph.metadata),
+        )
+        for node in graph.get_nodes():
+            masked_graph.add_node(node)
+
+        rng = np.random.default_rng(seed)
+        hidden_edges: list[GraphEdge] = []
+        for edge in graph.get_edges():
+            if self.protect_member_of and edge.relation == EdgeRelation.MEMBER_OF:
+                masked_graph.add_edge(edge)
+                continue
+            if rng.random() < self.mask_ratio:
+                hidden_edges.append(edge)
+            else:
+                masked_graph.add_edge(edge)
+
+        return masked_graph, hidden_edges
+
     def apply(
         self,
         data: HeteroData,

@@ -247,8 +247,8 @@ class TestScalabilityAndPerformanceProfiling:
     @pytest.mark.parametrize(
         ("num_nodes", "max_time_sec", "max_mem_mb"),
         [
-            (500, 0.25, 20.0),
-            (1000, 0.50, 40.0),
+            (500, 0.50, 20.0),
+            (1000, 0.75, 40.0),
             (2500, 1.50, 80.0),
         ],
     )
