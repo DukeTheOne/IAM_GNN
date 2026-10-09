@@ -191,6 +191,14 @@ class IAMGraph:
         """Retrieve all nodes of a specific NodeType."""
         return [self._nodes[nid] for nid in self._nodes_by_type[node_type]]
 
+    def get_nodes(self) -> list[GraphNode]:
+        """Retrieve all nodes in the graph in insertion order."""
+        return list(self._nodes.values())
+
+    def get_node_ids(self) -> list[str]:
+        """Retrieve all node IDs in the graph in insertion order."""
+        return list(self._nodes.keys())
+
     def get_high_value_targets(self) -> list[GraphNode]:
         """Retrieve all nodes flagged as high-value assets."""
         return [node for node in self._nodes.values() if node.is_high_value]

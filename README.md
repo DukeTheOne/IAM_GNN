@@ -22,29 +22,66 @@ iam-graph-learning/
 
 ## Quickstart
 
-### 1. Setup Virtual Environment
+### 1. Setup & Environment
+
+The repository uses `uv` for dependency management and deterministic locking (`uv.lock`).
+
+**Option A: Using `uv` (Recommended on Windows & Linux)**
+`uv` automatically executes commands inside the project `.venv` without needing manual shell activation:
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+# Sync all dependencies and optional dev dependencies
+uv sync --all-extras
+
+# List installed packages in the project environment
+uv pip list
 ```
 
-### 2. Linting & Type Checking
+**Option B: Manual Virtual Environment Activation**
+- **Windows (PowerShell)**:
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+- **macOS / Linux**:
+  ```bash
+  source .venv/bin/activate
+  ```
+
+---
+
+### 2. Interactive Demonstrations & Verification
+
+Run the interactive CLI demonstration to test the IAM AST parser, explicit Deny resolution, and Action Capability Model:
 ```bash
-ruff check .
-ruff format --check .
-mypy src tests
+uv run python scripts/demo_parser.py
+# Or if environment is activated: python scripts/demo_parser.py
 ```
+
+Run the end-to-end synthetic enterprise topology generator, PyG `HeteroData` conversion, Condition E adversarial bridge masking, and neural message-passing demo:
+```bash
+uv run python scripts/demo_pipeline.py
+# Or if environment is activated: python scripts/demo_pipeline.py
+```
+
+---
 
 ### 3. Run Test Suite
+
 ```bash
-pytest --cov=iam
+# Full test suite with coverage
+uv run pytest --cov=iam
+
+# Specific test suite
+uv run pytest tests/test_pipeline_m1.py -v
 ```
 
-### 4. Interactive Live Demo & Manual Verification
-Run the interactive CLI demonstration to manually test and inspect the AST parser, explicit Deny resolution, and AWS Action Capability Model C(a, r, c):
+---
+
+### 4. Code Quality & Type Checking
+
 ```bash
-python scripts/demo_parser.py
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy src tests
 ```
 
 ## Development & Git Workflow

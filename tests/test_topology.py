@@ -211,9 +211,9 @@ class TestPrivilegeEscalationInjection:
             # Temporarily sever bridge
             edge_data = nx_g.get_edge_data(bu, bv, key=brel)
             nx_g.remove_edge(bu, bv, key=brel)
-            assert not nx.has_path(
-                nx_g, s, t
-            ), f"Bridge removal did not sever path for {m_data['instance_id']}"
+            assert not nx.has_path(nx_g, s, t), (
+                f"Bridge removal did not sever path for {m_data['instance_id']}"
+            )
             # Restore bridge
             nx_g.add_edge(bu, bv, key=brel, **edge_data)
 
@@ -292,9 +292,9 @@ class TestPrivilegeEscalationInjection:
         assert len(benign_restricted_users) > 0
         for u_id in benign_restricted_users[:10]:
             for t_id in hv_targets:
-                assert not nx.has_path(
-                    nx_g, u_id, t_id
-                ), f"False positive reachability detected: {u_id} -> {t_id}"
+                assert not nx.has_path(nx_g, u_id, t_id), (
+                    f"False positive reachability detected: {u_id} -> {t_id}"
+                )
 
 
 class TestScalabilityAndPerformanceProfiling:
@@ -326,6 +326,6 @@ class TestScalabilityAndPerformanceProfiling:
 
         assert graph.num_nodes >= int(num_nodes * 0.90)
         assert graph.num_edges > graph.num_nodes
-        assert (
-            duration < max_allowed_sec
-        ), f"Generation for {num_nodes} nodes took {duration:.2f}s, exceeding {max_allowed_sec}s threshold"
+        assert duration < max_allowed_sec, (
+            f"Generation for {num_nodes} nodes took {duration:.2f}s, exceeding {max_allowed_sec}s threshold"
+        )

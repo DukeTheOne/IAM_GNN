@@ -522,15 +522,15 @@ class EnterpriseTopologyGenerator:
             if index == 0:
                 # Primary data lake bucket is high-value
                 rid = f"resource:s3-{dept_slug}-lake-vault-{index}"
-                r_arn = f"arn:aws:s3:::{dept_slug}-lake-vault-{index}"
+                r_arn = f"arn:aws:s3:::{account_id}-{dept_slug}-lake-vault-{index}"
                 return rid, r_arn, True
             else:
                 rid = f"resource:s3-{dept_slug}-data-{index}"
-                r_arn = f"arn:aws:s3:::{dept_slug}-data-{index}"
+                r_arn = f"arn:aws:s3:::{account_id}-{dept_slug}-data-{index}"
                 return rid, r_arn, False
         else:
             rid = f"resource:s3-{dept_slug}-store-{index}"
-            r_arn = f"arn:aws:s3:::{dept_slug}-store-{index}"
+            r_arn = f"arn:aws:s3:::{account_id}-{dept_slug}-store-{index}"
             return rid, r_arn, False
 
     def _sample_privilege_tiers(
@@ -1003,7 +1003,9 @@ class EnterpriseTopologyGenerator:
 
             # 5. Formally verify reachability and counterfactual bridge breaking
             verification = motif.verify_ground_truth(graph, instance)
-            assert verification.is_valid, f"Injected PE chain '{instance.instance_id}' failed ground truth: {verification.details}"
+            assert verification.is_valid, (
+                f"Injected PE chain '{instance.instance_id}' failed ground truth: {verification.details}"
+            )
 
             injected.append(instance)
 
@@ -1202,7 +1204,9 @@ class EnterpriseTopologyGenerator:
             )
 
             verification = branch_chain.verify(graph)
-            assert verification.is_valid, f"Branching PE chain '{branch_chain.chain_id}' failed verification: {verification.details}"
+            assert verification.is_valid, (
+                f"Branching PE chain '{branch_chain.chain_id}' failed verification: {verification.details}"
+            )
 
             branching_chains.append(branch_chain)
 
