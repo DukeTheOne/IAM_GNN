@@ -53,6 +53,11 @@ from iam.models.sampler import (
     NegativeSampleResult,
     StratifiedNegativeSampler,
 )
+from iam.models.thin_slice import (
+    ThinSliceConfig,
+    ThinSliceExperimentResult,
+    ThinSliceExperimentRunner,
+)
 from iam.models.training import (
     FocalLoss,
     InductiveLinkPredictionTrainer,
@@ -109,6 +114,9 @@ __all__ = [
     "StratifiedNegativeSampler",
     "StructuredMaskingSuite",
     "TemperatureScalingCalibrator",
+    "ThinSliceConfig",
+    "ThinSliceExperimentResult",
+    "ThinSliceExperimentRunner",
     "TrainingConfig",
     "TrainingHistory",
     "build_node_feature_dict",

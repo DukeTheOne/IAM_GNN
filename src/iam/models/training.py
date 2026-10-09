@@ -131,6 +131,15 @@ class RGCNLinkPredictionModel(nn.Module):
             self.encoder(data=data, x_dict=x_dict, edge_index_dict=edge_index_dict),
         )
 
+    def encode(
+        self,
+        data: HeteroData | None = None,
+        x_dict: dict[str, torch.Tensor] | None = None,
+        edge_index_dict: dict[tuple[str, str, str], torch.Tensor] | None = None,
+    ) -> dict[str, torch.Tensor]:
+        """Alias for forward: compute continuous node representations across all entity types."""
+        return self.forward(data=data, x_dict=x_dict, edge_index_dict=edge_index_dict)
+
     def score_edge_index(
         self,
         data: HeteroData,
