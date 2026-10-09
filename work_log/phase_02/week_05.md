@@ -123,8 +123,42 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 ---
 
-## Step 5.4: Loss Formulation & Training Loop (3.5h) - [PLANNED]
-- Focal binary cross-entropy ($\gamma = 2.0$) with AdamW and cosine annealing schedule, early stopping on validation PR-AUC.
+## Step 5.4: Loss Formulation & Training Loop (3.5h) - [COMPLETED]
+
+**Objective**: Implement the focal loss formulation ($\gamma = 2.0, \alpha = 0.25$), end-to-end composite model `RGCNLinkPredictionModel`, and inductive link prediction training pipeline `InductiveLinkPredictionTrainer` with negative sampling, AdamW optimization, cosine annealing learning rate scheduling, early stopping, and metric tracking (PR-AUC, ROC-AUC, ECE).
+
+**Implementation Details**:
+1. **Focal Loss Formulation (`FocalLoss`)**:
+   - Implements class-imbalance-resilient focal binary cross-entropy:
+     $$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$$
+   - Uses numerically stable derivation directly from raw logits $z$:
+     $$\text{bce} = \text{BCEWithLogits}(z, y), \quad p_t = \exp(-\text{bce}), \quad w_t = (1 - p_t)^\gamma$$
+   - Prevents vanishing/exploding gradients and fp32 numerical underflow when hard negative mining across high-cardinality candidate edge sets ($1 : 100$ positive-to-negative ratio).
+2. **Composite Link Prediction Architecture (`RGCNLinkPredictionModel`)**:
+   - Integrates `HeteroRGCNEncoder` and `BilinearRelationPredictor` into a single unified `nn.Module`.
+   - Exposes clean methods for representation learning (`encode`), edge-batch scoring (`score_edges`), candidate ranking (`predict_candidates`), and heterogeneous multi-graph data ingestion.
+3. **Training Configuration (`TrainingConfig`) & History (`TrainingHistory`)**:
+   - Dataclass parameterizing optimizer hyper-parameters (`lr = 1e-3`, `weight_decay = 1e-4`, `gradient_clip = 1.0`), focal loss hyperparameters ($\gamma = 2.0, \alpha = 0.25$), training schedule (`max_epochs = 50`, `patience = 10`, `lr_scheduler_type = "cosine"`), and negative sampling ratio (`negative_ratio = 1.0`).
+4. **Inductive Multi-Environment Trainer (`InductiveLinkPredictionTrainer`)**:
+   - **Inductive Multi-Graph Epoch Execution**: Trains across batches of distinct enterprise cloud environments ($\mathcal{O}_1, \dots, \mathcal{O}_M$), ensuring model weights never overfit to specific node ID spaces or static topologies.
+   - **Dynamic Uniform Negative Sampling**: For every true edge triple $(u, r, v)$, synthesizes negative corrupted edges $(u, r, v')$ where $v' \sim \text{Uniform}(\mathcal{V}_{\text{dst}} \setminus \{v\})$, filtering self-loops.
+   - **Evaluation & Metric Tracking**: Computes Loss, ROC-AUC, PR-AUC, Accuracy, and Expected Calibration Error (ECE) across training and held-out validation environments.
+   - **Validation Early Stopping**: Tracks validation PR-AUC, performs patience-based early termination, and restores the best performing checkpoint weights.
+   - **Post-Hoc Calibration Integration**: Incorporates `TemperatureScalingCalibrator` directly into the validation phase for automated ECE optimization.
+
+**Target File Artifacts**:
+- [`src/iam/models/training.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/training.py): `FocalLoss`, `RGCNLinkPredictionModel`, `TrainingConfig`, `TrainingHistory`, and `InductiveLinkPredictionTrainer`.
+- [`src/iam/models/__init__.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/__init__.py): Public module exports for all Step 5.4 classes.
+- [`tests/test_training.py`](file:///c:/Users/jack6/IAM/IAM_GNN/tests/test_training.py): Unit and multi-environment training integration tests.
+
+**Verification & Acceptance Results**:
+- **Focal Loss Behavior**: Confirmed $\gamma = 2.0$ downweights easy well-classified samples ($p \approx 0.99 \implies (1 - p_t)^2 \approx 0.0001$) by orders of magnitude compared to standard BCE, focusing gradients on hard boundary examples.
+- **Negative Edge Sampling**: Verified corrupted tails are uniformly distributed, distinct from true edges, and respect destination node types.
+- **Multi-Environment Convergence**: Confirmed training over multiple heterogeneous cloud environments decreases focal loss monotonically and converges within specified epochs.
+- **Early Stopping & Checkpoint Recovery**: Verified trainer terminates before `max_epochs` when validation metrics plateau and properly restores the optimal parameter state.
+- **Post-Hoc Calibration Fit**: Verified `trainer.calibrate_on_validation()` converges to optimal temperature $T$ on held-out validation graphs.
+- **Test Suite Results**: **8 / 8 passed** in `test_training.py` with 100% clean passes on strict typing (`mypy --strict`) and linting (`ruff`).
+- **Cumulative Phase 2 Week 5 Test Status**: **52 / 52 passed** across `test_rgcn.py`, `test_decoder.py`, `test_calibration.py`, and `test_training.py`.
 
 ---
 
