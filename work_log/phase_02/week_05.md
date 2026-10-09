@@ -63,8 +63,35 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 ---
 
-## Step 5.2: Bilinear Latent Relation Decoder (3.5h) - [PLANNED]
-- Implement `BilinearRelationPredictor` scoring candidate triples: $\hat{y}_{uv} = \sigma(h_u^T W_r h_v + b_r)$.
+## Step 5.2: Bilinear Latent Relation Decoder (3.5h) - [COMPLETED]
+
+**Objective**: Implement the `BilinearRelationPredictor` scoring head for hidden-relation triples $(u, r, v)$: $\hat{y}_{uv} = \sigma(h_u^T W_r h_v + b_r)$, solving Problem 1 (hidden-relation prediction).
+
+**Implementation Details**:
+1. **Scoring Head Architecture (`BilinearRelationPredictor`)**:
+   - Parameterizes relation matrices $W \in \mathbb{R}^{R \times d \times d}$ across all 26 canonical relations.
+   - Supports 3 parameterization modes:
+     - `"bilinear"` (standard full $W_r \in \mathbb{R}^{d \times d}$).
+     - `"basis"` (basis-regularized $W_r = \sum_{b=1}^{B_{\text{dec}}} \beta_{r,b} U_b$).
+     - `"distmult"` (factorized diagonal $W_r = \text{diag}(w_r)$).
+   - Configurable per-relation scalar biases $b_r \in \mathbb{R}$ and regularization dropout.
+2. **Batch Evaluation Routines**:
+   - Homogeneous relation batch scoring ($r \in \mathbb{Z}$): $O(M \cdot d^2)$ vectorized computation $(h_u W_r) \odot h_v$.
+   - Heterogeneous multi-relation batch scoring ($r_m \in \mathbb{Z}^M$): vectorized batch tensor contraction $\text{einsum}(md, mde, me \to m)$.
+   - All-pairs matrix scoring: $Z^{(r)} = H_{\text{src}} W_r H_{\text{dst}}^T + b_r \in \mathbb{R}^{N_{\text{src}} \times N_{\text{dst}}}$ for candidate ranking.
+   - High-level `score_edge_index(h_dict, edge_type, edge_index)` for evaluating masked candidate links.
+3. **End-to-End Gradient Flow**:
+   - Verified joint backpropagation from BCE loss through `BilinearRelationPredictor` and `HeteroRGCNEncoder` all the way to raw node feature linear projections.
+
+**Target File Artifacts**:
+- [`src/iam/models/decoder.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/decoder.py): `BilinearRelationPredictor` and `DecoderConfig`.
+- [`tests/test_decoder.py`](file:///c:/Users/jack6/IAM/IAM_GNN/tests/test_decoder.py): Unit and end-to-end integration test suite.
+
+**Verification & Acceptance Results**:
+- **Pointwise & Matrix Equivalence**: Proved that all-pairs matrix scoring $Z_{ij}$ strictly equals pointwise pair scoring $(h_i, h_j)$ within numerical tolerance ($< 10^{-5}$).
+- **Temperature Scaling Sensitivity**: Confirmed temperature parameter $T$ softens probabilities towards $0.5$ when $T > 1$ and sharpens them towards binary extremes when $T < 1$.
+- **End-to-End Backpropagation**: Verified non-zero gradients on all decoder weights ($W$) and encoder weights (`convs`, `input_proj["User"]`).
+- **Test Suite Results**: **16 / 16 passed** in `test_decoder.py` with 100% clean passes on strict typing (`mypy --strict`) and linting (`ruff`).
 
 ---
 

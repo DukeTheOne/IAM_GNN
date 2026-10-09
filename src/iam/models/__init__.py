@@ -15,6 +15,10 @@ from iam.models.dataset import (
     EnvironmentConfig,
     IAMEnvironmentDataset,
 )
+from iam.models.decoder import (
+    BilinearRelationPredictor,
+    DecoderConfig,
+)
 from iam.models.features import (
     CentralityExtractor,
     NodeFeatureExtractor,
@@ -58,6 +62,7 @@ __all__ = [
     "ActionVocabulary",
     "AdversarialBridgeMaskingOperator",
     "BaseMaskingOperator",
+    "BilinearRelationPredictor",
     "CANONICAL_DEPARTMENTS",
     "CANONICAL_FORWARD_EDGE_TYPES",
     "CANONICAL_NODE_TYPES",
@@ -67,6 +72,7 @@ __all__ = [
     "CentralityExtractor",
     "CrossAccountMaskingOperator",
     "DEFAULT_ORGANIZATION_CONFIGS",
+    "DecoderConfig",
     "EnterpriseCorpusGenerator",
     "EnvironmentConfig",
     "EphemeralSTSMaskingOperator",
