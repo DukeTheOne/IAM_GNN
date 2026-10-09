@@ -1,5 +1,12 @@
 """PyG RGCN model architecture, bilinear decoder, vocabulary, features, and HeteroData converter."""
 
+from iam.models.calibration import (
+    CalibrationBin,
+    CalibrationResult,
+    TemperatureScalingCalibrator,
+    compute_ece,
+    compute_nll,
+)
 from iam.models.converter import (
     CANONICAL_FORWARD_EDGE_TYPES,
     IAMHeteroDataConverter,
@@ -69,6 +76,8 @@ __all__ = [
     "CANONICAL_RELATION_TYPES",
     "CANONICAL_RESOURCE_TYPES",
     "CANONICAL_SERVICES",
+    "CalibrationBin",
+    "CalibrationResult",
     "CentralityExtractor",
     "CrossAccountMaskingOperator",
     "DEFAULT_ORGANIZATION_CONFIGS",
@@ -89,7 +98,10 @@ __all__ = [
     "RandomMaskingOperator",
     "StratifiedNegativeSampler",
     "StructuredMaskingSuite",
+    "TemperatureScalingCalibrator",
     "build_node_feature_dict",
+    "compute_ece",
+    "compute_nll",
     "get_default_in_channels_dict",
     "get_feature_dimension_config",
     "get_reverse_edge_type",
