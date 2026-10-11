@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from sklearn.metrics import average_precision_score, roc_auc_score  # type: ignore[import-untyped]
@@ -19,14 +19,13 @@ from iam.baselines.bfs import DeterministicBFSEngine
 from iam.baselines.motif_heuristic import MotifCompletionHeuristic
 from iam.baselines.oracle import ExactReachabilityOracle
 from iam.baselines.random_forest import RandomForestLinkPredictor
-from iam.models.masking import (
-    AdversarialBridgeMaskingOperator,
-    BaseMaskingOperator,
-    MaskingResult,
-    RandomMaskingOperator,
-    StructuredMaskingSuite,
-)
-from iam.models.sampler import StratifiedNegativeSampler
+
+if TYPE_CHECKING:
+    from iam.models.masking import (
+        BaseMaskingOperator,
+        MaskingResult,
+    )
+    from iam.models.sampler import StratifiedNegativeSampler
 
 
 def compute_pr_auc(y_true: np.ndarray, y_score: np.ndarray) -> float:
@@ -230,7 +229,12 @@ class BaselineBenchmarkSuite:
         negative_sampler: StratifiedNegativeSampler | None = None,
         seed: int = 42,
     ) -> None:
-        self.negative_sampler = negative_sampler or StratifiedNegativeSampler()
+        if negative_sampler is None:
+            from iam.models.sampler import StratifiedNegativeSampler
+
+            self.negative_sampler = StratifiedNegativeSampler()
+        else:
+            self.negative_sampler = negative_sampler
         self.seed = seed
 
     def evaluate_predictions(
@@ -332,6 +336,11 @@ class BaselineBenchmarkSuite:
 
         # Instantiate default operator if none provided
         if masking_operator is None:
+            from iam.models.masking import (
+                AdversarialBridgeMaskingOperator,
+                RandomMaskingOperator,
+            )
+
             if condition_name.upper() in ("E", "CONDITION_E_ADVERSARIAL_BRIDGE"):
                 op: BaseMaskingOperator = AdversarialBridgeMaskingOperator()
             else:
@@ -459,6 +468,8 @@ class BaselineBenchmarkSuite:
         """Run all 4 baselines across conditions on a collection of environments."""
         cond_list = conditions or ["A", "E"]
         results: list[BaselineMetricsResult] = []
+
+        from iam.models.masking import StructuredMaskingSuite
 
         suite = StructuredMaskingSuite()
 

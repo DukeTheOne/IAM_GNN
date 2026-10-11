@@ -14,8 +14,12 @@ import numpy as np
 import torch
 from torch_geometric.data import HeteroData
 
-from iam.generator.graph import GraphNode, IAMGraph, NodeType
-from iam.models.converter import is_reverse_edge_type
+from iam.generator.graph import (
+    GraphNode,
+    IAMGraph,
+    NodeType,
+    is_reverse_edge_type,
+)
 
 FEATURE_NAMES: list[str] = [
     "common_neighbors",

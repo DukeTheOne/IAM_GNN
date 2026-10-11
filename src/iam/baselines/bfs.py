@@ -17,8 +17,12 @@ from pydantic import BaseModel, ConfigDict, Field
 from torch_geometric.data import HeteroData
 
 from iam.baselines.oracle import OraclePathWitness
-from iam.generator.graph import GraphNode, IAMGraph, NodeType
-from iam.models.converter import is_reverse_edge_type
+from iam.generator.graph import (
+    GraphNode,
+    IAMGraph,
+    NodeType,
+    is_reverse_edge_type,
+)
 
 
 class BFSPathWitness(BaseModel):

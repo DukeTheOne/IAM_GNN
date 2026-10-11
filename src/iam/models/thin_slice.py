@@ -13,7 +13,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -21,13 +21,12 @@ import numpy as np
 import torch
 from torch_geometric.data import HeteroData
 
-from iam.baselines.bfs import DeterministicBFSEngine
-from iam.baselines.metrics import (
-    BaselineBenchmarkSuite,
-    BaselineMetricsResult,
-)
-from iam.baselines.motif_heuristic import MotifCompletionHeuristic
-from iam.baselines.random_forest import RandomForestLinkPredictor
+if TYPE_CHECKING:
+    from iam.baselines.metrics import (
+        BaselineBenchmarkSuite,
+        BaselineMetricsResult,
+    )
+    from iam.baselines.random_forest import RandomForestLinkPredictor
 from iam.models.calibration import TemperatureScalingCalibrator, compute_ece
 from iam.models.dataset import EnterpriseCorpusGenerator, EnvironmentConfig
 from iam.models.decoder import DecoderConfig
@@ -128,6 +127,8 @@ class ThinSliceExperimentRunner:
             capability_model=self.capability_model,
             vocabulary=self.vocabulary,
         )
+        from iam.baselines.metrics import BaselineBenchmarkSuite
+
         self.benchmark_suite: BaselineBenchmarkSuite = BaselineBenchmarkSuite(seed=self.config.seed)
         self.negative_sampler: StratifiedNegativeSampler = StratifiedNegativeSampler()
 
@@ -190,6 +191,8 @@ class ThinSliceExperimentRunner:
         train_envs: list[HeteroData],
     ) -> RandomForestLinkPredictor:
         """Inductively fit tabular Random Forest baseline across training environments."""
+        from iam.baselines.random_forest import RandomForestLinkPredictor
+
         rf = RandomForestLinkPredictor(n_estimators=50, random_state=self.config.seed)
         all_x: list[np.ndarray] = []
         all_y: list[np.ndarray] = []
@@ -325,6 +328,9 @@ class ThinSliceExperimentRunner:
     ) -> list[BaselineMetricsResult]:
         """Evaluate Oracle, BFS, RF, Motif Heuristic, and RGCN on held-out test environments."""
         all_results: list[BaselineMetricsResult] = []
+        from iam.baselines.bfs import DeterministicBFSEngine
+        from iam.baselines.motif_heuristic import MotifCompletionHeuristic
+
         bfs = DeterministicBFSEngine()
         heuristic = MotifCompletionHeuristic()
 

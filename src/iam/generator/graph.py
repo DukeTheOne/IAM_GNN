@@ -35,6 +35,11 @@ class EdgeRelation(str, Enum):
     PASSES_TO = "PassesTo"  # Principal/Role -> Role
 
 
+def is_reverse_edge_type(edge_type: tuple[str, str, str]) -> bool:
+    """Check if an edge type triple represents a reverse message-passing edge."""
+    return edge_type[1].startswith("Rev")
+
+
 class GraphNode(BaseModel):
     """A typed node entity within the IAM authorization multigraph."""
 
