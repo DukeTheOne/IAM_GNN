@@ -108,13 +108,15 @@ def compute_nll(
         probabilities.detach().cpu().numpy()
         if isinstance(probabilities, torch.Tensor)
         else np.asarray(probabilities)
-    )
-    y = targets.detach().cpu().numpy() if isinstance(targets, torch.Tensor) else np.asarray(targets)
+    ).astype(np.float64)
+    y = (
+        targets.detach().cpu().numpy() if isinstance(targets, torch.Tensor) else np.asarray(targets)
+    ).astype(np.float64)
 
     if len(p) == 0:
         return 0.0
 
-    p_clipped = np.clip(p, 1e-12, 1.0 - 1e-12)
+    p_clipped = np.clip(p, 1e-7, 1.0 - 1e-7)
     nll = -np.mean(y * np.log(p_clipped) + (1.0 - y) * np.log(1.0 - p_clipped))
     return float(nll)
 

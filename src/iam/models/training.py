@@ -156,6 +156,27 @@ class RGCNLinkPredictionModel(nn.Module):
             temperature=temperature,
         )
 
+    def score_edges(
+        self,
+        h_dict: dict[str, torch.Tensor],
+        edge_type: tuple[str, str, str],
+        edge_index: torch.Tensor,
+        temperature: float = 1.0,
+    ) -> torch.Tensor:
+        """Compute candidate edge logits using cached node embeddings."""
+        src_type, _, dst_type = edge_type
+        if src_type not in h_dict or dst_type not in h_dict:
+            raise KeyError(f"Entity types {src_type} or {dst_type} not in embeddings dictionary")
+        if edge_index.size(1) == 0:
+            return torch.empty(0, device=edge_index.device)
+        rel_id = self.decoder.get_relation_id(edge_type)
+        h_u = h_dict[src_type][edge_index[0]]
+        h_v = h_dict[dst_type][edge_index[1]]
+        logits = self.decoder.forward(h_u, h_v, rel_id)
+        if temperature != 1.0:
+            logits = logits / max(temperature, 1e-6)
+        return logits
+
     def score_matrix(
         self,
         data: HeteroData,

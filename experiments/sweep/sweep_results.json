@@ -1,0 +1,5203 @@
+{
+  "config": {
+    "seeds": [
+      101,
+      202,
+      303,
+      404,
+      505
+    ],
+    "conditions": [
+      "A_00",
+      "A_10",
+      "A_20",
+      "A_30",
+      "A_40",
+      "E",
+      "B",
+      "C",
+      "D"
+    ],
+    "num_epochs": 15,
+    "hidden_channels": 128,
+    "num_bases": 8
+  },
+  "gate_decision": "GO",
+  "gate_rationale": [
+    "PMapper/BFS Blindness verified under Condition E: BFS recovery=0.00.",
+    "Condition E Attack Path Recovery @ 10: RGCN=1.000 [1.0, 1.0] vs RF=1.000 [1.0, 1.0] vs Heuristic=1.000 [1.0, 1.0].",
+    "ECE Calibration Impact on Condition E: Uncalibrated ECE=0.1226 -> Calibrated ECE=0.0937 (23.6% reduction).",
+    "GO Decision criteria satisfied: RGCN achieves verified statistical superiority."
+  ],
+  "execution_time_sec": 34.57,
+  "aggregated_metrics": {
+    "A_00": {},
+    "A_10": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 0.6681,
+          "std": 0.0936,
+          "ci_lower": 0.552,
+          "ci_upper": 0.7842,
+          "raw_values": [
+            0.7235,
+            0.6101,
+            0.7448,
+            0.5312,
+            0.7309
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.6463,
+          "std": 0.1046,
+          "ci_lower": 0.5164,
+          "ci_upper": 0.7762,
+          "raw_values": [
+            0.7315,
+            0.5613,
+            0.7479,
+            0.5123,
+            0.6785
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.7605,
+          "std": 0.1644,
+          "ci_lower": 0.5564,
+          "ci_upper": 0.9645,
+          "raw_values": [
+            0.7223,
+            0.9285,
+            0.7944,
+            0.5,
+            0.8571
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9778,
+          "std": 0.0304,
+          "ci_lower": 0.94,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9445,
+            1.0,
+            0.9445,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.8784,
+          "std": 0.067,
+          "ci_lower": 0.7952,
+          "ci_upper": 0.9616,
+          "raw_values": [
+            0.8334,
+            0.7857,
+            0.9,
+            0.9445,
+            0.9285
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.7605,
+          "std": 0.1644,
+          "ci_lower": 0.5564,
+          "ci_upper": 0.9645,
+          "raw_values": [
+            0.7223,
+            0.9285,
+            0.7944,
+            0.5,
+            0.8571
+          ]
+        },
+        "ece": {
+          "mean": 0.3407,
+          "std": 0.0627,
+          "ci_lower": 0.2628,
+          "ci_upper": 0.4185,
+          "raw_values": [
+            0.3327,
+            0.4108,
+            0.3547,
+            0.3644,
+            0.2407
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.6854,
+          "std": 0.1148,
+          "ci_lower": 0.5429,
+          "ci_upper": 0.8279,
+          "raw_values": [
+            0.6111,
+            0.8572,
+            0.6889,
+            0.5556,
+            0.7143
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.6854,
+          "std": 0.1148,
+          "ci_lower": 0.5429,
+          "ci_upper": 0.8279,
+          "raw_values": [
+            0.6111,
+            0.8572,
+            0.6889,
+            0.5556,
+            0.7143
+          ]
+        },
+        "ece": {
+          "mean": 0.45,
+          "std": 0.0,
+          "ci_lower": 0.45,
+          "ci_upper": 0.45,
+          "raw_values": [
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.6113,
+          "std": 0.1102,
+          "ci_lower": 0.4745,
+          "ci_upper": 0.7481,
+          "raw_values": [
+            0.743,
+            0.674,
+            0.4653,
+            0.6361,
+            0.5381
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5169,
+          "std": 0.1566,
+          "ci_lower": 0.3225,
+          "ci_upper": 0.7114,
+          "raw_values": [
+            0.716,
+            0.5817,
+            0.31,
+            0.5586,
+            0.4183
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.5903,
+          "std": 0.1671,
+          "ci_lower": 0.3829,
+          "ci_upper": 0.7977,
+          "raw_values": [
+            0.7223,
+            0.7143,
+            0.3166,
+            0.5556,
+            0.6429
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5362,
+          "std": 0.1176,
+          "ci_lower": 0.3902,
+          "ci_upper": 0.6821,
+          "raw_values": [
+            0.3889,
+            0.7143,
+            0.5222,
+            0.5555,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.5903,
+          "std": 0.1671,
+          "ci_lower": 0.3829,
+          "ci_upper": 0.7977,
+          "raw_values": [
+            0.7223,
+            0.7143,
+            0.3166,
+            0.5556,
+            0.6429
+          ]
+        },
+        "ece": {
+          "mean": 0.3984,
+          "std": 0.0948,
+          "ci_lower": 0.2808,
+          "ci_upper": 0.5161,
+          "raw_values": [
+            0.2856,
+            0.3678,
+            0.5475,
+            0.3952,
+            0.3962
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.5781,
+          "std": 0.0752,
+          "ci_lower": 0.4847,
+          "ci_upper": 0.6715,
+          "raw_values": [
+            0.6405,
+            0.6107,
+            0.4653,
+            0.6361,
+            0.5381
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5288,
+          "std": 0.1651,
+          "ci_lower": 0.3238,
+          "ci_upper": 0.7338,
+          "raw_values": [
+            0.7191,
+            0.6378,
+            0.31,
+            0.5586,
+            0.4183
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.53,
+          "std": 0.1938,
+          "ci_lower": 0.2894,
+          "ci_upper": 0.7706,
+          "raw_values": [
+            0.7778,
+            0.3572,
+            0.3166,
+            0.5556,
+            0.6429
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8381,
+          "std": 0.2784,
+          "ci_lower": 0.4925,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8334,
+            0.3572,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5362,
+          "std": 0.1176,
+          "ci_lower": 0.3902,
+          "ci_upper": 0.6821,
+          "raw_values": [
+            0.3889,
+            0.7143,
+            0.5222,
+            0.5555,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.53,
+          "std": 0.1938,
+          "ci_lower": 0.2894,
+          "ci_upper": 0.7706,
+          "raw_values": [
+            0.7778,
+            0.3572,
+            0.3166,
+            0.5556,
+            0.6429
+          ]
+        },
+        "ece": {
+          "mean": 0.4378,
+          "std": 0.0887,
+          "ci_lower": 0.3277,
+          "ci_upper": 0.548,
+          "raw_values": [
+            0.3609,
+            0.3928,
+            0.5866,
+            0.4016,
+            0.4474
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 0.5626,
+          "std": 0.0307,
+          "ci_lower": 0.5245,
+          "ci_upper": 0.6007,
+          "raw_values": [
+            0.5918,
+            0.5344,
+            0.5781,
+            0.5249,
+            0.5838
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4917,
+          "std": 0.0661,
+          "ci_lower": 0.4097,
+          "ci_upper": 0.5737,
+          "raw_values": [
+            0.5679,
+            0.3928,
+            0.5005,
+            0.5278,
+            0.4694
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.5924,
+          "std": 0.1276,
+          "ci_lower": 0.434,
+          "ci_upper": 0.7507,
+          "raw_values": [
+            0.6111,
+            0.7143,
+            0.4778,
+            0.4445,
+            0.7143
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8689,
+          "std": 0.2412,
+          "ci_lower": 0.5695,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            0.9,
+            0.4445,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.8963,
+          "std": 0.1489,
+          "ci_lower": 0.7115,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8889,
+            0.6429,
+            0.95,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.5924,
+          "std": 0.1276,
+          "ci_lower": 0.434,
+          "ci_upper": 0.7507,
+          "raw_values": [
+            0.6111,
+            0.7143,
+            0.4778,
+            0.4445,
+            0.7143
+          ]
+        },
+        "ece": {
+          "mean": 0.5104,
+          "std": 0.0279,
+          "ci_lower": 0.4758,
+          "ci_upper": 0.5451,
+          "raw_values": [
+            0.49,
+            0.5595,
+            0.5028,
+            0.4999,
+            0.5
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.6112,
+          "std": 0.1294,
+          "ci_lower": 0.4505,
+          "ci_upper": 0.7718,
+          "raw_values": [
+            0.7085,
+            0.6648,
+            0.4475,
+            0.7353,
+            0.4998
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5307,
+          "std": 0.1379,
+          "ci_lower": 0.3595,
+          "ci_upper": 0.7019,
+          "raw_values": [
+            0.6358,
+            0.5612,
+            0.3023,
+            0.6389,
+            0.5153
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.6289,
+          "std": 0.16,
+          "ci_lower": 0.4303,
+          "ci_upper": 0.8275,
+          "raw_values": [
+            0.6667,
+            0.7143,
+            0.3667,
+            0.6111,
+            0.7857
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9571,
+          "std": 0.0958,
+          "ci_lower": 0.8382,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.7857
+          ]
+        },
+        "fnr": {
+          "mean": 0.4733,
+          "std": 0.067,
+          "ci_lower": 0.3902,
+          "ci_upper": 0.5564,
+          "raw_values": [
+            0.3889,
+            0.5,
+            0.4222,
+            0.5555,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.6289,
+          "std": 0.16,
+          "ci_lower": 0.4303,
+          "ci_upper": 0.8275,
+          "raw_values": [
+            0.6667,
+            0.7143,
+            0.3667,
+            0.6111,
+            0.7857
+          ]
+        },
+        "ece": {
+          "mean": 0.4316,
+          "std": 0.1098,
+          "ci_lower": 0.2953,
+          "ci_upper": 0.568,
+          "raw_values": [
+            0.3518,
+            0.3509,
+            0.5927,
+            0.3628,
+            0.5
+          ]
+        }
+      }
+    },
+    "A_20": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.7492,
+          "std": 0.1715,
+          "ci_lower": 0.5363,
+          "ci_upper": 0.9622,
+          "raw_values": [
+            0.8333,
+            0.6667,
+            0.6905,
+            0.5556,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.7492,
+          "std": 0.1715,
+          "ci_lower": 0.5363,
+          "ci_upper": 0.9622,
+          "raw_values": [
+            0.8333,
+            0.6667,
+            0.6905,
+            0.5556,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 0.6127,
+          "std": 0.0815,
+          "ci_lower": 0.5116,
+          "ci_upper": 0.7139,
+          "raw_values": [
+            0.6686,
+            0.5254,
+            0.6366,
+            0.5293,
+            0.7037
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.6015,
+          "std": 0.0742,
+          "ci_lower": 0.5093,
+          "ci_upper": 0.6937,
+          "raw_values": [
+            0.6389,
+            0.5155,
+            0.637,
+            0.5309,
+            0.6852
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.4573,
+          "std": 0.2252,
+          "ci_lower": 0.1777,
+          "ci_upper": 0.7369,
+          "raw_values": [
+            0.5833,
+            0.2334,
+            0.4143,
+            0.2777,
+            0.7778
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9845,
+          "std": 0.0213,
+          "ci_lower": 0.9581,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9584,
+            1.0,
+            0.9643,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.8989,
+          "std": 0.0548,
+          "ci_lower": 0.8309,
+          "ci_upper": 0.9669,
+          "raw_values": [
+            0.8334,
+            0.8667,
+            0.9334,
+            0.9722,
+            0.8889
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.4573,
+          "std": 0.2252,
+          "ci_lower": 0.1777,
+          "ci_upper": 0.7369,
+          "raw_values": [
+            0.5833,
+            0.2334,
+            0.4143,
+            0.2777,
+            0.7778
+          ]
+        },
+        "ece": {
+          "mean": 0.3433,
+          "std": 0.0749,
+          "ci_lower": 0.2503,
+          "ci_upper": 0.4363,
+          "raw_values": [
+            0.3291,
+            0.4183,
+            0.3116,
+            0.4159,
+            0.2416
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.4662,
+          "std": 0.1099,
+          "ci_lower": 0.3298,
+          "ci_upper": 0.6026,
+          "raw_values": [
+            0.5,
+            0.4667,
+            0.4476,
+            0.3055,
+            0.6111
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.4662,
+          "std": 0.1099,
+          "ci_lower": 0.3298,
+          "ci_upper": 0.6026,
+          "raw_values": [
+            0.5,
+            0.4667,
+            0.4476,
+            0.3055,
+            0.6111
+          ]
+        },
+        "ece": {
+          "mean": 0.45,
+          "std": 0.0,
+          "ci_lower": 0.45,
+          "ci_upper": 0.45,
+          "raw_values": [
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.5088,
+          "std": 0.0589,
+          "ci_lower": 0.4357,
+          "ci_upper": 0.5818,
+          "raw_values": [
+            0.5545,
+            0.588,
+            0.4537,
+            0.4759,
+            0.4716
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4514,
+          "std": 0.1107,
+          "ci_lower": 0.3139,
+          "ci_upper": 0.5888,
+          "raw_values": [
+            0.5174,
+            0.5844,
+            0.3348,
+            0.4808,
+            0.3395
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3598,
+          "std": 0.1136,
+          "ci_lower": 0.2188,
+          "ci_upper": 0.5008,
+          "raw_values": [
+            0.375,
+            0.4334,
+            0.2405,
+            0.25,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5333,
+          "std": 0.095,
+          "ci_lower": 0.4154,
+          "ci_upper": 0.6513,
+          "raw_values": [
+            0.4166,
+            0.6666,
+            0.5834,
+            0.5,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3598,
+          "std": 0.1136,
+          "ci_lower": 0.2188,
+          "ci_upper": 0.5008,
+          "raw_values": [
+            0.375,
+            0.4334,
+            0.2405,
+            0.25,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.4355,
+          "std": 0.0673,
+          "ci_lower": 0.3519,
+          "ci_upper": 0.5191,
+          "raw_values": [
+            0.391,
+            0.3876,
+            0.5512,
+            0.4136,
+            0.4342
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.4962,
+          "std": 0.0411,
+          "ci_lower": 0.4452,
+          "ci_upper": 0.5472,
+          "raw_values": [
+            0.5325,
+            0.5473,
+            0.4537,
+            0.4759,
+            0.4716
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4595,
+          "std": 0.1178,
+          "ci_lower": 0.3133,
+          "ci_upper": 0.6058,
+          "raw_values": [
+            0.5781,
+            0.5645,
+            0.3348,
+            0.4808,
+            0.3395
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3948,
+          "std": 0.1512,
+          "ci_lower": 0.2071,
+          "ci_upper": 0.5825,
+          "raw_values": [
+            0.5834,
+            0.4,
+            0.2405,
+            0.25,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.86,
+          "std": 0.2314,
+          "ci_lower": 0.5727,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8334,
+            0.4667,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5333,
+          "std": 0.095,
+          "ci_lower": 0.4154,
+          "ci_upper": 0.6513,
+          "raw_values": [
+            0.4166,
+            0.6666,
+            0.5834,
+            0.5,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3948,
+          "std": 0.1512,
+          "ci_lower": 0.2071,
+          "ci_upper": 0.5825,
+          "raw_values": [
+            0.5834,
+            0.4,
+            0.2405,
+            0.25,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.4834,
+          "std": 0.0681,
+          "ci_lower": 0.3988,
+          "ci_upper": 0.568,
+          "raw_values": [
+            0.4781,
+            0.45,
+            0.5907,
+            0.4069,
+            0.4912
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 0.552,
+          "std": 0.0433,
+          "ci_lower": 0.4983,
+          "ci_upper": 0.6058,
+          "raw_values": [
+            0.6092,
+            0.5514,
+            0.5521,
+            0.4875,
+            0.5599
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4993,
+          "std": 0.0685,
+          "ci_lower": 0.4142,
+          "ci_upper": 0.5844,
+          "raw_values": [
+            0.6146,
+            0.4956,
+            0.4328,
+            0.4815,
+            0.4722
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3774,
+          "std": 0.101,
+          "ci_lower": 0.252,
+          "ci_upper": 0.5027,
+          "raw_values": [
+            0.4584,
+            0.3334,
+            0.3452,
+            0.25,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8411,
+          "std": 0.2695,
+          "ci_lower": 0.5065,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            0.9667,
+            0.9334,
+            0.3611,
+            0.9445
+          ]
+        },
+        "fnr": {
+          "mean": 0.91,
+          "std": 0.1402,
+          "ci_lower": 0.7359,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9167,
+            0.6666,
+            0.9667,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3774,
+          "std": 0.101,
+          "ci_lower": 0.252,
+          "ci_upper": 0.5027,
+          "raw_values": [
+            0.4584,
+            0.3334,
+            0.3452,
+            0.25,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.4959,
+          "std": 0.0292,
+          "ci_lower": 0.4596,
+          "ci_upper": 0.5322,
+          "raw_values": [
+            0.4924,
+            0.4621,
+            0.4834,
+            0.5416,
+            0.5
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.5251,
+          "std": 0.0513,
+          "ci_lower": 0.4614,
+          "ci_upper": 0.5887,
+          "raw_values": [
+            0.5462,
+            0.5851,
+            0.449,
+            0.5408,
+            0.504
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4995,
+          "std": 0.0879,
+          "ci_lower": 0.3903,
+          "ci_upper": 0.6087,
+          "raw_values": [
+            0.5174,
+            0.5611,
+            0.3448,
+            0.5432,
+            0.5309
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3975,
+          "std": 0.1019,
+          "ci_lower": 0.2709,
+          "ci_upper": 0.524,
+          "raw_values": [
+            0.4166,
+            0.4,
+            0.3095,
+            0.3055,
+            0.5556
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9556,
+          "std": 0.0994,
+          "ci_lower": 0.8322,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.7778
+          ]
+        },
+        "fnr": {
+          "mean": 0.4762,
+          "std": 0.0675,
+          "ci_lower": 0.3923,
+          "ci_upper": 0.56,
+          "raw_values": [
+            0.4166,
+            0.4333,
+            0.4476,
+            0.5834,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3975,
+          "std": 0.1019,
+          "ci_lower": 0.2709,
+          "ci_upper": 0.524,
+          "raw_values": [
+            0.4166,
+            0.4,
+            0.3095,
+            0.3055,
+            0.5556
+          ]
+        },
+        "ece": {
+          "mean": 0.4368,
+          "std": 0.0759,
+          "ci_lower": 0.3425,
+          "ci_upper": 0.531,
+          "raw_values": [
+            0.3999,
+            0.3437,
+            0.5284,
+            0.4118,
+            0.5
+          ]
+        }
+      }
+    },
+    "A_30": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.5314,
+          "std": 0.1741,
+          "ci_lower": 0.3153,
+          "ci_upper": 0.7476,
+          "raw_values": [
+            0.5263,
+            0.4174,
+            0.4258,
+            0.4545,
+            0.8333
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.5314,
+          "std": 0.1741,
+          "ci_lower": 0.3153,
+          "ci_upper": 0.7476,
+          "raw_values": [
+            0.5263,
+            0.4174,
+            0.4258,
+            0.4545,
+            0.8333
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 0.5858,
+          "std": 0.0671,
+          "ci_lower": 0.5025,
+          "ci_upper": 0.6691,
+          "raw_values": [
+            0.6476,
+            0.5339,
+            0.6278,
+            0.495,
+            0.6247
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5638,
+          "std": 0.0794,
+          "ci_lower": 0.4652,
+          "ci_upper": 0.6624,
+          "raw_values": [
+            0.6683,
+            0.5074,
+            0.6063,
+            0.4675,
+            0.5695
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.276,
+          "std": 0.1392,
+          "ci_lower": 0.1032,
+          "ci_upper": 0.4488,
+          "raw_values": [
+            0.3158,
+            0.1469,
+            0.2129,
+            0.2046,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9821,
+          "std": 0.018,
+          "ci_lower": 0.9598,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9737,
+            1.0,
+            0.9783,
+            1.0,
+            0.9584
+          ]
+        },
+        "fnr": {
+          "mean": 0.8767,
+          "std": 0.0794,
+          "ci_lower": 0.778,
+          "ci_upper": 0.9753,
+          "raw_values": [
+            0.7631,
+            0.8748,
+            0.8515,
+            0.9772,
+            0.9166
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.276,
+          "std": 0.1392,
+          "ci_lower": 0.1032,
+          "ci_upper": 0.4488,
+          "raw_values": [
+            0.3158,
+            0.1469,
+            0.2129,
+            0.2046,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.3327,
+          "std": 0.0597,
+          "ci_lower": 0.2586,
+          "ci_upper": 0.4068,
+          "raw_values": [
+            0.294,
+            0.371,
+            0.2869,
+            0.4195,
+            0.2921
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3278,
+          "std": 0.1031,
+          "ci_lower": 0.1997,
+          "ci_upper": 0.4558,
+          "raw_values": [
+            0.3421,
+            0.2922,
+            0.2545,
+            0.25,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3278,
+          "std": 0.1031,
+          "ci_lower": 0.1997,
+          "ci_upper": 0.4558,
+          "raw_values": [
+            0.3421,
+            0.2922,
+            0.2545,
+            0.25,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.45,
+          "std": 0.0,
+          "ci_lower": 0.45,
+          "ci_upper": 0.45,
+          "raw_values": [
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.5176,
+          "std": 0.0549,
+          "ci_lower": 0.4494,
+          "ci_upper": 0.5857,
+          "raw_values": [
+            0.4785,
+            0.6121,
+            0.517,
+            0.4837,
+            0.4967
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4725,
+          "std": 0.0672,
+          "ci_lower": 0.3891,
+          "ci_upper": 0.556,
+          "raw_values": [
+            0.4633,
+            0.5644,
+            0.502,
+            0.4509,
+            0.382
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2574,
+          "std": 0.0843,
+          "ci_lower": 0.1527,
+          "ci_upper": 0.3621,
+          "raw_values": [
+            0.1842,
+            0.3122,
+            0.2337,
+            0.1819,
+            0.375
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5054,
+          "std": 0.1112,
+          "ci_lower": 0.3674,
+          "ci_upper": 0.6435,
+          "raw_values": [
+            0.3947,
+            0.6479,
+            0.4013,
+            0.5,
+            0.5833
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2574,
+          "std": 0.0843,
+          "ci_lower": 0.1527,
+          "ci_upper": 0.3621,
+          "raw_values": [
+            0.1842,
+            0.3122,
+            0.2337,
+            0.1819,
+            0.375
+          ]
+        },
+        "ece": {
+          "mean": 0.3933,
+          "std": 0.0302,
+          "ci_lower": 0.3558,
+          "ci_upper": 0.4309,
+          "raw_values": [
+            0.4054,
+            0.3496,
+            0.3836,
+            0.432,
+            0.3961
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.5151,
+          "std": 0.0297,
+          "ci_lower": 0.4782,
+          "ci_upper": 0.552,
+          "raw_values": [
+            0.5162,
+            0.562,
+            0.517,
+            0.4837,
+            0.4967
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4877,
+          "std": 0.0733,
+          "ci_lower": 0.3967,
+          "ci_upper": 0.5787,
+          "raw_values": [
+            0.5361,
+            0.5678,
+            0.502,
+            0.4509,
+            0.382
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.285,
+          "std": 0.0786,
+          "ci_lower": 0.1874,
+          "ci_upper": 0.3825,
+          "raw_values": [
+            0.3421,
+            0.2922,
+            0.2337,
+            0.1819,
+            0.375
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.851,
+          "std": 0.2437,
+          "ci_lower": 0.5485,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8157,
+            0.4392,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5054,
+          "std": 0.1112,
+          "ci_lower": 0.3674,
+          "ci_upper": 0.6435,
+          "raw_values": [
+            0.3947,
+            0.6479,
+            0.4013,
+            0.5,
+            0.5833
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.285,
+          "std": 0.0786,
+          "ci_lower": 0.1874,
+          "ci_upper": 0.3825,
+          "raw_values": [
+            0.3421,
+            0.2922,
+            0.2337,
+            0.1819,
+            0.375
+          ]
+        },
+        "ece": {
+          "mean": 0.4563,
+          "std": 0.0319,
+          "ci_lower": 0.4167,
+          "ci_upper": 0.496,
+          "raw_values": [
+            0.4863,
+            0.427,
+            0.4307,
+            0.4428,
+            0.4949
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 0.5225,
+          "std": 0.0237,
+          "ci_lower": 0.493,
+          "ci_upper": 0.5519,
+          "raw_values": [
+            0.549,
+            0.4914,
+            0.5312,
+            0.5046,
+            0.5362
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4829,
+          "std": 0.0187,
+          "ci_lower": 0.4596,
+          "ci_upper": 0.5061,
+          "raw_values": [
+            0.5062,
+            0.4642,
+            0.4937,
+            0.4866,
+            0.4636
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2276,
+          "std": 0.0869,
+          "ci_lower": 0.1197,
+          "ci_upper": 0.3356,
+          "raw_values": [
+            0.1579,
+            0.1887,
+            0.2346,
+            0.1819,
+            0.375
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8311,
+          "std": 0.2536,
+          "ci_lower": 0.5163,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            0.9148,
+            0.9791,
+            0.3863,
+            0.875
+          ]
+        },
+        "fnr": {
+          "mean": 0.9076,
+          "std": 0.1203,
+          "ci_lower": 0.7583,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8947,
+            0.7078,
+            0.9357,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2276,
+          "std": 0.0869,
+          "ci_lower": 0.1197,
+          "ci_upper": 0.3356,
+          "raw_values": [
+            0.1579,
+            0.1887,
+            0.2346,
+            0.1819,
+            0.375
+          ]
+        },
+        "ece": {
+          "mean": 0.5024,
+          "std": 0.0237,
+          "ci_lower": 0.4729,
+          "ci_upper": 0.5318,
+          "raw_values": [
+            0.4627,
+            0.5164,
+            0.5101,
+            0.5227,
+            0.5
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.5297,
+          "std": 0.054,
+          "ci_lower": 0.4626,
+          "ci_upper": 0.5968,
+          "raw_values": [
+            0.5061,
+            0.6231,
+            0.5143,
+            0.5209,
+            0.484
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5014,
+          "std": 0.0455,
+          "ci_lower": 0.4449,
+          "ci_upper": 0.5579,
+          "raw_values": [
+            0.507,
+            0.5778,
+            0.4645,
+            0.4752,
+            0.4827
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2714,
+          "std": 0.0876,
+          "ci_lower": 0.1627,
+          "ci_upper": 0.3801,
+          "raw_values": [
+            0.2105,
+            0.2904,
+            0.2119,
+            0.2273,
+            0.4167
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9333,
+          "std": 0.1491,
+          "ci_lower": 0.7483,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.6667
+          ]
+        },
+        "fnr": {
+          "mean": 0.4716,
+          "std": 0.0977,
+          "ci_lower": 0.3502,
+          "ci_upper": 0.5929,
+          "raw_values": [
+            0.3421,
+            0.4574,
+            0.4258,
+            0.5909,
+            0.5416
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2714,
+          "std": 0.0876,
+          "ci_lower": 0.1627,
+          "ci_upper": 0.3801,
+          "raw_values": [
+            0.2105,
+            0.2904,
+            0.2119,
+            0.2273,
+            0.4167
+          ]
+        },
+        "ece": {
+          "mean": 0.4267,
+          "std": 0.0788,
+          "ci_lower": 0.3288,
+          "ci_upper": 0.5246,
+          "raw_values": [
+            0.3881,
+            0.3237,
+            0.4368,
+            0.4475,
+            0.5373
+          ]
+        }
+      }
+    },
+    "A_40": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3499,
+          "std": 0.059,
+          "ci_lower": 0.2766,
+          "ci_upper": 0.4232,
+          "raw_values": [
+            0.3638,
+            0.3286,
+            0.3077,
+            0.303,
+            0.4465
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3499,
+          "std": 0.059,
+          "ci_lower": 0.2766,
+          "ci_upper": 0.4232,
+          "raw_values": [
+            0.3638,
+            0.3286,
+            0.3077,
+            0.303,
+            0.4465
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 0.5684,
+          "std": 0.0614,
+          "ci_lower": 0.4922,
+          "ci_upper": 0.6446,
+          "raw_values": [
+            0.6184,
+            0.5287,
+            0.6179,
+            0.4804,
+            0.5967
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5576,
+          "std": 0.078,
+          "ci_lower": 0.4608,
+          "ci_upper": 0.6544,
+          "raw_values": [
+            0.6462,
+            0.5275,
+            0.6067,
+            0.443,
+            0.5645
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.1681,
+          "std": 0.0623,
+          "ci_lower": 0.0907,
+          "ci_upper": 0.2455,
+          "raw_values": [
+            0.2182,
+            0.1158,
+            0.1534,
+            0.1061,
+            0.247
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.899,
+          "std": 0.0835,
+          "ci_lower": 0.7954,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9637,
+            0.9203,
+            0.8622,
+            0.7728,
+            0.9762
+          ]
+        },
+        "fnr": {
+          "mean": 0.8424,
+          "std": 0.1179,
+          "ci_lower": 0.6961,
+          "ci_upper": 0.9887,
+          "raw_values": [
+            0.6548,
+            0.9014,
+            0.8618,
+            0.9697,
+            0.8244
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.1681,
+          "std": 0.0623,
+          "ci_lower": 0.0907,
+          "ci_upper": 0.2455,
+          "raw_values": [
+            0.2182,
+            0.1158,
+            0.1534,
+            0.1061,
+            0.247
+          ]
+        },
+        "ece": {
+          "mean": 0.3168,
+          "std": 0.0723,
+          "ci_lower": 0.227,
+          "ci_upper": 0.4066,
+          "raw_values": [
+            0.2582,
+            0.3822,
+            0.2653,
+            0.4083,
+            0.27
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2357,
+          "std": 0.0237,
+          "ci_lower": 0.2062,
+          "ci_upper": 0.2652,
+          "raw_values": [
+            0.2354,
+            0.1956,
+            0.2457,
+            0.2576,
+            0.244
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9165,
+          "std": 0.0884,
+          "ci_lower": 0.8067,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            0.9014,
+            0.893,
+            0.7879,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2357,
+          "std": 0.0237,
+          "ci_lower": 0.2062,
+          "ci_upper": 0.2652,
+          "raw_values": [
+            0.2354,
+            0.1956,
+            0.2457,
+            0.2576,
+            0.244
+          ]
+        },
+        "ece": {
+          "mean": 0.45,
+          "std": 0.0,
+          "ci_lower": 0.45,
+          "ci_upper": 0.45,
+          "raw_values": [
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.5097,
+          "std": 0.049,
+          "ci_lower": 0.4488,
+          "ci_upper": 0.5705,
+          "raw_values": [
+            0.4648,
+            0.5887,
+            0.4894,
+            0.5232,
+            0.4822
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4965,
+          "std": 0.054,
+          "ci_lower": 0.4294,
+          "ci_upper": 0.5635,
+          "raw_values": [
+            0.4599,
+            0.5843,
+            0.4758,
+            0.5104,
+            0.452
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.1541,
+          "std": 0.0503,
+          "ci_lower": 0.0917,
+          "ci_upper": 0.2165,
+          "raw_values": [
+            0.0906,
+            0.1815,
+            0.1387,
+            0.1363,
+            0.2232
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8711,
+          "std": 0.0933,
+          "ci_lower": 0.7553,
+          "ci_upper": 0.9869,
+          "raw_values": [
+            0.928,
+            0.8545,
+            0.8002,
+            0.7728,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.4931,
+          "std": 0.0886,
+          "ci_lower": 0.383,
+          "ci_upper": 0.6031,
+          "raw_values": [
+            0.4166,
+            0.5414,
+            0.4129,
+            0.6212,
+            0.4732
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.1541,
+          "std": 0.0503,
+          "ci_lower": 0.0917,
+          "ci_upper": 0.2165,
+          "raw_values": [
+            0.0906,
+            0.1815,
+            0.1387,
+            0.1363,
+            0.2232
+          ]
+        },
+        "ece": {
+          "mean": 0.3693,
+          "std": 0.0415,
+          "ci_lower": 0.3178,
+          "ci_upper": 0.4207,
+          "raw_values": [
+            0.3797,
+            0.296,
+            0.3934,
+            0.3944,
+            0.3829
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.5143,
+          "std": 0.0323,
+          "ci_lower": 0.4742,
+          "ci_upper": 0.5545,
+          "raw_values": [
+            0.5128,
+            0.5638,
+            0.4894,
+            0.5234,
+            0.4822
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.512,
+          "std": 0.0546,
+          "ci_lower": 0.4442,
+          "ci_upper": 0.5798,
+          "raw_values": [
+            0.5274,
+            0.5943,
+            0.4758,
+            0.5106,
+            0.452
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.1823,
+          "std": 0.0417,
+          "ci_lower": 0.1306,
+          "ci_upper": 0.234,
+          "raw_values": [
+            0.2004,
+            0.2128,
+            0.1387,
+            0.1363,
+            0.2232
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.779,
+          "std": 0.1514,
+          "ci_lower": 0.5911,
+          "ci_upper": 0.9669,
+          "raw_values": [
+            0.7461,
+            0.5759,
+            0.8002,
+            0.7728,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.4931,
+          "std": 0.0886,
+          "ci_lower": 0.383,
+          "ci_upper": 0.6031,
+          "raw_values": [
+            0.4166,
+            0.5414,
+            0.4129,
+            0.6212,
+            0.4732
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.1823,
+          "std": 0.0417,
+          "ci_lower": 0.1306,
+          "ci_upper": 0.234,
+          "raw_values": [
+            0.2004,
+            0.2128,
+            0.1387,
+            0.1363,
+            0.2232
+          ]
+        },
+        "ece": {
+          "mean": 0.4401,
+          "std": 0.0269,
+          "ci_lower": 0.4067,
+          "ci_upper": 0.4734,
+          "raw_values": [
+            0.4805,
+            0.4195,
+            0.4511,
+            0.4138,
+            0.4354
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 0.5156,
+          "std": 0.0214,
+          "ci_lower": 0.489,
+          "ci_upper": 0.5422,
+          "raw_values": [
+            0.527,
+            0.5002,
+            0.5481,
+            0.5018,
+            0.5009
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4997,
+          "std": 0.0213,
+          "ci_lower": 0.4733,
+          "ci_upper": 0.5261,
+          "raw_values": [
+            0.517,
+            0.4722,
+            0.5191,
+            0.5082,
+            0.482
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.1804,
+          "std": 0.0258,
+          "ci_lower": 0.1484,
+          "ci_upper": 0.2125,
+          "raw_values": [
+            0.1825,
+            0.1988,
+            0.1851,
+            0.1363,
+            0.1994
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.7794,
+          "std": 0.1937,
+          "ci_lower": 0.5389,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.928,
+            0.8529,
+            0.7538,
+            0.4546,
+            0.9077
+          ]
+        },
+        "fnr": {
+          "mean": 0.8876,
+          "std": 0.1404,
+          "ci_lower": 0.7132,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.873,
+            0.6573,
+            0.9077,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.1804,
+          "std": 0.0258,
+          "ci_lower": 0.1484,
+          "ci_upper": 0.2125,
+          "raw_values": [
+            0.1825,
+            0.1988,
+            0.1851,
+            0.1363,
+            0.1994
+          ]
+        },
+        "ece": {
+          "mean": 0.5072,
+          "std": 0.0206,
+          "ci_lower": 0.4817,
+          "ci_upper": 0.5327,
+          "raw_values": [
+            0.4907,
+            0.5363,
+            0.4845,
+            0.514,
+            0.5104
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.5148,
+          "std": 0.0635,
+          "ci_lower": 0.436,
+          "ci_upper": 0.5936,
+          "raw_values": [
+            0.5065,
+            0.6236,
+            0.4897,
+            0.4965,
+            0.4579
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4849,
+          "std": 0.0667,
+          "ci_lower": 0.4022,
+          "ci_upper": 0.5677,
+          "raw_values": [
+            0.5056,
+            0.5852,
+            0.4475,
+            0.4779,
+            0.4084
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.1795,
+          "std": 0.0549,
+          "ci_lower": 0.1113,
+          "ci_upper": 0.2477,
+          "raw_values": [
+            0.1641,
+            0.2301,
+            0.1382,
+            0.1212,
+            0.244
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.7651,
+          "std": 0.1302,
+          "ci_lower": 0.6034,
+          "ci_upper": 0.9268,
+          "raw_values": [
+            0.9458,
+            0.8216,
+            0.7387,
+            0.7273,
+            0.5923
+          ]
+        },
+        "fnr": {
+          "mean": 0.4921,
+          "std": 0.1103,
+          "ci_lower": 0.3552,
+          "ci_upper": 0.6291,
+          "raw_values": [
+            0.4365,
+            0.41,
+            0.4001,
+            0.6515,
+            0.5625
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.1795,
+          "std": 0.0549,
+          "ci_lower": 0.1113,
+          "ci_upper": 0.2477,
+          "raw_values": [
+            0.1641,
+            0.2301,
+            0.1382,
+            0.1212,
+            0.244
+          ]
+        },
+        "ece": {
+          "mean": 0.4435,
+          "std": 0.1005,
+          "ci_lower": 0.3187,
+          "ci_upper": 0.5684,
+          "raw_values": [
+            0.3955,
+            0.316,
+            0.468,
+            0.4491,
+            0.5893
+          ]
+        }
+      }
+    },
+    "E": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0842,
+          "std": 0.0324,
+          "ci_lower": 0.044,
+          "ci_upper": 0.1245,
+          "raw_values": [
+            0.06,
+            0.1125,
+            0.1261,
+            0.0625,
+            0.06
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.475,
+          "std": 0.0559,
+          "ci_lower": 0.4056,
+          "ci_upper": 0.5444,
+          "raw_values": [
+            0.5,
+            0.375,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.4688,
+          "std": 0.0419,
+          "ci_lower": 0.4167,
+          "ci_upper": 0.5208,
+          "raw_values": [
+            0.45,
+            0.5437,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.9667,
+          "std": 0.0746,
+          "ci_lower": 0.8741,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.8333
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.95,
+          "std": 0.1118,
+          "ci_lower": 0.8112,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.75
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.15,
+          "std": 0.2236,
+          "ci_lower": 0.0,
+          "ci_upper": 0.4276,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.1226,
+          "std": 0.0889,
+          "ci_lower": 0.0122,
+          "ci_upper": 0.233,
+          "raw_values": [
+            0.1399,
+            0.0916,
+            0.0193,
+            0.101,
+            0.2612
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.9333,
+          "std": 0.0913,
+          "ci_lower": 0.82,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8334,
+            1.0,
+            1.0,
+            1.0,
+            0.8333
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.925,
+          "std": 0.1118,
+          "ci_lower": 0.7862,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.875,
+            1.0,
+            1.0,
+            1.0,
+            0.75
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.15,
+          "std": 0.2236,
+          "ci_lower": 0.0,
+          "ci_upper": 0.4276,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0937,
+          "std": 0.1016,
+          "ci_lower": 0.0,
+          "ci_upper": 0.2199,
+          "raw_values": [
+            0.125,
+            0.0,
+            0.0014,
+            0.097,
+            0.2454
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.9333,
+          "std": 0.1087,
+          "ci_lower": 0.7984,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            0.9166,
+            1.0,
+            0.75
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.9125,
+          "std": 0.1369,
+          "ci_lower": 0.7425,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            0.875,
+            1.0,
+            0.6875
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.9,
+          "std": 0.2236,
+          "ci_lower": 0.6224,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9,
+          "std": 0.2236,
+          "ci_lower": 0.6224,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "fnr": {
+          "mean": 0.35,
+          "std": 0.3354,
+          "ci_lower": 0.0,
+          "ci_upper": 0.7664,
+          "raw_values": [
+            0.0,
+            0.5,
+            0.75,
+            0.0,
+            0.5
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.9,
+          "std": 0.2236,
+          "ci_lower": 0.6224,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "ece": {
+          "mean": 0.1825,
+          "std": 0.094,
+          "ci_lower": 0.0659,
+          "ci_upper": 0.2992,
+          "raw_values": [
+            0.2508,
+            0.2175,
+            0.169,
+            0.0253,
+            0.25
+          ]
+        }
+      }
+    },
+    "B": {},
+    "C": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.5435,
+          "std": 0.1692,
+          "ci_lower": 0.3335,
+          "ci_upper": 0.7536,
+          "raw_values": [
+            0.6905,
+            0.5131,
+            0.4258,
+            0.3465,
+            0.7418
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.5435,
+          "std": 0.1692,
+          "ci_lower": 0.3335,
+          "ci_upper": 0.7536,
+          "raw_values": [
+            0.6905,
+            0.5131,
+            0.4258,
+            0.3465,
+            0.7418
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 0.6368,
+          "std": 0.0207,
+          "ci_lower": 0.6111,
+          "ci_upper": 0.6624,
+          "raw_values": [
+            0.6233,
+            0.671,
+            0.6299,
+            0.6197,
+            0.64
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.6597,
+          "std": 0.0436,
+          "ci_lower": 0.6056,
+          "ci_upper": 0.7139,
+          "raw_values": [
+            0.6079,
+            0.7218,
+            0.6474,
+            0.6823,
+            0.6391
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3835,
+          "std": 0.1098,
+          "ci_lower": 0.2472,
+          "ci_upper": 0.5199,
+          "raw_values": [
+            0.4785,
+            0.4105,
+            0.2971,
+            0.2425,
+            0.489
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9929,
+          "std": 0.016,
+          "ci_lower": 0.973,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9643,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.9534,
+          "std": 0.0753,
+          "ci_lower": 0.86,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8215,
+            1.0,
+            1.0,
+            0.9815,
+            0.9643
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3835,
+          "std": 0.1098,
+          "ci_lower": 0.2472,
+          "ci_upper": 0.5199,
+          "raw_values": [
+            0.4785,
+            0.4105,
+            0.2971,
+            0.2425,
+            0.489
+          ]
+        },
+        "ece": {
+          "mean": 0.3405,
+          "std": 0.082,
+          "ci_lower": 0.2387,
+          "ci_upper": 0.4423,
+          "raw_values": [
+            0.2905,
+            0.4103,
+            0.2575,
+            0.4451,
+            0.2993
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3702,
+          "std": 0.1553,
+          "ci_lower": 0.1774,
+          "ci_upper": 0.563,
+          "raw_values": [
+            0.5524,
+            0.3079,
+            0.2129,
+            0.2587,
+            0.5192
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3702,
+          "std": 0.1553,
+          "ci_lower": 0.1774,
+          "ci_upper": 0.563,
+          "raw_values": [
+            0.5524,
+            0.3079,
+            0.2129,
+            0.2587,
+            0.5192
+          ]
+        },
+        "ece": {
+          "mean": 0.45,
+          "std": 0.0,
+          "ci_lower": 0.45,
+          "ci_upper": 0.45,
+          "raw_values": [
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.5344,
+          "std": 0.044,
+          "ci_lower": 0.4797,
+          "ci_upper": 0.589,
+          "raw_values": [
+            0.5101,
+            0.4765,
+            0.5392,
+            0.5932,
+            0.5528
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5062,
+          "std": 0.0474,
+          "ci_lower": 0.4473,
+          "ci_upper": 0.5651,
+          "raw_values": [
+            0.4758,
+            0.4397,
+            0.5196,
+            0.5485,
+            0.5474
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2589,
+          "std": 0.0953,
+          "ci_lower": 0.1406,
+          "ci_upper": 0.3771,
+          "raw_values": [
+            0.3452,
+            0.2066,
+            0.1477,
+            0.224,
+            0.3709
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.9802,
+          "std": 0.0443,
+          "ci_lower": 0.9251,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            0.9008,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5131,
+          "std": 0.1972,
+          "ci_lower": 0.2683,
+          "ci_upper": 0.758,
+          "raw_values": [
+            0.45,
+            0.5881,
+            0.2129,
+            0.5729,
+            0.7418
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2589,
+          "std": 0.0953,
+          "ci_lower": 0.1406,
+          "ci_upper": 0.3771,
+          "raw_values": [
+            0.3452,
+            0.2066,
+            0.1477,
+            0.224,
+            0.3709
+          ]
+        },
+        "ece": {
+          "mean": 0.3765,
+          "std": 0.0714,
+          "ci_lower": 0.2879,
+          "ci_upper": 0.4652,
+          "raw_values": [
+            0.3085,
+            0.4103,
+            0.4234,
+            0.2916,
+            0.4488
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.5268,
+          "std": 0.0538,
+          "ci_lower": 0.4601,
+          "ci_upper": 0.5936,
+          "raw_values": [
+            0.4951,
+            0.4538,
+            0.5392,
+            0.5932,
+            0.5528
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5045,
+          "std": 0.0515,
+          "ci_lower": 0.4406,
+          "ci_upper": 0.5683,
+          "raw_values": [
+            0.4795,
+            0.4273,
+            0.5196,
+            0.5485,
+            0.5474
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.3115,
+          "std": 0.1297,
+          "ci_lower": 0.1506,
+          "ci_upper": 0.4725,
+          "raw_values": [
+            0.4809,
+            0.3342,
+            0.1477,
+            0.224,
+            0.3709
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.8171,
+          "std": 0.2102,
+          "ci_lower": 0.5562,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.6215,
+            0.5632,
+            1.0,
+            0.9008,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.5131,
+          "std": 0.1972,
+          "ci_lower": 0.2683,
+          "ci_upper": 0.758,
+          "raw_values": [
+            0.45,
+            0.5881,
+            0.2129,
+            0.5729,
+            0.7418
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.3115,
+          "std": 0.1297,
+          "ci_lower": 0.1506,
+          "ci_upper": 0.4725,
+          "raw_values": [
+            0.4809,
+            0.3342,
+            0.1477,
+            0.224,
+            0.3709
+          ]
+        },
+        "ece": {
+          "mean": 0.4706,
+          "std": 0.098,
+          "ci_lower": 0.349,
+          "ci_upper": 0.5922,
+          "raw_values": [
+            0.5024,
+            0.5883,
+            0.4541,
+            0.3193,
+            0.4888
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 0.5314,
+          "std": 0.0351,
+          "ci_lower": 0.4879,
+          "ci_upper": 0.575,
+          "raw_values": [
+            0.5353,
+            0.554,
+            0.5654,
+            0.5279,
+            0.4747
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.499,
+          "std": 0.0752,
+          "ci_lower": 0.4056,
+          "ci_upper": 0.5924,
+          "raw_values": [
+            0.5436,
+            0.5447,
+            0.541,
+            0.4965,
+            0.3694
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2479,
+          "std": 0.0927,
+          "ci_lower": 0.1328,
+          "ci_upper": 0.363,
+          "raw_values": [
+            0.3785,
+            0.2829,
+            0.2555,
+            0.1386,
+            0.184
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.634,
+          "std": 0.4363,
+          "ci_lower": 0.0924,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            0.8474,
+            1.0,
+            0.1386,
+            0.184
+          ]
+        },
+        "fnr": {
+          "mean": 0.8837,
+          "std": 0.1079,
+          "ci_lower": 0.7497,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8595,
+            0.8698,
+            0.7237,
+            0.9653,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2479,
+          "std": 0.0927,
+          "ci_lower": 0.1328,
+          "ci_upper": 0.363,
+          "raw_values": [
+            0.3785,
+            0.2829,
+            0.2555,
+            0.1386,
+            0.184
+          ]
+        },
+        "ece": {
+          "mean": 0.49,
+          "std": 0.0174,
+          "ci_lower": 0.4685,
+          "ci_upper": 0.5116,
+          "raw_values": [
+            0.4738,
+            0.482,
+            0.4811,
+            0.4958,
+            0.5177
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.5241,
+          "std": 0.0267,
+          "ci_lower": 0.491,
+          "ci_upper": 0.5573,
+          "raw_values": [
+            0.5353,
+            0.5202,
+            0.5449,
+            0.5408,
+            0.4794
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.497,
+          "std": 0.0458,
+          "ci_lower": 0.4402,
+          "ci_upper": 0.5538,
+          "raw_values": [
+            0.5113,
+            0.4787,
+            0.5346,
+            0.5342,
+            0.4261
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.2894,
+          "std": 0.1062,
+          "ci_lower": 0.1576,
+          "ci_upper": 0.4213,
+          "raw_values": [
+            0.3428,
+            0.2552,
+            0.2119,
+            0.1894,
+            0.4478
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.866,
+          "std": 0.2393,
+          "ci_lower": 0.569,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            0.8823,
+            0.4478
+          ]
+        },
+        "fnr": {
+          "mean": 0.3344,
+          "std": 0.1349,
+          "ci_lower": 0.1668,
+          "ci_upper": 0.5019,
+          "raw_values": [
+            0.3785,
+            0.2276,
+            0.2572,
+            0.2562,
+            0.5522
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.2894,
+          "std": 0.1062,
+          "ci_lower": 0.1576,
+          "ci_upper": 0.4213,
+          "raw_values": [
+            0.3428,
+            0.2552,
+            0.2119,
+            0.1894,
+            0.4478
+          ]
+        },
+        "ece": {
+          "mean": 0.409,
+          "std": 0.0961,
+          "ci_lower": 0.2897,
+          "ci_upper": 0.5282,
+          "raw_values": [
+            0.3723,
+            0.3176,
+            0.4024,
+            0.3811,
+            0.5715
+          ]
+        }
+      }
+    },
+    "D": {
+      "Oracle": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "BFS": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "RandomForest": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.1226,
+          "std": 0.0616,
+          "ci_lower": 0.0246,
+          "ci_upper": 0.2206,
+          "raw_values": [
+            0.15,
+            0.1954,
+            0.085,
+            0.06
+          ]
+        }
+      },
+      "MotifHeuristic": {
+        "pr_auc": {
+          "mean": 0.5,
+          "std": 0.0,
+          "ci_lower": 0.5,
+          "ci_upper": 0.5,
+          "raw_values": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.4583,
+          "std": 0.0833,
+          "ci_lower": 0.3257,
+          "ci_upper": 0.5909,
+          "raw_values": [
+            0.3333,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.4812,
+          "std": 0.0625,
+          "ci_lower": 0.3818,
+          "ci_upper": 0.5807,
+          "raw_values": [
+            0.575,
+            0.45,
+            0.45,
+            0.45
+          ]
+        }
+      },
+      "RGCN_Uncalibrated": {
+        "pr_auc": {
+          "mean": 0.7847,
+          "std": 0.255,
+          "ci_lower": 0.3791,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.6389,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.6667,
+          "std": 0.4714,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.6667,
+            1.0,
+            1.0,
+            0.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.25,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.2193,
+          "std": 0.2452,
+          "ci_lower": 0.0,
+          "ci_upper": 0.6094,
+          "raw_values": [
+            0.3136,
+            0.0194,
+            0.021,
+            0.523
+          ]
+        }
+      },
+      "RGCN_Calibrated": {
+        "pr_auc": {
+          "mean": 0.8125,
+          "std": 0.2394,
+          "ci_lower": 0.4317,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.75,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.7083,
+          "std": 0.4787,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8333,
+            1.0,
+            1.0,
+            0.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.25,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.1679,
+          "std": 0.2281,
+          "ci_lower": 0.0,
+          "ci_upper": 0.5307,
+          "raw_values": [
+            0.1667,
+            0.0016,
+            0.0125,
+            0.4908
+          ]
+        }
+      },
+      "UntypedGCN": {
+        "pr_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "roc_auc": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 1.0,
+          "std": 0.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "ece": {
+          "mean": 0.0,
+          "std": 0.0,
+          "ci_lower": 0.0,
+          "ci_upper": 0.0,
+          "raw_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "RGCN_PermissionsOnly": {
+        "pr_auc": {
+          "mean": 0.8542,
+          "std": 0.2394,
+          "ci_lower": 0.4734,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.9167,
+            1.0,
+            1.0,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.7847,
+          "std": 0.3603,
+          "ci_lower": 0.2115,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.8889,
+            1.0,
+            1.0,
+            0.25
+          ]
+        },
+        "recall_at_10": {
+          "mean": 0.75,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            0.0
+          ]
+        },
+        "recall_at_50": {
+          "mean": 0.75,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            0.0
+          ]
+        },
+        "fnr": {
+          "mean": 0.4167,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            0.6667,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "attack_path_recovery_at_10": {
+          "mean": 0.75,
+          "std": 0.5,
+          "ci_lower": 0.0,
+          "ci_upper": 1.0,
+          "raw_values": [
+            1.0,
+            1.0,
+            1.0,
+            0.0
+          ]
+        },
+        "ece": {
+          "mean": 0.2691,
+          "std": 0.1954,
+          "ci_lower": 0.0,
+          "ci_upper": 0.58,
+          "raw_values": [
+            0.3037,
+            0.2477,
+            0.025,
+            0.5
+          ]
+        }
+      }
+    }
+  }
+}

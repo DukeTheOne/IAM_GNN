@@ -65,6 +65,12 @@ from iam.models.training import (
     TrainingConfig,
     TrainingHistory,
 )
+from iam.models.untyped_gcn import (
+    UntypedGCNConfig,
+    UntypedGCNEncoder,
+    UntypedLinkPredictionModel,
+    UntypedRelationPredictor,
+)
 from iam.models.vocabulary import (
     CANONICAL_DEPARTMENTS,
     CANONICAL_RESOURCE_TYPES,
@@ -119,6 +125,10 @@ __all__ = [
     "ThinSliceExperimentRunner",
     "TrainingConfig",
     "TrainingHistory",
+    "UntypedGCNConfig",
+    "UntypedGCNEncoder",
+    "UntypedLinkPredictionModel",
+    "UntypedRelationPredictor",
     "build_node_feature_dict",
     "compute_ece",
     "compute_nll",
