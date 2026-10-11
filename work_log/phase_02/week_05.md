@@ -37,18 +37,18 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Implementation Details**:
 1. **Canonical Relation Registry**:
-   - Codified fixed mapping of all 26 canonical AWS IAM forward and reverse relational triples (`CANONICAL_RELATION_TYPES`).
+   - [x] Codified fixed mapping of all 26 canonical AWS IAM forward and reverse relational triples (`CANONICAL_RELATION_TYPES`).
 2. **Configuration Dataclass (`RGCNConfig`)**:
-   - Parameterizes `hidden_channels = 128`, `num_layers = 2`, `num_bases = 8`, `dropout = 0.2`, `act_negative_slope = 0.2`, `use_residual = True`, `aggr = "mean"`.
+   - [x] Parameterizes `hidden_channels = 128`, `num_layers = 2`, `num_bases = 8`, `dropout = 0.2`, `act_negative_slope = 0.2`, `use_residual = True`, `aggr = "mean"`.
 3. **Encoder Architecture (`HeteroRGCNEncoder`)**:
-   - `input_proj`: `nn.ModuleDict` mapping each entity type's raw features ($D_{\text{user}} \approx 51, D_{\text{role}} \approx 52, \dots$) to $d_{\text{hidden}} = 128$.
-   - `input_norm`: `nn.ModuleDict` applying per-type `LayerNorm`.
-   - `convs`: `nn.ModuleList` of 2 `RGCNConv` layers with $B = 8$ shared bases and `root_weight = True`.
-   - `norms`: Layer normalizations between convolutions.
-   - Residual connections and dropout for gradient stability.
-   - Unified flat tensor aggregation supporting empty edge tensors and variable-sized environments.
-   - High-level `forward(data: HeteroData)` and flexible dictionary-based `forward(x_dict, edge_index_dict)` interfaces.
-   - `count_basis_parameters()` utility proving >60% parameter savings via basis decomposition.
+   - [x] `input_proj`: `nn.ModuleDict` mapping each entity type's raw features ($D_{\text{user}} \approx 51, D_{\text{role}} \approx 52, \dots$) to $d_{\text{hidden}} = 128$.
+   - [x] `input_norm`: `nn.ModuleDict` applying per-type `LayerNorm`.
+   - [x] `convs`: `nn.ModuleList` of 2 `RGCNConv` layers with $B = 8$ shared bases and `root_weight = True`.
+   - [x] `norms`: Layer normalizations between convolutions.
+   - [x] Residual connections and dropout for gradient stability.
+   - [x] Unified flat tensor aggregation supporting empty edge tensors and variable-sized environments.
+   - [x] High-level `forward(data: HeteroData)` and flexible dictionary-based `forward(x_dict, edge_index_dict)` interfaces.
+   - [x] `count_basis_parameters()` utility proving >60% parameter savings via basis decomposition.
 
 **Target File Artifacts**:
 - [`src/iam/models/rgcn.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/rgcn.py): `HeteroRGCNEncoder` and `RGCNConfig`.
@@ -69,19 +69,19 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Implementation Details**:
 1. **Scoring Head Architecture (`BilinearRelationPredictor`)**:
-   - Parameterizes relation matrices $W \in \mathbb{R}^{R \times d \times d}$ across all 26 canonical relations.
-   - Supports 3 parameterization modes:
+   - [x] Parameterizes relation matrices $W \in \mathbb{R}^{R \times d \times d}$ across all 26 canonical relations.
+   - [x] Supports 3 parameterization modes:
      - `"bilinear"` (standard full $W_r \in \mathbb{R}^{d \times d}$).
      - `"basis"` (basis-regularized $W_r = \sum_{b=1}^{B_{\text{dec}}} \beta_{r,b} U_b$).
      - `"distmult"` (factorized diagonal $W_r = \text{diag}(w_r)$).
-   - Configurable per-relation scalar biases $b_r \in \mathbb{R}$ and regularization dropout.
+   - [x] Configurable per-relation scalar biases $b_r \in \mathbb{R}$ and regularization dropout.
 2. **Batch Evaluation Routines**:
-   - Homogeneous relation batch scoring ($r \in \mathbb{Z}$): $O(M \cdot d^2)$ vectorized computation $(h_u W_r) \odot h_v$.
-   - Heterogeneous multi-relation batch scoring ($r_m \in \mathbb{Z}^M$): vectorized batch tensor contraction $\text{einsum}(md, mde, me \to m)$.
-   - All-pairs matrix scoring: $Z^{(r)} = H_{\text{src}} W_r H_{\text{dst}}^T + b_r \in \mathbb{R}^{N_{\text{src}} \times N_{\text{dst}}}$ for candidate ranking.
-   - High-level `score_edge_index(h_dict, edge_type, edge_index)` for evaluating masked candidate links.
+   - [x] Homogeneous relation batch scoring ($r \in \mathbb{Z}$): $O(M \cdot d^2)$ vectorized computation $(h_u W_r) \odot h_v$.
+   - [x] Heterogeneous multi-relation batch scoring ($r_m \in \mathbb{Z}^M$): vectorized batch tensor contraction $\text{einsum}(md, mde, me \to m)$.
+   - [x] All-pairs matrix scoring: $Z^{(r)} = H_{\text{src}} W_r H_{\text{dst}}^T + b_r \in \mathbb{R}^{N_{\text{src}} \times N_{\text{dst}}}$ for candidate ranking.
+   - [x] High-level `score_edge_index(h_dict, edge_type, edge_index)` for evaluating masked candidate links.
 3. **End-to-End Gradient Flow**:
-   - Verified joint backpropagation from BCE loss through `BilinearRelationPredictor` and `HeteroRGCNEncoder` all the way to raw node feature linear projections.
+   - [x] Verified joint backpropagation from BCE loss through `BilinearRelationPredictor` and `HeteroRGCNEncoder` all the way to raw node feature linear projections.
 
 **Target File Artifacts**:
 - [`src/iam/models/decoder.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/decoder.py): `BilinearRelationPredictor` and `DecoderConfig`.
@@ -101,15 +101,15 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Implementation Details**:
 1. **Temperature Scaling Module (`TemperatureScalingCalibrator`)**:
-   - Single scalar temperature parameter $T > 0$ clamped to bounded range $[0.01, 100.0]$ to prevent degenerate probability saturation or collapse.
-   - Fits $T$ by minimizing binary cross-entropy (NLL) on held-out validation predictions using L-BFGS.
-   - Provides `calibrate_logits(z)`, `predict_proba(z)`, and `calibrate_probabilities(p)`.
+   - [x] Single scalar temperature parameter $T > 0$ clamped to bounded range $[0.01, 100.0]$ to prevent degenerate probability saturation or collapse.
+   - [x] Fits $T$ by minimizing binary cross-entropy (NLL) on held-out validation predictions using L-BFGS.
+   - [x] Provides `calibrate_logits(z)`, `predict_proba(z)`, and `calibrate_probabilities(p)`.
 2. **Calibration Diagnostics & Metrics**:
-   - `compute_ece(probabilities, targets, num_bins)`: Computes Expected Calibration Error $\text{ECE} = \sum_m \frac{|B_m|}{N} |\text{acc}(B_m) - \text{conf}(B_m)|$, Maximum Calibration Error (MCE), and per-bin statistics.
-   - `compute_nll(probabilities, targets)`: Numerically stable binary log-loss computation.
+   - [x] `compute_ece(probabilities, targets, num_bins)`: Computes Expected Calibration Error $\text{ECE} = \sum_m \frac{|B_m|}{N} |\text{acc}(B_m) - \text{conf}(B_m)|$, Maximum Calibration Error (MCE), and per-bin statistics.
+   - [x] `compute_nll(probabilities, targets)`: Numerically stable binary log-loss computation.
 3. **Reliability Diagram Reporting**:
-   - `generate_markdown_diagram()`: Renders ASCII-visualized GitHub Flavored Markdown reliability diagrams for automated thesis reports and triage dashboards.
-   - `to_dict()`: Structured serialization for JSON logging and visualization pipelines.
+   - [x] `generate_markdown_diagram()`: Renders ASCII-visualized GitHub Flavored Markdown reliability diagrams for automated thesis reports and triage dashboards.
+   - [x] `to_dict()`: Structured serialization for JSON logging and visualization pipelines.
 
 **Target File Artifacts**:
 - [`src/iam/models/calibration.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/calibration.py): `TemperatureScalingCalibrator`, `CalibrationResult`, `CalibrationBin`, `compute_ece`, and `compute_nll`.
@@ -129,22 +129,22 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Implementation Details**:
 1. **Focal Loss Formulation (`FocalLoss`)**:
-   - Implements class-imbalance-resilient focal binary cross-entropy:
+   - [x] Implements class-imbalance-resilient focal binary cross-entropy:
      $$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$$
-   - Uses numerically stable derivation directly from raw logits $z$:
+   - [x] Uses numerically stable derivation directly from raw logits $z$:
      $$\text{bce} = \text{BCEWithLogits}(z, y), \quad p_t = \exp(-\text{bce}), \quad w_t = (1 - p_t)^\gamma$$
-   - Prevents vanishing/exploding gradients and fp32 numerical underflow when hard negative mining across high-cardinality candidate edge sets ($1 : 100$ positive-to-negative ratio).
+   - [x] Prevents vanishing/exploding gradients and fp32 numerical underflow when hard negative mining across high-cardinality candidate edge sets ($1 : 100$ positive-to-negative ratio).
 2. **Composite Link Prediction Architecture (`RGCNLinkPredictionModel`)**:
-   - Integrates `HeteroRGCNEncoder` and `BilinearRelationPredictor` into a single unified `nn.Module`.
-   - Exposes clean methods for representation learning (`encode`), edge-batch scoring (`score_edges`), candidate ranking (`predict_candidates`), and heterogeneous multi-graph data ingestion.
+   - [x] Integrates `HeteroRGCNEncoder` and `BilinearRelationPredictor` into a single unified `nn.Module`.
+   - [x] Exposes clean methods for representation learning (`encode`), edge-batch scoring (`score_edges`), candidate ranking (`predict_candidates`), and heterogeneous multi-graph data ingestion.
 3. **Training Configuration (`TrainingConfig`) & History (`TrainingHistory`)**:
-   - Dataclass parameterizing optimizer hyper-parameters (`lr = 1e-3`, `weight_decay = 1e-4`, `gradient_clip = 1.0`), focal loss hyperparameters ($\gamma = 2.0, \alpha = 0.25$), training schedule (`max_epochs = 50`, `patience = 10`, `lr_scheduler_type = "cosine"`), and negative sampling ratio (`negative_ratio = 1.0`).
+   - [x] Dataclass parameterizing optimizer hyper-parameters (`lr = 1e-3`, `weight_decay = 1e-4`, `gradient_clip = 1.0`), focal loss hyperparameters ($\gamma = 2.0, \alpha = 0.25$), training schedule (`max_epochs = 50`, `patience = 10`, `lr_scheduler_type = "cosine"`), and negative sampling ratio (`negative_ratio = 1.0`).
 4. **Inductive Multi-Environment Trainer (`InductiveLinkPredictionTrainer`)**:
-   - **Inductive Multi-Graph Epoch Execution**: Trains across batches of distinct enterprise cloud environments ($\mathcal{O}_1, \dots, \mathcal{O}_M$), ensuring model weights never overfit to specific node ID spaces or static topologies.
-   - **Dynamic Uniform Negative Sampling**: For every true edge triple $(u, r, v)$, synthesizes negative corrupted edges $(u, r, v')$ where $v' \sim \text{Uniform}(\mathcal{V}_{\text{dst}} \setminus \{v\})$, filtering self-loops.
-   - **Evaluation & Metric Tracking**: Computes Loss, ROC-AUC, PR-AUC, Accuracy, and Expected Calibration Error (ECE) across training and held-out validation environments.
-   - **Validation Early Stopping**: Tracks validation PR-AUC, performs patience-based early termination, and restores the best performing checkpoint weights.
-   - **Post-Hoc Calibration Integration**: Incorporates `TemperatureScalingCalibrator` directly into the validation phase for automated ECE optimization.
+   - [x] **Inductive Multi-Graph Epoch Execution**: Trains across batches of distinct enterprise cloud environments ($\mathcal{O}_1, \dots, \mathcal{O}_M$), ensuring model weights never overfit to specific node ID spaces or static topologies.
+   - [x] **Dynamic Uniform Negative Sampling**: For every true edge triple $(u, r, v)$, synthesizes negative corrupted edges $(u, r, v')$ where $v' \sim \text{Uniform}(\mathcal{V}_{\text{dst}} \setminus \{v\})$, filtering self-loops.
+   - [x] **Evaluation & Metric Tracking**: Computes Loss, ROC-AUC, PR-AUC, Accuracy, and Expected Calibration Error (ECE) across training and held-out validation environments.
+   - [x] **Validation Early Stopping**: Tracks validation PR-AUC, performs patience-based early termination, and restores the best performing checkpoint weights.
+   - [x] **Post-Hoc Calibration Integration**: Incorporates `TemperatureScalingCalibrator` directly into the validation phase for automated ECE optimization.
 
 **Target File Artifacts**:
 - [`src/iam/models/training.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/training.py): `FocalLoss`, `RGCNLinkPredictionModel`, `TrainingConfig`, `TrainingHistory`, and `InductiveLinkPredictionTrainer`.
@@ -168,11 +168,11 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Implementation Details**:
 1. **Experiment Pipeline Architecture (`ThinSliceExperimentRunner`)**:
-   - Synthesizes 4 training environments, 1 validation environment, and 2 held-out test environments parameterized with the canonical `PassRole` + Lambda privilege escalation motif alongside enterprise identity graphs.
-   - Fits inductive `RandomForestLinkPredictor` over topological and shortest-path features extracted across training environments.
-   - Trains `RGCNLinkPredictionModel` with `InductiveLinkPredictionTrainer` over 25 epochs using focal loss ($\gamma=2.0$).
-   - Fits post-hoc temperature scaling parameter $T^*$ via `TemperatureScalingCalibrator` on validation logits.
-   - Evaluates all models across test environments under both Condition E and Condition A:
+   - [x] Synthesizes 4 training environments, 1 validation environment, and 2 held-out test environments parameterized with the canonical `PassRole` + Lambda privilege escalation motif alongside enterprise identity graphs.
+   - [x] Fits inductive `RandomForestLinkPredictor` over topological and shortest-path features extracted across training environments.
+   - [x] Trains `RGCNLinkPredictionModel` with `InductiveLinkPredictionTrainer` over 25 epochs using focal loss ($\gamma=2.0$).
+   - [x] Fits post-hoc temperature scaling parameter $T^*$ via `TemperatureScalingCalibrator` on validation logits.
+   - [x] Evaluates all models across test environments under both Condition E and Condition A:
      - `ExactReachabilityOracle` (gold-standard upper bound)
      - `DeterministicBFSEngine` (PMapper reachability proxy)
      - `RandomForestLinkPredictor` (tabular ML baseline)
@@ -180,15 +180,15 @@ Before implementing the neural modules, we synthesize the design requirements ou
      - `RGCN (Uncalibrated)` (raw neural link predictor)
      - `RGCN (Calibrated)` (temperature-scaled neural link predictor)
 2. **Benchmark Artifacts & Publication Figures**:
-   - Automated publication-quality 3-panel figure generation via matplotlib:
+   - [x] Automated publication-quality 3-panel figure generation via matplotlib:
      - Panel 1: Precision-Recall AUC (PR-AUC) across models under Condition E and Condition A.
      - Panel 2: Attack Path Recovery Rate @ 10 under Condition E (highlighting BFS = 0.0% vs. RGCN = 100.0%).
      - Panel 3: Post-Hoc Expected Calibration Error (ECE) reduction.
-   - Automated GitHub Flavored Markdown benchmark report (`experiments/thin_slice/thin_slice_report.md`).
-   - JSON benchmark summary export (`experiments/thin_slice/thin_slice_results.json`).
+   - [x] Automated GitHub Flavored Markdown benchmark report (`experiments/thin_slice/thin_slice_report.md`).
+   - [x] JSON benchmark summary export (`experiments/thin_slice/thin_slice_results.json`).
 3. **CLI Script & Test Suite**:
-   - CLI executable entry point: [`scripts/run_thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/scripts/run_thin_slice.py).
-   - Unit and integration test suite: [`tests/test_thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/tests/test_thin_slice.py).
+   - [x] CLI executable entry point: [`scripts/run_thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/scripts/run_thin_slice.py).
+   - [x] Unit and integration test suite: [`tests/test_thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/tests/test_thin_slice.py).
 
 **Target File Artifacts**:
 - [`src/iam/models/thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/thin_slice.py): `ThinSliceConfig`, `ThinSliceExperimentResult`, and `ThinSliceExperimentRunner`.
@@ -229,6 +229,20 @@ Before implementing the neural modules, we synthesize the design requirements ou
 
 **Cumulative Phase 2 Week 5 Verification Status**:
 - **56 / 56 tests passed** across all 5 Week 5 test suites (`test_rgcn.py`, `test_decoder.py`, `test_calibration.py`, `test_training.py`, `test_thin_slice.py`).
+- **271 / 271 tests passed** across full project test suite.
 - **100% strict type safety**: `mypy --strict src tests scripts` passed with zero errors across 63 files.
 - **100% clean formatting and linting**: zero warnings on `ruff check` and `ruff format`.
 - **Pre-commit validation**: 8 / 8 hooks passed.
+
+---
+
+## Week 05 Deliverables Checklist & Handoff to Week 06
+
+| Module / Component | Output Artifact | Status | Consumer in Week 06 |
+| :--- | :--- | :--- | :--- |
+| **HeteroRGCNEncoder** | [`src/iam/models/rgcn.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/rgcn.py) | [COMPLETED] | Core relational GNN encoder for structured masking sweep |
+| **BilinearRelationPredictor** | [`src/iam/models/decoder.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/decoder.py) | [COMPLETED] | Latent relation scoring head for link prediction |
+| **TemperatureScalingCalibrator** | [`src/iam/models/calibration.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/calibration.py) | [COMPLETED] | Uncertainty calibration & ECE optimization |
+| **FocalLoss & InductiveTrainer** | [`src/iam/models/training.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/training.py) | [COMPLETED] | Inductive multi-graph training harness |
+| **Thin-Slice Benchmark & CLI** | [`src/iam/models/thin_slice.py`](file:///c:/Users/jack6/IAM/IAM_GNN/src/iam/models/thin_slice.py) | [COMPLETED] | RQ1 prototype execution & publication figures |
+| **Thin-Slice Report & Artifacts** | `experiments/thin_slice/` | [COMPLETED] | Empirical evidence for Gate G0 GO decision |
