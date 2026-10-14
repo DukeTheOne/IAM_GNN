@@ -219,9 +219,9 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
 
 ---
 
-## Step 7.5: Unit & Solver Verification Tests (2.0h) - [PLANNED]
+## Step 7.5: Unit & Solver Verification Tests (2.0h) - [COMPLETED]
 
-**Objective**: Establish a comprehensive, regression-tested validation suite ensuring 100% adherence to AWS capability validity, zero regression on observed CloudTrail logs ($\mathcal{D}^{T_1}$), multi-motif repair coverage across all 4 P0 motifs, and strict Python typing.
+**Objective**: Establish a comprehensive, regression-tested validation suite ensuring 100% adherence to AWS capability validity, zero regression on observed CloudTrail logs ($\mathcal{D}^{T_1}$), multi-motif repair coverage across all 4 P0 motifs, end-to-end integration across the full repair pipeline, and strict Python typing.
 
 **Implementation Details**:
 1. **Comprehensive Test Suite**:
@@ -229,20 +229,30 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
    - [x] Unit tests for candidate pruning recall and runtime latency in `test_pruning.py`.
    - [x] Solver tests for `PassRoleLambdaMotif`, `CreateAccessKeyMotif`, `AttachPolicyMotif`, and `AssumeRoleChainMotif` in `test_greedy_repair.py`.
    - [x] Exact constraint solving tests in `test_z3_solver.py`.
-   - [ ] End-to-end integration test verifying full pipeline: sampling $\to$ pruning $\to$ greedy repair $\to$ policy patch generation.
+   - [x] End-to-end integration test verifying full pipeline: sampling $\to$ pruning $\to$ greedy repair $\to$ policy patch generation in `test_pipeline_m3.py`.
 2. **Quality & Tooling Standards**:
-   - [x] Strict type safety: zero errors on `mypy --strict src/iam/optimizer tests scripts`.
+   - [x] Strict type safety: zero errors on `mypy --strict src tests scripts` (78 source files clean).
    - [x] Formatting & linting: 100% clean passes on `ruff check` and `ruff format --check`.
-   - [x] Test coverage: maintain $>90\%$ statement coverage on new `src/iam/optimizer/` modules.
+   - [x] Test coverage: achieved **91% statement coverage** across all `src/iam/optimizer/` modules (1,184 LOC).
+3. **Enterprise Latency & Memory Scaling**:
+   - [x] Verified full pipeline execution on 150+ node enterprise topology in **0.30 seconds** (well within interactive target $< 2.0\text{ s}$).
+   - [x] Confirmed peak memory consumption is strictly bounded to **18.3 MB** (far below the $50\text{ MB}$ threshold).
+
+**Target File Artifacts**:
+- [`tests/test_pipeline_m3.py`](file:///Users/duke/IAM/tests/test_pipeline_m3.py): Milestone M3 end-to-end pipeline benchmark (5 / 5 tests passing).
+- [`tests/test_sampler.py`](file:///Users/duke/IAM/tests/test_sampler.py): Monte Carlo latent completion sampler tests (14 / 14 tests passing).
+- [`tests/test_pruning.py`](file:///Users/duke/IAM/tests/test_pruning.py): Candidate space pruning & recall tests (12 / 12 tests passing).
+- [`tests/test_greedy_repair.py`](file:///Users/duke/IAM/tests/test_greedy_repair.py): Greedy repair & capability enforcement tests (22 / 22 tests passing).
+- [`tests/test_z3_solver.py`](file:///Users/duke/IAM/tests/test_z3_solver.py): Exact SMT/MaxSAT solver baseline tests (9 / 9 tests passing).
 
 ---
 
 ## Cumulative Verification & Quality Status (Phase 3 Progress)
 
-- **Unit & Integration Tests**: **342 / 342 tests passing** across the complete project test suite (`pytest -v`).
-- **Optimizer Module Coverage**: **90% coverage** across all 6 optimizer modules (1,184 LOC).
+- **Unit & Integration Tests**: **347 / 347 tests passing** across the complete project test suite (`pytest -v`).
+- **Optimizer Module Coverage**: **91% coverage** across all 6 optimizer modules (1,184 LOC).
 - **Phase 2 Gate Decision**: **Gate G0 GO** formally approved and documented in [`experiments/sweep/sweep_report.md`](file:///Users/duke/IAM/experiments/sweep/sweep_report.md).
-- **Strict Typing**: **Zero errors** across all source files on `mypy --strict src tests scripts`.
+- **Strict Typing**: **Zero errors** across all 78 source files on `mypy --strict src tests scripts`.
 - **Formatting & Linting**: **Zero issues** on `ruff check` and `ruff format --check`.
 
 ---
@@ -256,4 +266,4 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
 | **Transformation Models** | [`src/iam/optimizer/transformations.py`](file:///Users/duke/IAM/src/iam/optimizer/transformations.py) | [COMPLETED] | Admissible patch operators for policy diff generation |
 | **Greedy Policy Repair Engine** | [`src/iam/optimizer/repair.py`](file:///Users/duke/IAM/src/iam/optimizer/repair.py) | [COMPLETED] | Core remediation engine for Central Tradeoff Experiment (RQ2, Step 8.3) |
 | **Canonical Z3 MaxSAT Solver** | [`src/iam/optimizer/z3_solver.py`](file:///Users/duke/IAM/src/iam/optimizer/z3_solver.py) | [COMPLETED] | Formal exact solver baseline for optimality benchmarking |
-| **Optimizer Test Suite** | [`tests/test_sampler.py`](file:///Users/duke/IAM/tests/test_sampler.py), [`tests/test_pruning.py`](file:///Users/duke/IAM/tests/test_pruning.py), [`tests/test_greedy_repair.py`](file:///Users/duke/IAM/tests/test_greedy_repair.py), [`tests/test_z3_solver.py`](file:///Users/duke/IAM/tests/test_z3_solver.py) | [IN PROGRESS] | Automated regression testing for repair safety |
+| **Optimizer Test Suite** | [`tests/test_pipeline_m3.py`](file:///Users/duke/IAM/tests/test_pipeline_m3.py), [`tests/test_sampler.py`](file:///Users/duke/IAM/tests/test_sampler.py), [`tests/test_pruning.py`](file:///Users/duke/IAM/tests/test_pruning.py), [`tests/test_greedy_repair.py`](file:///Users/duke/IAM/tests/test_greedy_repair.py), [`tests/test_z3_solver.py`](file:///Users/duke/IAM/tests/test_z3_solver.py) | [COMPLETED] | Automated regression testing for repair safety |
