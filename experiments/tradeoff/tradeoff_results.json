@@ -17,7 +17,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.049678,
+      "execution_time_sec": 0.05682,
       "details": "Theoretical upper bound with zero-unobservability assumptions.",
       "verification_status": "safe"
     },
@@ -38,7 +38,7 @@
       "has_side_effects": false,
       "num_transformations": 0,
       "transformation_cost": 0.0,
-      "execution_time_sec": 0.000108,
+      "execution_time_sec": 8.7e-05,
       "details": "Identity baseline: demonstrates deceptive safety on Go (Condition E).",
       "verification_status": "misleading_safe"
     },
@@ -59,7 +59,7 @@
       "has_side_effects": false,
       "num_transformations": 2,
       "transformation_cost": 10.0,
-      "execution_time_sec": 0.000129,
+      "execution_time_sec": 0.000147,
       "details": "Coarse action removal: blocks attack but breaks benign workload using the action.",
       "verification_status": "safe"
     },
@@ -80,7 +80,7 @@
       "has_side_effects": false,
       "num_transformations": 4,
       "transformation_cost": 4.0,
-      "execution_time_sec": 0.003264,
+      "execution_time_sec": 0.003035,
       "details": "Log-only tightening: 0% T1 breakage, high T2 breakage on operational drift.",
       "verification_status": "safe"
     },
@@ -101,7 +101,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.121577,
+      "execution_time_sec": 0.048019,
       "details": "Point-estimate repair: brittle when probability falls below hard threshold.",
       "verification_status": "safe"
     },
@@ -122,7 +122,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.035244,
+      "execution_time_sec": 0.032953,
       "details": "Uncertainty-aware repair: cuts latent attack distribution while preserving 100% T1.",
       "verification_status": "safe"
     }
@@ -145,7 +145,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.047648,
+      "execution_time_sec": 0.044615,
       "details": "Theoretical upper bound with zero-unobservability assumptions.",
       "verification_status": "safe"
     },
@@ -166,7 +166,7 @@
       "has_side_effects": false,
       "num_transformations": 0,
       "transformation_cost": 0.0,
-      "execution_time_sec": 0.001216,
+      "execution_time_sec": 0.001342,
       "details": "Identity baseline: demonstrates deceptive safety on Go (Condition E).",
       "verification_status": "misleading_safe"
     },
@@ -187,7 +187,7 @@
       "has_side_effects": false,
       "num_transformations": 2,
       "transformation_cost": 10.0,
-      "execution_time_sec": 0.00135,
+      "execution_time_sec": 0.001208,
       "details": "Coarse action removal: blocks attack but breaks benign workload using the action.",
       "verification_status": "safe"
     },
@@ -208,7 +208,7 @@
       "has_side_effects": false,
       "num_transformations": 3,
       "transformation_cost": 3.0,
-      "execution_time_sec": 0.001495,
+      "execution_time_sec": 0.001438,
       "details": "Log-only tightening: 0% T1 breakage, high T2 breakage on operational drift.",
       "verification_status": "safe"
     },
@@ -229,7 +229,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.04691,
+      "execution_time_sec": 0.045748,
       "details": "Point-estimate repair: brittle when probability falls below hard threshold.",
       "verification_status": "safe"
     },
@@ -250,7 +250,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.03391,
+      "execution_time_sec": 0.033583,
       "details": "Uncertainty-aware repair: cuts latent attack distribution while preserving 100% T1.",
       "verification_status": "safe"
     }

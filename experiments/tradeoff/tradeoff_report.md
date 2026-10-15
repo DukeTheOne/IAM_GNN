@@ -16,14 +16,14 @@ This evaluation investigates **Research Question RQ2**: *Under partial authoriza
 
 ### Environment: `canonical_passrole_rq2`
 
-| Remediation Method | Status | Level 3 Risk ($G^*$) | $T_1$ Breakage | $T_2$ Breakage | AST Cost | Latency | Dominates | Dominated By |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| **Method 0: Oracle (G*)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 49.68 ms | coarse_deletion, log_only_tightening | — |
-| **Method 1: No Action (Identity)** | **[PARETO OPTIMAL]** | **1.00** | 0.0% | **0.0%** | 0.0 | 0.11 ms | — | — |
-| **Method 2: Coarse Deletion (IAMPERE)** | _[DOMINATED]_ | **0.00** | 29.6% | **17.2%** | 10.0 | 0.13 ms | — | oracle, log_only_tightening, point_estimate, uncertainty_aware |
-| **Method 3: Log-Only Tightening (PolicyRefiner)** | _[DOMINATED]_ | **0.00** | 0.0% | **0.8%** | 4.0 | 3.26 ms | coarse_deletion | oracle, point_estimate, uncertainty_aware |
-| **Method 4a: Point-Estimate (p >= 0.50)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 121.58 ms | coarse_deletion, log_only_tightening | — |
-| **Method 4b: Uncertainty-Aware (Ours)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 35.24 ms | coarse_deletion, log_only_tightening | — |
+| Remediation Method | Status | Risk (G*) | T₁ Break | T₂ Break | AST Cost | Latency | Dominance |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Method 0: Oracle (G*)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 56.8 ms | Dominates: coarse_deletion, log_only_tightening |
+| **Method 1: No Action (Identity)** | **[PARETO OPTIMAL]** | **1.00** | 0.0% | **0.0%** | 0.0 | 0.1 ms | Optimal frontier |
+| **Method 2: Coarse Deletion (IAMPERE)** | _[DOMINATED]_ | **0.00** | 29.6% | **17.2%** | 10.0 | 0.1 ms | Dominated by: oracle, log_only_tightening, point_estimate, uncertainty_aware |
+| **Method 3: Log-Only Tightening (PolicyRefiner)** | _[DOMINATED]_ | **0.00** | 0.0% | **0.8%** | 4.0 | 3.0 ms | Dominated by: oracle, point_estimate, uncertainty_aware |
+| **Method 4a: Point-Estimate (p >= 0.50)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 48.0 ms | Dominates: coarse_deletion, log_only_tightening |
+| **Method 4b: Uncertainty-Aware (Ours)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 33.0 ms | Dominates: coarse_deletion, log_only_tightening |
 
 #### Pareto Dominance & Scientific Certification
 - **Safety Certified**: `True` ($G^*$ Reachability Risk = `0.00`)
@@ -66,14 +66,14 @@ Legend:
 
 ### Environment: `enterprise_100_rq2`
 
-| Remediation Method | Status | Level 3 Risk ($G^*$) | $T_1$ Breakage | $T_2$ Breakage | AST Cost | Latency | Dominates | Dominated By |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| **Method 0: Oracle (G*)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 47.65 ms | coarse_deletion, log_only_tightening | — |
-| **Method 1: No Action (Identity)** | **[PARETO OPTIMAL]** | **1.00** | 0.0% | **0.0%** | 0.0 | 1.22 ms | — | — |
-| **Method 2: Coarse Deletion (IAMPERE)** | _[DOMINATED]_ | **0.00** | 9.9% | **9.7%** | 10.0 | 1.35 ms | — | oracle, log_only_tightening, point_estimate, uncertainty_aware |
-| **Method 3: Log-Only Tightening (PolicyRefiner)** | _[DOMINATED]_ | **0.00** | 0.0% | **0.0%** | 3.0 | 1.50 ms | coarse_deletion | oracle, point_estimate, uncertainty_aware |
-| **Method 4a: Point-Estimate (p >= 0.50)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 46.91 ms | coarse_deletion, log_only_tightening | — |
-| **Method 4b: Uncertainty-Aware (Ours)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 33.91 ms | coarse_deletion, log_only_tightening | — |
+| Remediation Method | Status | Risk (G*) | T₁ Break | T₂ Break | AST Cost | Latency | Dominance |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Method 0: Oracle (G*)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 44.6 ms | Dominates: coarse_deletion, log_only_tightening |
+| **Method 1: No Action (Identity)** | **[PARETO OPTIMAL]** | **1.00** | 0.0% | **0.0%** | 0.0 | 1.3 ms | Optimal frontier |
+| **Method 2: Coarse Deletion (IAMPERE)** | _[DOMINATED]_ | **0.00** | 9.9% | **9.7%** | 10.0 | 1.2 ms | Dominated by: oracle, log_only_tightening, point_estimate, uncertainty_aware |
+| **Method 3: Log-Only Tightening (PolicyRefiner)** | _[DOMINATED]_ | **0.00** | 0.0% | **0.0%** | 3.0 | 1.4 ms | Dominated by: oracle, point_estimate, uncertainty_aware |
+| **Method 4a: Point-Estimate (p >= 0.50)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 45.7 ms | Dominates: coarse_deletion, log_only_tightening |
+| **Method 4b: Uncertainty-Aware (Ours)** | **[PARETO OPTIMAL]** | **0.00** | 0.0% | **0.0%** | 1.0 | 33.6 ms | Dominates: coarse_deletion, log_only_tightening |
 
 #### Pareto Dominance & Scientific Certification
 - **Safety Certified**: `True` ($G^*$ Reachability Risk = `0.00`)

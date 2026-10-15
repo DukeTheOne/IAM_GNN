@@ -437,8 +437,8 @@ class ParetoFrontierAnalyzer:
     def render_markdown_table(self, points: list[ParetoFrontierPoint]) -> str:
         """Render a publication-ready Markdown table summarizing multi-dimensional metrics and Pareto status."""
         lines: list[str] = [
-            "| Remediation Method | Status | Level 3 Risk ($G^*$) | $T_1$ Breakage | $T_2$ Breakage | AST Cost | Latency | Dominates | Dominated By |",
-            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |",
+            "| Remediation Method | Status | Risk (G*) | T₁ Break | T₂ Break | AST Cost | Latency | Dominance |",
+            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |",
         ]
 
         # Sort order: Oracle, No Action, Coarse, Log-Only, Point-Estimate, Uncertainty-Aware
@@ -453,7 +453,6 @@ class ParetoFrontierAnalyzer:
         pts_map = {p.method: p for p in points}
 
         sorted_pts = [pts_map[m] for m in order if m in pts_map]
-        # Append any extras
         for p in points:
             if p not in sorted_pts:
                 sorted_pts.append(p)
@@ -461,14 +460,24 @@ class ParetoFrontierAnalyzer:
         for p in sorted_pts:
             m = p.metrics
             badge = "**[PARETO OPTIMAL]**" if p.is_pareto_optimal else "_[DOMINATED]_"
-            dom_str = ", ".join(d.value for d in p.dominates) if p.dominates else "—"
-            by_str = ", ".join(d.value for d in p.dominated_by) if p.dominated_by else "—"
+            if p.is_pareto_optimal:
+                summary = (
+                    f"Dominates: {', '.join(d.value for d in p.dominates)}"
+                    if p.dominates
+                    else "Optimal frontier"
+                )
+            else:
+                summary = (
+                    f"Dominated by: {', '.join(d.value for d in p.dominated_by)}"
+                    if p.dominated_by
+                    else "Sub-optimal"
+                )
 
             lines.append(
                 f"| **{m.method_name}** | {badge} | **{m.level3_risk:.2f}** | "
                 f"{m.t1_breakage * 100.0:.1f}% | **{m.t2_breakage * 100.0:.1f}%** | "
-                f"{m.transformation_cost:.1f} | {m.execution_time_ms:.2f} ms | "
-                f"{dom_str} | {by_str} |"
+                f"{m.transformation_cost:.1f} | {m.execution_time_ms:.1f} ms | "
+                f"{summary} |"
             )
 
         return "\n".join(lines)

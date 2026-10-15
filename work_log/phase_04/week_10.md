@@ -187,12 +187,12 @@ flowchart TD
 
 | Subsystem | Tier 1 Prototype Implementation | Tier 2 Thesis Foundation Hook | Theoretical Complexity |
 | :--- | :--- | :--- | :--- |
-| **Graph Scaling** | Synthetic topologies ($N \in [500, 5{,}000]$) | Multi-account AWS Org partitioning ($N \ge 50{,}000$) | $\mathcal{O}(|V| + |E|)$ memory |
-| **Relational Model** | 2-layer RGCN with basis-sharing | Relational Graph Transformer / Hetero RGAT | $\mathcal{O}(\|E\| \cdot d)$ per epoch |
-| **Uncertainty Model** | Independent Bernoulli sampling | Group-correlated motif Gibbs / MCMC sampling | $\mathcal{O}(M \cdot (\|V\| + \|E\|))$ |
-| **Repair Optimizer** | Greedy + Z3 MaxSAT ($C(a,r,c)$ restricted) | Chance-constrained exact solving ($\text{Risk} \le \delta$) | $\mathcal{O}(K \cdot \log K)$ |
-| **Visual Triage UI** | Scoped $k \le 2$ ego-canvas ($|V_{\text{ego}}| \le 30$) | Hierarchical macro-org + micro-ego zoom | $\mathcal{O}(d^k)$ bounded ($<5\text{ ms}$) |
-| **IaC Ingestion** | Synthetic policy AST generator | Real-world Terraform & CloudFormation AST parsers | $\mathcal{O}(S_{\text{ast}})$ linear parse |
+| **Graph Scaling** | Synthetic topologies (N in [500, 5,000]) | Multi-account AWS Org partitioning (N >= 50,000) | O(\|V\| + \|E\|) memory |
+| **Relational Model** | 2-layer RGCN with basis-sharing | Relational Graph Transformer / Hetero RGAT | O(\|E\| · d) per epoch |
+| **Uncertainty Model** | Independent Bernoulli sampling | Group-correlated motif Gibbs / MCMC sampling | O(M · (\|V\| + \|E\|)) |
+| **Repair Optimizer** | Greedy + Z3 MaxSAT (C(a,r,c) restricted) | Chance-constrained exact solving (Risk <= δ) | O(K · log K) |
+| **Visual Triage UI** | Scoped k <= 2 ego-canvas (\|V_ego\| <= 30) | Hierarchical macro-org + micro-ego zoom | O(d^k) bounded (< 5 ms) |
+| **IaC Ingestion** | Synthetic policy AST generator | Real-world Terraform & CloudFormation AST parsers | O(S_ast) linear parse |
 
 ---
 

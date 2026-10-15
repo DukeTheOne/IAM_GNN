@@ -21,7 +21,7 @@
 
 ## 2. Multi-Condition Benchmark Summary Table (Mean ± 95% CI)
 
-| Condition | Model | PR-AUC | ROC-AUC | Recall@10 | Attack Path Rec@10 | FNR | ECE |
+| Condition | Model | PR-AUC | ROC-AUC | Recall@10 | Path Rec@10 | FNR | ECE |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **A_20** | Oracle | 1.000±0.00 | 1.000±0.00 | 1.000 | 1.000 | 0.000 | N/A |
 | **A_20** | BFS | 0.500±0.00 | 0.500±0.00 | 0.000 | 0.000 | 1.000 | N/A |

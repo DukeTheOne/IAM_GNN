@@ -42,12 +42,19 @@ Following the formal Gate G0 **GO** verdict established in [week_06.md](file:///
 ### 1. Separation of Edge Probabilities vs. Latent Graph Uncertainty (Monte Carlo Sampling)
 - **The Pitfall of Path Multiplications**: In multi-relational access control graphs, hidden relations are rarely conditionally independent ($\mathbb{P}(e_1 \wedge e_2) \neq \mathbb{P}(e_1) \cdot \mathbb{P}(e_2)$). A single external departmental boundary, federated IdP mapping, or dynamic STS delegation mechanism often masks an entire cluster of interconnected permissions. Multiplying raw edge probabilities along a path introduces compounding errors and fails to model joint topological reachability.
 - **Monte Carlo Completion Sampling**: We model missing authorization evidence as a latent set $H$ and sample $M$ plausible completions $\{H_1, \dots, H_M\}$ from calibrated edge probabilities $\hat{p}_{uv}^r = \sigma(z_{uv}^r / T^*)$:
-  $$\widehat{\mathbb{P}}\big[\text{Attack}(s, t) \mid G_o\big] = \frac{1}{M}\sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; G_o \cup H_i)\big]$$
+
+$$
+\widehat{\mathbb{P}}\big[\text{Attack}(s, t) \mid G_o\big] = \frac{1}{M}\sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; G_o \cup H_i)\big]
+$$
+
 - **Prototype Approximation (P1)**: Independent Bernoulli sampling on calibrated probabilities serves as our computational prototype approximation, explicitly tagged and compared against naive edge-product estimates on hand-crafted multi-hop cases to document approximation variance before Tier 2 group-correlated sampling.
 
 ### 2. Formal Uncertainty-Aware Repair Objective
 The repair engine synthesizes a patch $\mathcal{P}^*$ that optimizes the security–utility trade-off over the distribution of plausible completions:
-$$\min_{\mathcal{P}} \Big[\text{RepairCost}(\mathcal{P}) + \lambda \cdot \frac{1}{M}\sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; (G_o \cup H_i) \oplus \mathcal{P})\big]\Big]$$
+
+$$
+\min_{\mathcal{P}} \Big[\text{RepairCost}(\mathcal{P}) + \lambda \cdot \frac{1}{M}\sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; (G_o \cup H_i) \oplus \mathcal{P})\big]\Big]
+$$
 subject to three hard constraints:
 1. **Capability Validity**: $\forall a \in \mathcal{P}$, the transformation is strictly admitted by the AWS Action Capability Model: $\text{CapabilityValid}(\mathcal{P}) \iff \forall (a, r, c) \in \mathcal{P}, C(a, r, c) = \text{Admissible}$.
 2. **Historical Log Conformance**: $\forall \text{event} \in \mathcal{D}^{T_1}, \text{Authorized}(\text{event}, G_o \oplus \mathcal{P}) = 1$. The repair must not break any legitimate operational workflow observed during the baseline monitoring window $T_1$.
@@ -82,7 +89,11 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
 2. **Monte Carlo Attack Reachability Evaluator**:
    - [x] Traverses each instantiated completion $G_i$ using `ExactReachabilityOracle`.
    - [x] Computes empirical attack frequency across completions:
-     $$\widehat{\mathbb{P}}\big[\text{Attack}(s, t) \mid G_o\big] = \frac{1}{M} \sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; G_o \cup H_i)\big]$$
+
+$$
+\widehat{\mathbb{P}}\big[\text{Attack}(s, t) \mid G_o\big] = \frac{1}{M} \sum_{i=1}^M \mathbf{1}\big[\text{Attack}(s, t; G_o \cup H_i)\big]
+$$
+
    - [x] Records complete path witnesses and bridge edges active in each sample $H_i$, exposed via `MonteCarloReachabilityResult`.
 3. **Comparison Against Naive Edge Product Estimator**:
    - [x] Implemented `compare_monte_carlo_vs_product(graph, candidate_edges, source_id, target_id, num_samples, seed)` to quantify the error introduced by assuming independent edge probabilities on multi-hop chains.
@@ -113,16 +124,27 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
    - [x] Computes sample participation frequency: $\text{Freq}(e) = \frac{1}{M}\sum_{i=1}^M \mathbf{1}[e \in \Pi_{\text{attack}}^{(i)}]$.
 2. **Candidate Ranking & Cut Filtering (`CandidatePruner`)**:
    - [x] Ranks edges using a composite utility score:
-     $$\text{Score}(e) = w_{\text{freq}} \cdot \text{Freq}(e) + w_{\text{cent}} \cdot \text{NormalizedPathCount}(e) + w_{\text{cap}} \cdot \text{CapabilityScore}(e)$$
+
+$$
+\text{Score}(e) = w_{\text{freq}} \cdot \text{Freq}(e) + w_{\text{cent}} \cdot \text{NormalizedPathCount}(e) + w_{\text{cap}} \cdot \text{CapabilityScore}(e)
+$$
+
      prioritizing edges that frequently sever attacks and actions that admit fine-grained ARN scoping under $C(a, r, c)$.
    - [x] Prunes search space to a bounded candidate set $E_{\text{cand}} \subseteq E_{\text{obs}}$ (default budget $K = 50$, configurable).
    - [x] Restricts policy cut search to observed edges (`only_observed=True`), preventing invalid attempts to modify external unobserved policies.
    - [x] Extracts focused candidate subgraph (`extract_candidate_subgraph`) isolating endpoints and cut relations for rapid downstream solver execution.
 3. **Pruning Quality & Latency Benchmark**:
    - [x] Implemented `compute_candidate_recall` measuring the fraction of true solver cut edges retained in the candidate set:
-     $$\text{Recall} = \frac{|E_{\text{optimal}} \cap E_{\text{pruned}}|}{|E_{\text{optimal}}|}$$
+
+$$
+\text{Recall} = \frac{|E_{\text{optimal}} \cap E_{\text{pruned}}|}{|E_{\text{optimal}}|}
+$$
+
    - [x] Implemented `compute_optimality_gap` measuring absolute and relative repair cost penalty:
-     $$\Delta \text{Cost} = \text{Cost}_{\text{pruned}} - \text{Cost}_{\text{unpruned}}$$
+
+$$
+\Delta \text{Cost} = \text{Cost}_{\text{pruned}} - \text{Cost}_{\text{unpruned}}
+$$
    - [x] Verified interactive latency: pruning profiles 500 path witnesses across 50 completions in **< 0.01 seconds** (well within the $< 3.0\text{ s}$ target).
    - [x] Enforces safety invariant: pruning serves purely as hypothesis generation and never bypasses symbolic verification.
 
@@ -159,13 +181,20 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
 3. **Historical Workload Conformance Checker**:
    - [x] Ingests baseline historical workload trace $\mathcal{D}^{T_1}$ (list of authorized `AuthRequest` events).
    - [x] Checks that for every event $e \in \mathcal{D}^{T_1}$, the repaired policy set still authorizes the action:
-     $$\text{Authorized}(e, G_o \oplus \mathcal{P}) = 1$$
+
+$$
+\text{Authorized}(e, G_o \oplus \mathcal{P}) = 1
+$$
+
    - [x] If a candidate transformation denies any event in $\mathcal{D}^{T_1}$, the transformation is marked inadmissible and discarded.
 4. **Greedy Repair Optimization Loop**:
    - [x] Iteratively evaluates candidate cuts from the pruned subgraph.
    - [x] For each cut, generates candidate transformations (ARN scoping first, then action revocation).
    - [x] Selects the admissible, log-conforming transformation that achieves the greatest reduction in Monte Carlo attack probability per unit repair cost:
-     $$\Delta \text{Objective} = \frac{\Delta \widehat{\mathbb{P}}[\text{Attack}]}{\text{Cost}(\mathcal{P})}$$
+
+$$
+\Delta \text{Objective} = \frac{\Delta \widehat{\mathbb{P}}[\text{Attack}]}{\text{Cost}(\mathcal{P})}
+$$
    - [x] Terminates when residual attack risk drops below threshold $\delta$ (default $\delta = 0.0$) or candidate budget is exhausted.
    - [x] Outputs structured `PolicyPatchResult` containing modified JSON policy documents, AST diffs, cost metrics, and security guarantees.
 
@@ -199,7 +228,11 @@ Unlike naive solvers that treat IAM policies as generic strings (e.g., scoping a
    - [x] Encodes hard security reachability constraints: $\forall \text{attack path } p \text{ in } G_o \cup H_i$, $\neg \text{PathActive}(p)$ where unevidenced steps require $x_{\text{action\_keep}} \land \neg x_{\text{scoped\_arn}}$.
 2. **Soft Constraint Optimization**:
    - [x] Uses Z3 `Optimize()` to solve MaxSAT: minimizes weighted cost function:
-     $$\min \sum w_{\text{remove}} \cdot (1 - x_{\text{action\_keep}}) + \sum w_{\text{scope}} \cdot (x_{\text{action\_keep}} \land x_{\text{scoped\_arn}})$$
+
+$$
+\min \sum w_{\text{remove}} \cdot (1 - x_{\text{action\_keep}}) + \sum w_{\text{scope}} \cdot (x_{\text{action\_keep}} \land x_{\text{scoped\_arn}})
+$$
+
      with default weights $w_{\text{scope}} = 1.0$ and $w_{\text{remove}} = 5.0$.
 3. **Greedy vs. Z3 Optimality Gap Comparison**:
    - [x] Executes both greedy repair and Z3 exact solver on the canonical `PassRole` + Lambda motif instance.

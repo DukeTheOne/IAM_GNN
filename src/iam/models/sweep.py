@@ -866,7 +866,7 @@ class ExperimentalSweepRunner:
                 "",
                 "## 2. Multi-Condition Benchmark Summary Table (Mean ± 95% CI)",
                 "",
-                "| Condition | Model | PR-AUC | ROC-AUC | Recall@10 | Attack Path Rec@10 | FNR | ECE |",
+                "| Condition | Model | PR-AUC | ROC-AUC | Recall@10 | Path Rec@10 | FNR | ECE |",
                 "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |",
             ]
         )

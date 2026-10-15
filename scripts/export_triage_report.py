@@ -95,17 +95,18 @@ def run_export(args: argparse.Namespace) -> int:
 
     table_header = (
         "\n\n### Top High-Risk Identities (Calibrated Latent Privilege Escalation)\n\n"
-        "| Principal ID | Type | Department | Observed Risk (G_o) | Latent P̂ | Severity | Misleading Safe? | Target Asset |\n"
+        "| Principal | Type | Dept | Observed (Go) | Latent P̂ | Severity | Blind Spot? | Target Asset |\n"
         "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |\n"
     )
     table_rows: list[str] = []
     for r in top_records:
         misleading_tag = "**YES (⚠️ Blind)**" if r.is_misleading else "No"
         target_str = r.target_assets[0] if r.target_assets else "None"
+        target_short = target_str.replace("arn:aws:", "")
         row = (
             f"| `{r.principal_id}` | {r.principal_type} | {r.department} | "
-            f"`{r.observed_risk:.2f}` | `{r.latent_attack_prob:.2f}` | "
-            f"**{r.severity.value}** | {misleading_tag} | `{target_str}` |"
+            f"{r.observed_risk:.2f} | {r.latent_attack_prob:.2f} | "
+            f"**{r.severity.value}** | {misleading_tag} | `{target_short}` |"
         )
         table_rows.append(row)
 

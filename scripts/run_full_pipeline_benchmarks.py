@@ -550,15 +550,15 @@ def generate_markdown_report(
             "",
             "## 3. RQ1: Latent Attack Path Discovery under Structured Masking",
             "",
-            "| Masking Condition | BFS AUC | Random Forest AUC | Motif Heuristic AUC | RGCN AUC (Ours) | RGCN Macro-F1 | RGCN ECE |",
+            "| Masking Condition | BFS | Random Forest | Motif Heuristic | RGCN (Ours) | Macro-F1 | ECE |",
             "| :--- | :---: | :---: | :---: | :---: | :---: | :---: |",
         ]
     )
 
     for r in rq1_data:
         lines.append(
-            f"| {r['condition']} | `{r['bfs_auc']:.3f}` | `{r['rf_auc']:.3f}` | "
-            f"`{r['motif_auc']:.3f}` | **`{r['rgcn_auc']:.3f}`** | **`{r['rgcn_f1']:.3f}`** | `{r['rgcn_ece']:.3f}` |"
+            f"| {r['condition']} | {r['bfs_auc']:.3f} | {r['rf_auc']:.3f} | "
+            f"{r['motif_auc']:.3f} | **{r['rgcn_auc']:.3f}** | **{r['rgcn_f1']:.3f}** | {r['rgcn_ece']:.3f} |"
         )
 
     lines.extend(
@@ -568,7 +568,7 @@ def generate_markdown_report(
             "",
             "## 4. RQ2: Multi-Objective Security-Utility Tradeoff (Condition E)",
             "",
-            "| Remediation Method | Ground Truth Risk P(Reach) | Historical T1 Conformance | T2 Drift Breakage Rate | Transformation Cost | Pareto Status |",
+            "| Remediation Method | Risk P(Reach) | T₁ Conformance | T₂ Drift Break | AST Cost | Pareto Status |",
             "| :--- | :---: | :---: | :---: | :---: | :---: |",
         ]
     )
@@ -580,7 +580,7 @@ def generate_markdown_report(
         cost = f"{res.transformation_cost:.2f}"
         pareto = "**DOMINANT**" if method == RemediationMethod.UNCERTAINTY_AWARE else "Dominated"
         lines.append(
-            f"| {method.value} | `{risk:.2f}` | `{t1_conf}` | `{t2_break}` | `{cost}` | {pareto} |"
+            f"| {method.value} | {risk:.2f} | {t1_conf} | {t2_break} | {cost} | {pareto} |"
         )
 
     lines.extend(
@@ -590,17 +590,17 @@ def generate_markdown_report(
             "",
             "## 5. RQ3: Optimization Bounds, Candidate Pruning & Runtime Latency",
             "",
-            "| Scale | Inference (s) | Sampling (s) | Pruning (s) | Solver (s) | Verifier (s) | Total Latency (s) | Candidate Recall (K=25) | Optimality Gap | Budget Passed? |",
-            "| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
+            "| Scale | Infer | Sample | Prune | Solve | Total Latency | Recall (K=25) | Opt. Gap | 3.0s SLA |",
+            "| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
         ]
     )
 
     for q in rq3_data:
         lines.append(
-            f"| {q['scale']} | `{q['latency_infer_s']:.4f}` | `{q['latency_sample_s']:.4f}` | "
-            f"`{q['latency_prune_s']:.4f}` | `{q['latency_solve_s']:.4f}` | `{q['latency_verify_s']:.4f}` | "
-            f"**`{q['latency_total_s']:.4f}`** | **`{q['candidate_recall_k25'] * 100:.1f}%`** | "
-            f"`{q['optimality_gap_pct']:.2f}%` | **{'✓ YES' if q['within_latency_budget'] else '✗ NO'}** |"
+            f"| {q['scale']} | {q['latency_infer_s'] * 1000.0:.1f} ms | {q['latency_sample_s'] * 1000.0:.1f} ms | "
+            f"{q['latency_prune_s'] * 1000.0:.1f} ms | {q['latency_solve_s'] * 1000.0:.1f} ms | "
+            f"**{q['latency_total_s'] * 1000.0:.1f} ms** | **{q['candidate_recall_k25'] * 100:.1f}%** | "
+            f"{q['optimality_gap_pct']:.2f}% | **{'Passed' if q['within_latency_budget'] else 'Failed'}** |"
         )
 
     lines.extend(

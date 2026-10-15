@@ -9,10 +9,10 @@
 
 ### Top High-Risk Identities (Calibrated Latent Privilege Escalation)
 
-| Principal ID | Type | Department | Observed Risk (G_o) | Latent P̂ | Severity | Misleading Safe? | Target Asset |
+| Principal | Type | Dept | Observed (Go) | Latent P̂ | Severity | Blind Spot? | Target Asset |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| `user:secops-standard-0` | User | SecOps | `0.00` | `0.88` | **CRITICAL** | **YES (⚠️ Blind)** | `arn:aws:s3:::enterprise-data-lake-prod` |
-| `user:secops-standard-1` | User | SecOps | `0.00` | `0.00` | **LOW** | No | `None` |
-| `user:secops-restricted-2` | User | SecOps | `0.00` | `0.00` | **LOW** | No | `None` |
-| `user:secops-standard-3` | User | SecOps | `0.00` | `0.00` | **LOW** | No | `None` |
-| `user:secops-restricted-4` | User | SecOps | `0.00` | `0.00` | **LOW** | No | `None` |
+| `user:secops-standard-0` | User | SecOps | 0.00 | 0.88 | **CRITICAL** | **YES (⚠️ Blind)** | `s3:::enterprise-data-lake-prod` |
+| `user:secops-standard-1` | User | SecOps | 0.00 | 0.00 | **LOW** | No | `None` |
+| `user:secops-restricted-2` | User | SecOps | 0.00 | 0.00 | **LOW** | No | `None` |
+| `user:secops-standard-3` | User | SecOps | 0.00 | 0.00 | **LOW** | No | `None` |
+| `user:secops-restricted-4` | User | SecOps | 0.00 | 0.00 | **LOW** | No | `None` |

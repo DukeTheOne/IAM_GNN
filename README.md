@@ -92,29 +92,60 @@ flowchart TD
 
 ### 3.1 Relational Multigraph Schema
 An enterprise cloud authorization environment is formalized as a directed heterogeneous multigraph:
-$$G = (V, E, \mathcal{R})$$
+
+$$
+G = (V, E, \mathcal{R})
+$$
+
 where:
-- Node entity types $V = V_{\text{User}} \cup V_{\text{Role}} \cup V_{\text{Policy}} \cup V_{\text{Group}} \cup V_{\text{Resource}} \cup V_{\text{Condition}}$.
-- Edge relation types $\mathcal{R} = \{\text{AttachedTo}, \text{AssumesRole}, \text{HasPolicy}, \text{TargetsResource}, \text{PassesRoleTo}, \text{AppliesCondition}, \dots\}$.
+- Node entity types: $V = V_{\text{User}} \cup V_{\text{Role}} \cup V_{\text{Policy}} \cup V_{\text{Group}} \cup V_{\text{Resource}} \cup V_{\text{Condition}}$.
+- Edge relation types: $\mathcal{R} = \{\text{AttachedTo}, \text{AssumesRole}, \text{HasPolicy}, \text{TargetsResource}, \text{PassesRoleTo}, \text{AppliesCondition}, \dots\}$.
 
 ### 3.2 AWS Action Capability Model $C(a, r, c)$
 AWS authorization enforcement is heterogeneous: applying resource constraints to actions that AWS forbids resource-level permissions causes immediate deployment errors. We formalize this constraint via the capability mapping:
-$$\mathcal{T}(a) = \begin{cases} \text{ARN-Restricted} & \text{if } a \text{ supports resource-level scoping (e.g., } \texttt{s3:GetObject}, \texttt{iam:PassRole}\text{)} \\ \text{Global-Only} & \text{if } a \text{ requires } \texttt{"Resource": "*"} \text{ (e.g., } \texttt{iam:CreatePolicyVersion}\text{)} \end{cases}$$
+
+$$
+\mathcal{T}(a) = \begin{cases}
+\text{ARN-Restricted} & \text{if } a \text{ supports resource-level scoping (e.g. s3:GetObject, iam:PassRole)} \\
+\text{Global-Only} & \text{if } a \text{ requires wildcard resources (e.g. iam:CreatePolicyVersion)}
+\end{cases}
+$$
 
 Candidate policy remediations must strictly satisfy:
-$$\text{ValidPatch}(P, a) \iff \begin{cases} \text{ScopeResource}(P, a, \text{ARN}) & \text{if } \mathcal{T}(a) == \text{ARN-Restricted} \\ \text{InjectCondition}(P, a, \text{Key}, \text{Val}) & \text{if } \mathcal{T}(a) == \text{Global-Only} \\ \text{RemoveAction}(P, a) & \text{only as last-resort fallback} \end{cases}$$
+
+$$
+\text{ValidPatch}(P, a) \iff \begin{cases}
+\text{ScopeResource}(P, a, \text{ARN}) & \text{if } \mathcal{T}(a) = \text{ARN-Restricted} \\
+\text{InjectCondition}(P, a, \text{Key}, \text{Val}) & \text{if } \mathcal{T}(a) = \text{Global-Only} \\
+\text{RemoveAction}(P, a) & \text{only as fallback}
+\end{cases}
+$$
 
 ### 3.3 Calibrated Message Passing & Link Prediction
 Node embeddings are updated via 2-layer Relational Graph Convolutions:
-$$h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)$$
+
+$$
+h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+$$
+
 with basis-sharing regularization $W_r = \sum_{b=1}^B a_{rb} V_b$ to prevent overfitting on rare attack motifs. Uncalibrated link logits $z_{uvr} = h_u^T R_r h_v$ are calibrated via learned scalar temperature $T > 0$:
-$$\hat{p}_{uvr} = \sigma \left( \frac{z_{uvr}}{T} \right)$$
+
+$$
+\hat{p}_{uvr} = \sigma \left( \frac{z_{uvr}}{T} \right)
+$$
+
 minimizing the Expected Calibration Error (ECE):
-$$\text{ECE} = \sum_{m=1}^M \frac{|B_m|}{N} \left| \text{acc}(B_m) - \text{conf}(B_m) \right| < 0.05$$
+
+$$
+\text{ECE} = \sum_{m=1}^M \frac{|B_m|}{N} \left| \text{acc}(B_m) - \text{conf}(B_m) \right| \le 0.05
+$$
 
 ### 3.4 Multi-Objective Security–Utility Optimization
 The optimal capability-compliant patch $P^*$ solves:
-$$\min_{P^*} \quad \underbrace{\text{Cost}(P \to P^*)}_{\text{AST Transformation Cost}} + \lambda \cdot \underbrace{\text{Breakage}(P^*, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})}_{\text{CloudTrail API Invalidation}} + \gamma \cdot \underbrace{\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)} \left[ \text{Reachability}(G_o \cup H, P^*, s_{\text{att}}, t_{\text{tgt}}) \right]}_{\text{Latent Attack Reachability Risk}}$$
+
+$$
+\min_{P^*} \quad \underbrace{\text{Cost}(P \to P^*)}_{\text{AST Transformation Cost}} + \lambda \cdot \underbrace{\text{Breakage}(P^*, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})}_{\text{CloudTrail Invalidation}} + \gamma \cdot \underbrace{\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)} \left[ \text{Reachability}(G_o \cup H, P^*, s_{\text{att}}, t_{\text{tgt}}) \right]}_{\text{Latent Attack Reachability Risk}}
+$$
 
 ---
 
@@ -263,48 +294,48 @@ Executes exhaustive multi-seed evaluations across scales $N \in [500, 1000, 3000
 
 ### 7.1 RQ1: Latent Attack Path Discovery Under Structured Masking
 We evaluate inductive link prediction across three structured masking scenarios:
-1. **Condition A (Uniform Random)**: $10\%$ to $40\%$ missing edges.
+1. **Condition A (Uniform Random)**: 10% to 40% missing edges.
 2. **Condition B (Cross-Account)**: Inter-account trust edges hidden.
 3. **Condition E (Adversarial Bridge)**: Escalation bottleneck links omitted from telemetry.
 
-| Link Discovery Method | Condition A (Random 20%) | Condition B (Cross-Account) | Condition E (Adversarial Bridge) |
+| Method | Cond A (Random 20%) | Cond B (Cross-Acct) | Cond E (Adv Bridge) |
 | :--- | :---: | :---: | :---: |
-| **Deterministic BFS (PMapper)** | $0.62 \pm 0.04$ | $0.51 \pm 0.03$ | **$0.50 \pm 0.00$ (0.0% Recall)** |
-| **Random Forest Baseline** | $0.78 \pm 0.02$ | $0.74 \pm 0.03$ | $0.69 \pm 0.03$ |
-| **Heuristic Motif Completion** | $0.81 \pm 0.02$ | $0.79 \pm 0.02$ | $0.75 \pm 0.02$ |
-| **2-Layer RGCN (Ours)** | **$0.92 \pm 0.01$** | **$0.89 \pm 0.02$** | **$0.91 \pm 0.02$** |
+| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00 *(0% recall)* |
+| **Random Forest** | 0.78 ± 0.02 | 0.74 ± 0.03 | 0.69 ± 0.03 |
+| **Motif Heuristic** | 0.81 ± 0.02 | 0.79 ± 0.02 | 0.75 ± 0.02 |
+| **2-Layer RGCN (Ours)** | **0.92 ± 0.01** | **0.89 ± 0.02** | **0.91 ± 0.02** |
 
-> **Key Finding**: Under adversarial bridge masking (Condition E), deterministic BFS collapses to random chance ($0.50$ AUC, $0\%$ recall) because the single required transition is absent from telemetry. The 2-layer RGCN sustains **$>0.90$ ROC-AUC** by propagating structural embeddings across multi-hop organizational topologies.
+> **Key Finding**: Under adversarial bridge masking (Condition E), deterministic BFS collapses to random chance (0.50 AUC, 0% recall) because the single required transition is absent from telemetry. The 2-layer RGCN sustains **>0.90 ROC-AUC** by propagating structural embeddings across multi-hop organizational topologies.
 
 ---
 
 ### 7.2 RQ2: Security–Utility Tradeoff & Pareto Dominance
 We benchmark six remediation strategies on enterprise topologies evaluated against ground truth ($G^*$), baseline traffic ($\mathcal{D}^{T_1}$), and temporally drifted traffic ($\mathcal{D}^{T_2}$):
 
-| Remediation Method | Status | Level 3 Risk ($G^*$) | $T_1$ Breakage | $T_2$ Breakage | AST Cost | Dominance |
+| Remediation Strategy | Status | Risk (G*) | T₁ Break | T₂ Drift | AST Cost | Pareto Dominance |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Method 0: Oracle ($G^*$)** | *Pareto Optimal* | $0.00$ | $0.0\%$ | $0.0\%$ | $1.0$ | Theoretical Bound |
-| **Method 1: No Action (Identity)** | *Pareto Optimal* | **$1.00$** | $0.0\%$ | $0.0\%$ | $0.0$ | Deceptive / Critical Risk |
-| **Method 2: Coarse Deletion (IAMPERE)** | *Dominated* | $0.00$ | **$29.6\%$** | **$17.2\%$** | $10.0$ | Dominated by Ours & Oracle |
-| **Method 3: Log-Only Tightening (PolicyRefiner)** | *Dominated* | $0.00$ | $0.0\%$ | **$0.8\%$** | $4.0$ | Dominated by Ours & Oracle |
-| **Method 4a: Point-Estimate ($\hat{p} \ge 0.50$)** | *Pareto Optimal* | $0.00$ | $0.0\%$ | $0.0\%$ | $1.0$ | Fragile to Uncalibrated Scores |
-| **Method 4b: Uncertainty-Aware (Ours)** | **Pareto Optimal** | **$0.00$** | **$0.0\%$** | **$0.0\%$** | **$1.0$** | **Strictly Dominates Methods 2 & 3** |
+| **M0: Oracle (G*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 | Theoretical Bound |
+| **M1: No Action (Identity)** | *Optimal* | **1.00** | 0.0% | 0.0% | 0.0 | Deceptive / Critical Risk |
+| **M2: Coarse Deletion (IAMPERE)** | *Dominated* | 0.00 | **29.6%** | **17.2%** | 10.0 | High operational breakage |
+| **M3: Log-Only (PolicyRefiner)** | *Dominated* | 0.00 | 0.0% | **0.8%** | 4.0 | Fragile under drift |
+| **M4a: Point-Estimate (p̂ ≥ 0.5)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 | Uncalibrated risk |
+| **M4b: Uncertainty-Aware (Ours)** | **Optimal** | **0.00** | **0.0%** | **0.0%** | **1.0** | **Dominates M2 & M3** |
 
-> **Key Finding**: Prior automated repair methods impose severe collateral damage: Coarse Deletion strips `iam:PassRole`, breaking $17\%$ to $30\%$ of legitimate workloads. Log-Only Tightening breaks under future operational drift. Our capability-compliant uncertainty-aware repair achieves **$0.00$ residual risk with $0.0\%$ operational breakage**, matching the theoretical Oracle frontier.
+> **Key Finding**: Prior automated repair methods impose severe collateral damage: Coarse Deletion strips `iam:PassRole`, breaking 17% to 30% of legitimate workloads. Log-Only Tightening breaks under future operational drift. Our capability-compliant uncertainty-aware repair achieves **0.00 residual risk with 0.0% operational breakage**, matching the theoretical Oracle frontier.
 
 ---
 
 ### 7.3 RQ3: Scalability, Pruning Efficiency & Latency
-We profile candidate pruning efficiency and end-to-end repair latency across enterprise topologies scaling from $N = 500$ to $N = 5{,}000$ nodes:
+We profile candidate pruning efficiency and end-to-end repair latency across enterprise topologies scaling from N = 500 to N = 5,000 nodes:
 
-| Target Scale ($N$) | Realized Graph ($|V|, |E|$) | Total Latency (s) | 3.0s SLA Passed | Candidate Recall | Optimality Gap | Safety Coverage |
+| Target Scale (N) | Realized (|V|, |E|) | Total Latency | 3.0s SLA | Recall | Opt. Gap | Safety |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **500** | $514$ nodes, $550$ edges | **$0.0085\text{ s}$** | **PASSED** | **$100.0\%$** | **$0.00\%$** | **$100.0\%$** |
-| **1,000** | $1,020$ nodes, $1,135$ edges | **$0.0173\text{ s}$** | **PASSED** | **$100.0\%$** | **$0.00\%$** | **$100.0\%$** |
-| **3,000** | $3,045$ nodes, $3,332$ edges | **$0.0159\text{ s}$** | **PASSED** | **$100.0\%$** | **$0.00\%$** | **$100.0\%$** |
-| **5,000** | $5,069$ nodes, $5,523$ edges | **$0.0172\text{ s}$** | **PASSED** | **$100.0\%$** | **$0.00\%$** | **$100.0\%$** |
+| **500** | 514 / 550 | **8.5 ms** | Passed | 100.0% | 0.00% | 100.0% |
+| **1,000** | 1,020 / 1,135 | **17.3 ms** | Passed | 100.0% | 0.00% | 100.0% |
+| **3,000** | 3,045 / 3,332 | **15.9 ms** | Passed | 100.0% | 0.00% | 100.0% |
+| **5,000** | 5,069 / 5,523 | **17.2 ms** | Passed | 100.0% | 0.00% | 100.0% |
 
-> **Key Finding**: Uncertainty-guided candidate pruning restricts the combinatorial search space to bottleneck witness edges. Across all scales up to 5,000 nodes, repair synthesis terminates in **$< 0.02\text{ s}$** (over $150\times$ faster than the $3.0\text{ s}$ operational SLA) with zero optimality gap and $100\%$ candidate recall.
+> **Key Finding**: Uncertainty-guided candidate pruning restricts the combinatorial search space to bottleneck witness edges. Across all scales up to 5,000 nodes, repair synthesis terminates in **< 0.02 s** (over 150× faster than the 3.0 s operational SLA) with zero optimality gap and 100% candidate recall.
 
 ---
 
@@ -315,7 +346,11 @@ In security-critical authorization systems, claiming that a neural network is so
 1. **Statistical Predictor (Unsound)**: The 2-layer RGCN link predictor is a statistical heuristic; it makes no claims of formal soundness or completeness.
 2. **Formal AST Evaluation (Sound)**: The policy AST evaluator strictly implements the formal AWS authorization logic, including deterministic Explicit Deny precedence and Action Capability constraints $C(a, r, c)$.
 3. **Symbolic Verification Boundary (Conditional Soundness)**:
-   $$\text{VerifiedSafe}(P^*, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^*, s, t) = \emptyset$$
+
+$$
+\text{VerifiedSafe}(P^*, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^*, s, t) = \emptyset
+$$
+
    The verifier is **sound relative to the evaluated completion set $\mathcal{H}_M$** and the formal AWS authorization model. If a synthesized patch fails verification on any sampled completion, it is rejected automatically before deployment.
 
 ---

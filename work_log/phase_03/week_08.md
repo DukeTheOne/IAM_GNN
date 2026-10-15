@@ -54,12 +54,19 @@ The measured discrepancy between Level 1, Level 2, and Level 3 is a primary rese
 ### 2. Operational Workload Drift ($\mathcal{D}^{T_1}$ vs. $\mathcal{D}^{T_2}$)
 To rigorously benchmark operational utility without relying on proprietary enterprise CloudTrail dumps, we construct a **Data Level 1 Temporal Holdout**:
 - **Baseline Synthesis Window ($T_1$)**: Months 1–3 ($\sim 90$ days). Benign operational events (CI/CD build execution, scheduled ETL queries, routine infrastructure provisioning). The repair solver treats $\mathcal{D}^{T_1}$ as a hard constraint:
-  $$\forall e \in \mathcal{D}^{T_1}, \quad \text{Authorized}(e, G_o \oplus \mathcal{P}) = 1$$
+
+$$
+\forall e \in \mathcal{D}^{T_1}, \quad \text{Authorized}(e, G_o \oplus \mathcal{P}) = 1
+$$
+
 - **Evaluation Holdout Window ($T_2$)**: Month 4 ($\sim 30$ days). Strictly held out during patch synthesis. Features controlled operational drift:
   1. *Resource Drift*: Legitimate actions target newly created, valid enterprise resource ARNs (e.g. daily S3 partition buckets, quarterly audit reports) not observed during $T_1$.
   2. *Infrequent Action Drift*: Infrequent but authorized business workflows (e.g. quarterly credential rotation, emergency KMS re-encrypt).
 - **Utility Metric**: Fraction of legitimate requests in $\mathcal{D}^{T_2}$ denied by $\mathcal{P}$:
-  $$\text{BreakageRate}(\mathcal{P}, \mathcal{D}^{T_2}) = \frac{|\{ e \in \mathcal{D}^{T_2} \mid \text{Authorized}(e, G_o \oplus \mathcal{P}) = 0 \}|}{|\mathcal{D}^{T_2}|}$$
+
+$$
+\text{BreakageRate}(\mathcal{P}, \mathcal{D}^{T_2}) = \frac{|\{ e \in \mathcal{D}^{T_2} \mid \text{Authorized}(e, G_o \oplus \mathcal{P}) = 0 \}|}{|\mathcal{D}^{T_2}|}
+$$
 
 ### 3. The Central Tradeoff Experiment: 6 Remediation Strategies (RQ2)
 Under Condition E (adversarial bridge relation $a \to b$ hidden), we systematically evaluate 6 distinct remediation strategies:

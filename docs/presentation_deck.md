@@ -33,13 +33,13 @@
 ## Slide 2: Prior Art & The Novelty Gap
 
 ### Slide Content
-| Prior System | Technique | Key Strength | Fatal Vulnerability / Gap |
+| System | Technique | Key Strength | Critical Limitation |
 | :--- | :--- | :--- | :--- |
-| **PMapper / AWS Access Analyzer** | Graph BFS / SMT Solvers | Sound under complete state $G$ | **Zero Recall under Partial Observability**: If a single bridge relation is unobserved, reachability drops to zero. |
-| **IAMPERE (ASE 2023)** | GNN-Assisted MaxSAT | Automated policy repair | **Coarse Deletion**: Removes dangerous actions entirely (`iam:PassRole`), breaking legitimate CI/CD workloads. Assumes $G$ is complete. |
-| **TAC / TAC-GB (ICSE 2024)** | Adaptive Querying | Discovers hidden relations via queries | **Query Dependency**: Requires an oracle or interactive API to query missing data; inapplicable when telemetry is permanently inaccessible. |
-| **PolicyRefiner / Restricter** | CloudTrail Log Tightening | Tightens observed policy ASTs | **Operational Drift Breakage**: Strips valid future permissions; zero reasoning over latent structural relations. |
-| **This Work (Ours)** | **Calibrated Relational Learning + Uncertainty-Aware Repair** | **Infers latent attack paths with calibrated uncertainty and synthesizes capability-compliant minimal repairs** | **First end-to-end framework solving repair under missing telemetry without breaking legitimate workloads.** |
+| **PMapper** | BFS / SMT | Sound under complete G | **Zero recall under partial observability** |
+| **IAMPERE** | GNN + MaxSAT | Automated policy repair | **Coarse action deletion** (breaks CI/CD) |
+| **TAC-GB** | Adaptive Queries | Active edge discovery | **Query dependency** (inapplicable when telemetry missing) |
+| **PolicyRefiner** | Log Tightening | Tightens observed AST | **Brittle to drift** (breaks future workloads) |
+| **Ours** | **Calibrated RGCN + C(a,r,c)** | **Infers latent paths & repairs AST** | **Pareto-optimal, 0% operational breakage** |
 
 ### Visual Layout
 - 2x2 Positioning Matrix:
@@ -60,7 +60,7 @@
 
 - **Key Research Contributions**:
   1. **Relational IAM Multigraph Formulation**: Heterogeneous representation mapping AWS entities, permissions, and trust relationships with an explicit Action Capability Model $C(a, r, c)$.
-  2. **Calibrated Relational Inductive Learning**: 2-layer Relational Graph Convolutional Network (RGCN) with temperature scaling, achieving Expected Calibration Error (ECE) $< 0.05$.
+  2. **Calibrated Relational Inductive Learning**: 2-layer Relational Graph Convolution Network (RGCN) with temperature scaling, achieving Expected Calibration Error (ECE) $\le 0.05$.
   3. **Capability-Compliant Greedy Repair Engine**: Subgraph min-cut synthesis guided by AWS resource scoping rules, eliminating reachability without coarse action deletions.
   4. **Multi-Completion Safety Verification**: Three-level verification ($G_o$, $\mathcal{H}_M$, $G^*$) guaranteeing residual risk bounds before policy deployment.
   5. **Interactive Security Triage System**: High-performance Streamlit + PyVis operator dashboard for sub-second visual triage and automated policy diff inspection.
@@ -78,10 +78,17 @@
   - Edge Relations $\mathcal{R}$: `AttachedTo`, `AssumesRole`, `HasPolicy`, `TargetsResource`, `PassesRoleTo`, `AppliesCondition`.
 - **The AWS Action Capability Model $C(a, r, c)$**:
   - AWS authorization semantics are non-uniform: naive solvers generate invalid policies by applying resource constraints to actions that AWS forbids.
-  $$\mathcal{T}(a) = \begin{cases} \text{ARN-Restricted} & \text{if } a \text{ supports resource-level permissions (e.g., } \texttt{s3:GetObject}\text{)} \\ \text{Global Only } (\texttt{"Resource": "*"}) & \text{if } a \text{ requires wildcard (e.g., } \texttt{iam:CreatePolicyVersion}\text{)} \end{cases}$$
+
+$$
+\mathcal{T}(a) = \begin{cases}
+\text{ARN-Restricted} & \text{if } a \text{ supports resource-level permissions (e.g. s3:GetObject, iam:PassRole)} \\
+\text{Global-Only} & \text{if } a \text{ requires wildcard resources (e.g. iam:CreatePolicyVersion)}
+\end{cases}
+$$
+
   - $C(a, r, c)$ strictly dictates valid remediation actions:
-    1. If $\mathcal{T}(a) == \text{ARN-Restricted}$: Narrow resource ARN from `*` to verified operational prefix.
-    2. If $\mathcal{T}(a) == \text{Global}$: Inject verified IAM condition keys (e.g., `aws:PrincipalArn`, `aws:RequestedRegion`).
+    1. If $\mathcal{T}(a) = \text{ARN-Restricted}$: Narrow resource ARN from `*` to verified operational prefix.
+    2. If $\mathcal{T}(a) = \text{Global}$: Inject verified IAM condition keys (e.g., `aws:PrincipalArn`, `aws:RequestedRegion`).
     3. Excision (Action Deletion) is permitted **only** as a fallback when no valid scoping exists.
 
 ### Visual Layout
@@ -98,14 +105,18 @@
 ### Slide Content
 - **2-Layer Relational Graph Convolutional Network (RGCN)**:
   - Inductive message passing over heterogeneous relations $r \in \mathcal{R}$:
-    $$h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)$$
+
+$$
+h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+$$
+
   - Regularized with basis-sharing decomposition: $W_r = \sum_{b=1}^B a_{rb} V_b$ to prevent overfitting on rare escalation motifs.
 - **Link Prediction Decoder**:
   - DistMult bilinear scoring: $s(u, r, v) = h_u^T R_r h_v$.
 - **Post-Hoc Temperature Calibration (ECE)**:
   - Raw neural link probabilities are notoriously overconfident, invalidating probabilistic risk estimation.
   - We apply Platt temperature scaling: $\hat{p} = \sigma(z / T)$ where $T > 0$ is optimized via NLL on validation sets.
-  - Achieves Expected Calibration Error (ECE) $< 0.05$ across all experimental seeds.
+  - Achieves Expected Calibration Error (ECE) $\le 0.05$ across all experimental seeds.
 
 ### Visual Layout
 - Left: Neural architecture diagram with 2 RGCN layers, basis sharing, and DistMult link predictor.
@@ -120,20 +131,20 @@
 
 ### Slide Content
 - **Evaluation Across Masking Conditions**:
-  - **Condition A (Uniform Random Masking)**: $10\%$ to $40\%$ missing edges.
+  - **Condition A (Uniform Random Masking)**: 10% to 40% missing edges.
   - **Condition B (Cross-Account Masking)**: External trust edges hidden.
   - **Condition E (Adversarial Bridge Masking)**: Critical escalation bottleneck edges deliberately omitted from telemetry.
 
-| Method | Condition A (Random 20%) | Condition B (Cross-Account) | Condition E (Adversarial Bridge) |
+| Method | Cond A (Random 20%) | Cond B (Cross-Acct) | Cond E (Adv Bridge) |
 | :--- | :---: | :---: | :---: |
-| **Deterministic BFS (PMapper)** | $0.62 \pm 0.04$ | $0.51 \pm 0.03$ | **$0.50 \pm 0.00$ (0.0% Recall)** |
-| **Random Forest Baseline** | $0.78 \pm 0.02$ | $0.74 \pm 0.03$ | $0.69 \pm 0.03$ |
-| **Heuristic Motif Completion** | $0.81 \pm 0.02$ | $0.79 \pm 0.02$ | $0.75 \pm 0.02$ |
-| **2-Layer RGCN (Ours)** | **$0.92 \pm 0.01$** | **$0.89 \pm 0.02$** | **$0.91 \pm 0.02$** |
+| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00 *(0% recall)* |
+| **Random Forest** | 0.78 ± 0.02 | 0.74 ± 0.03 | 0.69 ± 0.03 |
+| **Motif Heuristic** | 0.81 ± 0.02 | 0.79 ± 0.02 | 0.75 ± 0.02 |
+| **2-Layer RGCN (Ours)** | **0.92 ± 0.01** | **0.89 ± 0.02** | **0.91 ± 0.02** |
 
 - **Key Takeaway**:
-  - Deterministic BFS drops to random chance ($0.50$ AUC, $0\%$ recall) under adversarial bridge masking because the required link is absent from observed telemetry.
-  - RGCN outperforms tabular baselines by $+0.22$ AUC on adversarial bridges by propagating high-order structural context.
+  - Deterministic BFS drops to random chance (0.50 AUC, 0% recall) under adversarial bridge masking because the required link is absent from observed telemetry.
+  - RGCN outperforms tabular baselines by +0.22 AUC on adversarial bridges by propagating high-order structural context.
 
 ### Visual Layout
 - Grouped bar chart comparing ROC-AUC across the four methods under Conditions A, B, and E.
@@ -148,16 +159,19 @@
 
 ### Slide Content
 - **The Central Security–Utility Tradeoff**:
-  $$\min_{P^*} \quad \text{Cost}(P \to P^*) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^*)]$$
 
-| Remediation Method | Status | Level 3 Risk ($G^*$) | $T_1$ Breakage | $T_2$ Breakage | Transformation Cost |
+$$
+\min_{P^*} \quad \text{Cost}(P \to P^*) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^*)]
+$$
+
+| Remediation Strategy | Status | Risk (G*) | T₁ Break | T₂ Drift | AST Cost |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Method 0: Oracle ($G^*$)** | *Pareto Optimal* | $0.00$ | $0.0\%$ | $0.0\%$ | $1.0$ |
-| **Method 1: No Action (Identity)** | *Pareto Optimal* | **$1.00$ (Critical)** | $0.0\%$ | $0.0\%$ | $0.0$ |
-| **Method 2: Coarse Deletion (IAMPERE)** | **Dominated** | $0.00$ | **$29.6\%$** | **$17.2\%$** | $10.0$ |
-| **Method 3: Log-Only Tightening (PolicyRefiner)** | **Dominated** | $0.00$ | $0.0\%$ | **$0.8\%$** | $4.0$ |
-| **Method 4a: Point-Estimate ($\hat{p} \ge 0.5$)** | *Pareto Optimal* | $0.00$ | $0.0\%$ | $0.0\%$ | $1.0$ |
-| **Method 4b: Uncertainty-Aware (Ours)** | **Pareto Optimal** | **$0.00$** | **$0.0\%$** | **$0.0\%$** | **$1.0$** |
+| **M0: Oracle (G*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 |
+| **M1: No Action (Identity)** | *Optimal* | **1.00** | 0.0% | 0.0% | 0.0 |
+| **M2: Coarse Deletion (IAMPERE)** | *Dominated* | 0.00 | **29.6%** | **17.2%** | 10.0 |
+| **M3: Log-Only (PolicyRefiner)** | *Dominated* | 0.00 | 0.0% | **0.8%** | 4.0 |
+| **M4a: Point-Estimate (p̂ ≥ 0.5)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 |
+| **M4b: Uncertainty-Aware (Ours)** | **Optimal** | **0.00** | **0.0%** | **0.0%** | **1.0** |
 
 - **Pareto Dominance**:
   - Our uncertainty-aware method strictly dominates Coarse Deletion and Log-Only Tightening.
@@ -217,14 +231,14 @@
   - Retain only high-probability bottleneck candidates: $\text{Freq}(e \in \text{Cut}) \ge \tau$.
 - **Empirical Scalability Across Enterprise Scales ($N \in [500, 5{,}000]$)**:
 
-| Scale ($|V|$) | Edges ($|E|$) | Total Latency | Candidate Recall | Optimality Gap | Safety Coverage |
+| Scale (|V|) | Edges (|E|) | Total Latency | Candidate Recall | Optimality Gap | Safety Coverage |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **500** | $550$ | **$8.5\text{ ms}$** | $100.0\%$ | $0.00\%$ | $100.0\%$ |
-| **1,000** | $1,135$ | **$17.3\text{ ms}$** | $100.0\%$ | $0.00\%$ | $100.0\%$ |
-| **3,000** | $3,332$ | **$15.9\text{ ms}$** | $100.0\%$ | $0.00\%$ | $100.0\%$ |
-| **5,000** | $5,523$ | **$17.2\text{ ms}$** | $100.0\%$ | $0.00\%$ | $100.0\%$ |
+| **500** | 550 | **8.5 ms** | 100.0% | 0.00% | 100.0% |
+| **1,000** | 1,135 | **17.3 ms** | 100.0% | 0.00% | 100.0% |
+| **3,000** | 3,332 | **15.9 ms** | 100.0% | 0.00% | 100.0% |
+| **5,000** | 5,523 | **17.2 ms** | 100.0% | 0.00% | 100.0% |
 
-- **Result**: Sub-second execution ($<0.02\text{ s}$ vs. $3.0\text{ s}$ budget), zero optimality gap, and $100\%$ candidate recall.
+- **Result**: Sub-second execution (< 0.02 s vs. 3.0 s budget), zero optimality gap, and 100% candidate recall.
 
 ### Visual Layout
 - Latency scaling curve plot showing runtime flatlining well below $20\text{ ms}$ up to $5,000$ nodes.

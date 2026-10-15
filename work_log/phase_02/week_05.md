@@ -17,8 +17,15 @@ Before implementing the neural modules, we synthesize the design requirements ou
 2. **Multi-Relational Message Passing with Basis-Sharing Regularization**:
    - Standard GCNs fail on multi-relational graphs because they ignore edge semantics. However, unconstrained relational transformations ($W_r \in \mathbb{R}^{d \times d}$ for each relation $r \in \mathcal{R}$) lead to severe parameter explosion: with $|\mathcal{R}| = 26$, a single unconstrained layer consumes over $425{,}000$ parameters, causing rapid overfitting on sparse graphs.
    - We implement Schlichtkrull et al.'s multi-relational graph convolution with **basis-sharing decomposition** ($B = 8$ basis matrices):
-     $$W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}$$
-     $$h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)$$
+
+$$
+W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}
+$$
+
+$$
+h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+$$
+
    - This reduces layer parameter count from $425{,}984$ to $131{,}280$ (~$70\%$ reduction) while enabling cross-relation knowledge transfer (e.g., sharing structural representations between forward delegation `AssumesRole` and reverse message-passing `RevAssumesRole`).
 
 3. **Inductive Invariance Across Organizations**:
@@ -130,9 +137,16 @@ Before implementing the neural modules, we synthesize the design requirements ou
 **Implementation Details**:
 1. **Focal Loss Formulation (`FocalLoss`)**:
    - [x] Implements class-imbalance-resilient focal binary cross-entropy:
-     $$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$$
+
+$$
+\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)
+$$
+
    - [x] Uses numerically stable derivation directly from raw logits $z$:
-     $$\text{bce} = \text{BCEWithLogits}(z, y), \quad p_t = \exp(-\text{bce}), \quad w_t = (1 - p_t)^\gamma$$
+
+$$
+\text{bce} = \text{BCEWithLogits}(z, y), \quad p_t = \exp(-\text{bce}), \quad w_t = (1 - p_t)^\gamma
+$$
    - [x] Prevents vanishing/exploding gradients and fp32 numerical underflow when hard negative mining across high-cardinality candidate edge sets ($1 : 100$ positive-to-negative ratio).
 2. **Composite Link Prediction Architecture (`RGCNLinkPredictionModel`)**:
    - [x] Integrates `HeteroRGCNEncoder` and `BilinearRelationPredictor` into a single unified `nn.Module`.
