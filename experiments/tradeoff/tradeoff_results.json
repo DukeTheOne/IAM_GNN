@@ -17,7 +17,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.045499,
+      "execution_time_sec": 0.049678,
       "details": "Theoretical upper bound with zero-unobservability assumptions.",
       "verification_status": "safe"
     },
@@ -38,7 +38,7 @@
       "has_side_effects": false,
       "num_transformations": 0,
       "transformation_cost": 0.0,
-      "execution_time_sec": 8.7e-05,
+      "execution_time_sec": 0.000108,
       "details": "Identity baseline: demonstrates deceptive safety on Go (Condition E).",
       "verification_status": "misleading_safe"
     },
@@ -59,7 +59,7 @@
       "has_side_effects": false,
       "num_transformations": 2,
       "transformation_cost": 10.0,
-      "execution_time_sec": 0.000139,
+      "execution_time_sec": 0.000129,
       "details": "Coarse action removal: blocks attack but breaks benign workload using the action.",
       "verification_status": "safe"
     },
@@ -80,7 +80,7 @@
       "has_side_effects": false,
       "num_transformations": 4,
       "transformation_cost": 4.0,
-      "execution_time_sec": 0.002954,
+      "execution_time_sec": 0.003264,
       "details": "Log-only tightening: 0% T1 breakage, high T2 breakage on operational drift.",
       "verification_status": "safe"
     },
@@ -101,7 +101,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.044603,
+      "execution_time_sec": 0.121577,
       "details": "Point-estimate repair: brittle when probability falls below hard threshold.",
       "verification_status": "safe"
     },
@@ -122,12 +122,12 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.030603,
+      "execution_time_sec": 0.035244,
       "details": "Uncertainty-aware repair: cuts latent attack distribution while preserving 100% T1.",
       "verification_status": "safe"
     }
   },
-  "enterprise_150_rq2": {
+  "enterprise_100_rq2": {
     "oracle": {
       "method": "oracle",
       "method_name": "Method 0: Oracle (G*)",
@@ -145,7 +145,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.059142,
+      "execution_time_sec": 0.047648,
       "details": "Theoretical upper bound with zero-unobservability assumptions.",
       "verification_status": "safe"
     },
@@ -166,7 +166,7 @@
       "has_side_effects": false,
       "num_transformations": 0,
       "transformation_cost": 0.0,
-      "execution_time_sec": 0.001709,
+      "execution_time_sec": 0.001216,
       "details": "Identity baseline: demonstrates deceptive safety on Go (Condition E).",
       "verification_status": "misleading_safe"
     },
@@ -178,16 +178,16 @@
       "level3_risk": 0.0,
       "is_safe_gt": true,
       "is_misleading": false,
-      "t1_breakage": 0.022,
-      "t2_breakage": 0.0323,
+      "t1_breakage": 0.0989,
+      "t2_breakage": 0.0968,
       "total_t1_requests": 91,
       "total_t2_requests": 31,
-      "t1_denied_requests": 2,
-      "t2_denied_requests": 1,
+      "t1_denied_requests": 9,
+      "t2_denied_requests": 3,
       "has_side_effects": false,
       "num_transformations": 2,
       "transformation_cost": 10.0,
-      "execution_time_sec": 0.001801,
+      "execution_time_sec": 0.00135,
       "details": "Coarse action removal: blocks attack but breaks benign workload using the action.",
       "verification_status": "safe"
     },
@@ -208,7 +208,7 @@
       "has_side_effects": false,
       "num_transformations": 3,
       "transformation_cost": 3.0,
-      "execution_time_sec": 0.001887,
+      "execution_time_sec": 0.001495,
       "details": "Log-only tightening: 0% T1 breakage, high T2 breakage on operational drift.",
       "verification_status": "safe"
     },
@@ -229,7 +229,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.060286,
+      "execution_time_sec": 0.04691,
       "details": "Point-estimate repair: brittle when probability falls below hard threshold.",
       "verification_status": "safe"
     },
@@ -250,7 +250,7 @@
       "has_side_effects": false,
       "num_transformations": 1,
       "transformation_cost": 1.0,
-      "execution_time_sec": 0.046103,
+      "execution_time_sec": 0.03391,
       "details": "Uncertainty-aware repair: cuts latent attack distribution while preserving 100% T1.",
       "verification_status": "safe"
     }

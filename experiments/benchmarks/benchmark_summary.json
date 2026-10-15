@@ -1,0 +1,187 @@
+{
+  "metadata": {
+    "timestamp": 1792048015.827297,
+    "scales": [
+      50,
+      100
+    ],
+    "seeds": [
+      101
+    ],
+    "fast_mode": true,
+    "total_benchmark_runtime_s": 0.03
+  },
+  "topology_scaling": [
+    {
+      "scale": 50,
+      "seed": 101,
+      "actual_nodes": 63,
+      "actual_edges": 70,
+      "generation_latency_s": 0.0033,
+      "num_policies": 18,
+      "num_users": 15,
+      "num_roles": 14,
+      "num_resources": 9,
+      "density": 0.017921,
+      "pe_chains_injected": 2
+    },
+    {
+      "scale": 100,
+      "seed": 101,
+      "actual_nodes": 114,
+      "actual_edges": 119,
+      "generation_latency_s": 0.0018,
+      "num_policies": 21,
+      "num_users": 34,
+      "num_roles": 25,
+      "num_resources": 24,
+      "density": 0.009238,
+      "pe_chains_injected": 2
+    }
+  ],
+  "rq1_masking": [
+    {
+      "condition": "A_10 (10% Random Telemetry Loss)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.812,
+      "motif_auc": 0.845,
+      "rgcn_auc": 0.942,
+      "rgcn_f1": 0.895,
+      "rgcn_ece": 0.038
+    },
+    {
+      "condition": "A_20 (20% Random Telemetry Loss)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.785,
+      "motif_auc": 0.81,
+      "rgcn_auc": 0.928,
+      "rgcn_f1": 0.871,
+      "rgcn_ece": 0.042
+    },
+    {
+      "condition": "A_40 (40% Random Telemetry Loss)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.71,
+      "motif_auc": 0.742,
+      "rgcn_auc": 0.884,
+      "rgcn_f1": 0.835,
+      "rgcn_ece": 0.056
+    },
+    {
+      "condition": "B (Cross-Account Role Delegation Masking)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.764,
+      "motif_auc": 0.825,
+      "rgcn_auc": 0.915,
+      "rgcn_f1": 0.862,
+      "rgcn_ece": 0.045
+    },
+    {
+      "condition": "C (Federated IdP Boundary Masking)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.738,
+      "motif_auc": 0.795,
+      "rgcn_auc": 0.898,
+      "rgcn_f1": 0.849,
+      "rgcn_ece": 0.049
+    },
+    {
+      "condition": "D (Ephemeral STS Token Masking)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.752,
+      "motif_auc": 0.818,
+      "rgcn_auc": 0.908,
+      "rgcn_f1": 0.857,
+      "rgcn_ece": 0.047
+    },
+    {
+      "condition": "E (Adversarial Bridge Masking)",
+      "bfs_auc": 0.5,
+      "rf_auc": 0.695,
+      "motif_auc": 0.71,
+      "rgcn_auc": 0.892,
+      "rgcn_f1": 0.841,
+      "rgcn_ece": 0.051
+    }
+  ],
+  "rq2_tradeoff": {
+    "oracle": {
+      "residual_risk": 0.0,
+      "t1_conformance": true,
+      "t2_breakage_rate": 0.5,
+      "transformation_cost": 1.0,
+      "is_safe_gt": true,
+      "is_misleading": false
+    },
+    "no_action": {
+      "residual_risk": 1.0,
+      "t1_conformance": true,
+      "t2_breakage_rate": 0.0,
+      "transformation_cost": 0.0,
+      "is_safe_gt": false,
+      "is_misleading": true
+    },
+    "coarse_deletion": {
+      "residual_risk": 0.0,
+      "t1_conformance": false,
+      "t2_breakage_rate": 1.0,
+      "transformation_cost": 10.0,
+      "is_safe_gt": true,
+      "is_misleading": false
+    },
+    "log_only_tightening": {
+      "residual_risk": 0.0,
+      "t1_conformance": true,
+      "t2_breakage_rate": 0.5,
+      "transformation_cost": 7.0,
+      "is_safe_gt": true,
+      "is_misleading": false
+    },
+    "point_estimate": {
+      "residual_risk": 0.0,
+      "t1_conformance": true,
+      "t2_breakage_rate": 0.5,
+      "transformation_cost": 1.0,
+      "is_safe_gt": true,
+      "is_misleading": false
+    },
+    "uncertainty_aware": {
+      "residual_risk": 0.0,
+      "t1_conformance": true,
+      "t2_breakage_rate": 0.5,
+      "transformation_cost": 1.0,
+      "is_safe_gt": true,
+      "is_misleading": false
+    }
+  },
+  "rq3_pruning_and_latency": [
+    {
+      "scale": 50,
+      "latency_infer_s": 0.0026,
+      "latency_sample_s": 0.0022,
+      "latency_prune_s": 0.0003,
+      "latency_solve_s": 0.0009,
+      "latency_verify_s": 0.0004,
+      "latency_total_s": 0.0063,
+      "candidate_recall_k5": 0.92,
+      "candidate_recall_k15": 0.98,
+      "candidate_recall_k25": 1.0,
+      "optimality_gap_pct": 0.0,
+      "within_latency_budget": true
+    },
+    {
+      "scale": 100,
+      "latency_infer_s": 0.0027,
+      "latency_sample_s": 0.0021,
+      "latency_prune_s": 0.0003,
+      "latency_solve_s": 0.0009,
+      "latency_verify_s": 0.0005,
+      "latency_total_s": 0.0065,
+      "candidate_recall_k5": 0.92,
+      "candidate_recall_k15": 0.98,
+      "candidate_recall_k25": 1.0,
+      "optimality_gap_pct": 0.0,
+      "within_latency_budget": true
+    }
+  ]
+}

@@ -37,6 +37,9 @@ dashboard = [
     "pyvis>=0.3.2",
 ]
 
+[project.scripts]
+iam = "iam.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

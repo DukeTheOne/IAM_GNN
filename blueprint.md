@@ -388,25 +388,25 @@ $$
 * **Estimated Effort**: 16 Hours
 
 #### Step 10.1: Full Pipeline Benchmark Run & Results Compilation (4.5h)
-- [ ] Run automated end-to-end evaluation script across all dataset scales (500, 1,000, 3,000, 5,000 nodes).
-- [ ] Export final tables and plots for RQ1 (Structured Masking), RQ2 (Security–Utility Tradeoff), and RQ3 (Candidate Recall, Optimality Gap, Safety Coverage, Latency).
+- [x] Run automated end-to-end evaluation script across all dataset scales (500, 1,000, 3,000, 5,000 nodes).
+- [x] Export final tables and plots for RQ1 (Structured Masking), RQ2 (Security–Utility Tradeoff), and RQ3 (Candidate Recall, Optimality Gap, Safety Coverage, Latency).
 
 #### Step 10.2: Codebase Refactoring & Quality Verification (3.5h)
-- [ ] Ensure 100% adherence to `ruff` linting and formatting.
-- [ ] Complete type annotations across public APIs (`mypy --strict`).
-- [ ] Validate unit test suite (`pytest --cov=src` targeting >85% coverage).
+- [x] Ensure 100% adherence to `ruff` linting and formatting.
+- [x] Complete type annotations across public APIs (`mypy --strict`).
+- [x] Validate unit test suite (`pytest --cov=src` targeting >85% coverage).
 
 #### Step 10.3: Documentation & Automated Reproduction Package (4.5h)
-- [ ] Write comprehensive `README.md`:
+- [x] Write comprehensive `README.md`:
   - Problem motivation, system architecture diagram, and methodology summary.
   - Quickstart guide: single-command synthetic generation, model training, and dashboard launch.
   - CLI command reference (`generate`, `train`, `evaluate`, `repair`, `dashboard`).
-- [ ] Create `reproduce_results.sh` script to run all baseline and ablation experiments with a single command.
+- [x] Create `reproduce_results.sh` script to run all baseline and ablation experiments with a single command.
 
 #### Step 10.4: Demo Recording & Presentation Package (3.5h)
-- [ ] Record a 3-minute video/GIF walkthrough showing latent path discovery under missing telemetry and minimal capability-compliant policy diff triage.
-- [ ] Build 10–12 slide course presentation deck following Section 5 guidelines.
-- [ ] Tag GitHub release milestone `v1.0.0`.
+- [x] Record a 3-minute video/GIF walkthrough showing latent path discovery under missing telemetry and minimal capability-compliant policy diff triage.
+- [x] Build 10–12 slide course presentation deck following Section 5 guidelines.
+- [x] Tag GitHub release milestone `v1.0.0`.
 
 ---
 

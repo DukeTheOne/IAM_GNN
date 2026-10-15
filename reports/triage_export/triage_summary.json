@@ -1,0 +1,104 @@
+{
+  "posture_kpis": {
+    "total_identities": 86,
+    "total_users": 51,
+    "total_roles": 35,
+    "total_policies": 31,
+    "total_resources": 26,
+    "flagged_identities_count": 1,
+    "critical_risks_count": 1,
+    "high_risks_count": 0,
+    "misleading_safe_count": 1,
+    "average_latent_blast_radius": 1.0,
+    "pareto_dominance_certified": true
+  },
+  "top_records": [
+    {
+      "principal_id": "user:secops-standard-0",
+      "principal_arn": "arn:aws:iam::123456789012:user/secops-standard-0",
+      "principal_type": "User",
+      "department": "SecOps",
+      "is_admin": false,
+      "observed_risk": 0.0,
+      "latent_attack_prob": 0.88,
+      "severity": "CRITICAL",
+      "target_assets": [
+        "arn:aws:s3:::enterprise-data-lake-prod"
+      ],
+      "max_privilege_tier": 3,
+      "recommended_action": "ScopeResource: Scope action 'iam:PassRole' to [arn:aws:iam::123456789012:role/ScopedBuildRole]",
+      "patch_summary": "Scope action 'iam:PassRole' to [arn:aws:iam::123456789012:role/ScopedBuildRole]",
+      "verification_status": "misleading_safe",
+      "is_misleading": true
+    },
+    {
+      "principal_id": "user:secops-standard-1",
+      "principal_arn": "arn:aws:iam::123456789012:user/secops-standard-1",
+      "principal_type": "User",
+      "department": "SecOps",
+      "is_admin": false,
+      "observed_risk": 0.0,
+      "latent_attack_prob": 0.0,
+      "severity": "LOW",
+      "target_assets": [],
+      "max_privilege_tier": 2,
+      "recommended_action": "Maintain Baseline",
+      "patch_summary": "No anomalous privilege escalation path detected",
+      "verification_status": "unverified",
+      "is_misleading": false
+    },
+    {
+      "principal_id": "user:secops-restricted-2",
+      "principal_arn": "arn:aws:iam::123456789012:user/secops-restricted-2",
+      "principal_type": "User",
+      "department": "SecOps",
+      "is_admin": false,
+      "observed_risk": 0.0,
+      "latent_attack_prob": 0.0,
+      "severity": "LOW",
+      "target_assets": [],
+      "max_privilege_tier": 2,
+      "recommended_action": "Maintain Baseline",
+      "patch_summary": "No anomalous privilege escalation path detected",
+      "verification_status": "unverified",
+      "is_misleading": false
+    },
+    {
+      "principal_id": "user:secops-standard-3",
+      "principal_arn": "arn:aws:iam::123456789012:user/secops-standard-3",
+      "principal_type": "User",
+      "department": "SecOps",
+      "is_admin": false,
+      "observed_risk": 0.0,
+      "latent_attack_prob": 0.0,
+      "severity": "LOW",
+      "target_assets": [],
+      "max_privilege_tier": 2,
+      "recommended_action": "Maintain Baseline",
+      "patch_summary": "No anomalous privilege escalation path detected",
+      "verification_status": "unverified",
+      "is_misleading": false
+    },
+    {
+      "principal_id": "user:secops-restricted-4",
+      "principal_arn": "arn:aws:iam::123456789012:user/secops-restricted-4",
+      "principal_type": "User",
+      "department": "SecOps",
+      "is_admin": false,
+      "observed_risk": 0.0,
+      "latent_attack_prob": 0.0,
+      "severity": "LOW",
+      "target_assets": [],
+      "max_privilege_tier": 2,
+      "recommended_action": "Maintain Baseline",
+      "patch_summary": "No anomalous privilege escalation path detected",
+      "verification_status": "unverified",
+      "is_misleading": false
+    }
+  ],
+  "metadata": {
+    "num_nodes": 150,
+    "seed": 42,
+    "timestamp": 1792048018.1481652
+  }
+}
