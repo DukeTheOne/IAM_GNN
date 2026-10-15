@@ -144,8 +144,13 @@ $$
 The optimal capability-compliant patch $P^{\ast}$ solves:
 
 $$
-\min_{P^{\ast}} \quad \underbrace{\text{Cost}(P \to P^{\ast})}_{\text{AST Transformation Cost}} + \lambda \cdot \underbrace{\text{Breakage}(P^{\ast}, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})}_{\text{CloudTrail Invalidation}} + \gamma \cdot \underbrace{\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)} \left[ \text{Reachability}(G_o \cup H, P^{\ast}, s_{\text{att}}, t_{\text{tgt}}) \right]}_{\text{Latent Attack Reachability Risk}}
+\min_{P^{\ast}} \quad \text{Cost}(P \to P^{\ast}) + \lambda \cdot \text{Breakage}(P^{\ast}, \mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Reachability}(G_o \cup H, P^{\ast}, s, t)]
 $$
+
+where:
+- $\text{Cost}(P \to P^{\ast})$: AST transformation cost (favoring resource scoping over action deletion).
+- $\text{Breakage}(P^{\ast}, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})$: Legitimate workload disruption across baseline ($T_1$) and drifted ($T_2$) CloudTrail traffic.
+- $\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Reachability}(G_o \cup H, P^{\ast}, s, t)]$: Expected residual attack path reachability over sampled latent completions.
 
 ---
 
