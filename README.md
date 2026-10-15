@@ -141,10 +141,10 @@ $$
 $$
 
 ### 3.4 Multi-Objective Security–Utility Optimization
-The optimal capability-compliant patch $P^*$ solves:
+The optimal capability-compliant patch $P^{\ast}$ solves:
 
 $$
-\min_{P^*} \quad \underbrace{\text{Cost}(P \to P^*)}_{\text{AST Transformation Cost}} + \lambda \cdot \underbrace{\text{Breakage}(P^*, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})}_{\text{CloudTrail Invalidation}} + \gamma \cdot \underbrace{\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)} \left[ \text{Reachability}(G_o \cup H, P^*, s_{\text{att}}, t_{\text{tgt}}) \right]}_{\text{Latent Attack Reachability Risk}}
+\min_{P^{\ast}} \quad \underbrace{\text{Cost}(P \to P^{\ast})}_{\text{AST Transformation Cost}} + \lambda \cdot \underbrace{\text{Breakage}(P^{\ast}, \mathcal{D}^{T_1}, \mathcal{D}^{T_2})}_{\text{CloudTrail Invalidation}} + \gamma \cdot \underbrace{\mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)} \left[ \text{Reachability}(G_o \cup H, P^{\ast}, s_{\text{att}}, t_{\text{tgt}}) \right]}_{\text{Latent Attack Reachability Risk}}
 $$
 
 ---
@@ -347,11 +347,11 @@ In security-critical authorization systems, claiming that a neural network is so
 2. **Formal AST Evaluation (Sound)**: The policy AST evaluator strictly implements the formal AWS authorization logic, including deterministic Explicit Deny precedence and Action Capability constraints $C(a, r, c)$.
 3. **Symbolic Verification Boundary (Conditional Soundness)**:
 
-   $$
-   \text{VerifiedSafe}(P^*, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^*, s, t) = \emptyset
-   $$
+$$
+\text{VerifiedSafe}(P^{\ast}, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^{\ast}, s, t) = \emptyset
+$$
 
-   The verifier is **sound relative to the evaluated completion set $\mathcal{H}_M$** and the formal AWS authorization model. If a synthesized patch fails verification on any sampled completion, it is rejected automatically before deployment.
+The verifier is **sound relative to the evaluated completion set $\mathcal{H}_M$** and the formal AWS authorization model. If a synthesized patch fails verification on any sampled completion, it is rejected automatically before deployment.
 
 ---
 

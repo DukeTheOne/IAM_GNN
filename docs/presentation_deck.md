@@ -161,7 +161,7 @@
 - **The Central Security–Utility Tradeoff**:
 
   $$
-  \min_{P^*} \quad \text{Cost}(P \to P^*) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^*)]
+  \min_{P^{\ast}} \quad \text{Cost}(P \to P^{\ast}) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^{\ast})]
   $$
 
 | Remediation Strategy | Status | Risk (G\*) | T₁ Break | T₂ Drift | AST Cost |
