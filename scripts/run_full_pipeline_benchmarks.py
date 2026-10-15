@@ -532,7 +532,7 @@ def generate_markdown_report(
         "",
         "## 2. Multi-Scale Topology Ingestion & Generation Scalability",
         "",
-        "| Scale (Nodes) | Actual |V| | Actual |E| | Generation Time (s) | Policies | Users | Roles | Resources | PE Chains |",
+        "| Scale (Nodes) | Nodes | Edges | Generation Time (s) | Policies | Users | Roles | Resources | PE Chains |",
         "| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
     ]
 

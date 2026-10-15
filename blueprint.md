@@ -14,7 +14,7 @@ This blueprint translates the research and engineering objectives specified in [
 
 **Frozen project architecture:**
 
-```
+```text
 Partial IAM Observability -> Calibrated Latent-Relation Inference -> Uncertainty-Aware Security/Utility Optimization
         -> Capability-Constrained Policy Repair -> Completion-Set Verification + Temporal Holdout
 ```
@@ -26,7 +26,7 @@ The dashboard is a deliverable, the RGCN is a method, and Z3/MaxSAT is a solver.
 * **Tier 2 (Months 1–18 core, Months 19–24 buffer: Master's Thesis)**:
   A phased plan with explicit go/no-go gates (Section 6). The 10-week prototype is months 1–3 of this plan. Months 19–24 are optional publication extension, not guaranteed work. The target hierarchy is: good thesis, then publishable paper, then strong venue if results warrant it.
 
-```
+```text
 +---------------------------------------------------------------------------------------------------------+
 |                                    10-WEEK PHASE ROADMAP (TIER 1 PROTOTYPE)                             |
 +---------------------------------------------------------------------------------------------------------+
@@ -179,9 +179,9 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 
 #### Step 3.3: Environment-Level Dataset Splitting (Preventing Generator Overfitting) (4.5h)
 - [ ] **Crucial Scientific Safeguard:** Split datasets strictly by **Environment / Organization**, not by edges within the same graph:
-  - Train set: Graphs from Organizations $\mathcal{O}\_1, \dots, \mathcal{O}\_8$
-  - Validation set: Graphs from Organizations $\mathcal{O}\_9, \mathcal{O}\_{10}$
-  - Held-out test set: Graphs from Organizations $\mathcal{O}\_{11}, \dots, \mathcal{O}\_{14}$ with different departmental sizes and branching factors.
+  - Train set: Graphs from Organizations $\mathcal{O}_1, \dots, \mathcal{O}_8$
+  - Validation set: Graphs from Organizations $\mathcal{O}_9, \mathcal{O}_{10}$
+  - Held-out test set: Graphs from Organizations $\mathcal{O}_{11}, \dots, \mathcal{O}_{14}$ with different departmental sizes and branching factors.
 - [ ] Implement inductive link prediction evaluation harness.
 - [ ] Balanced negative sampling: sample non-escalating identity pairs across departments.
 
@@ -224,33 +224,33 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 #### Step 5.1: Multi-Relational Message Passing Layer (5.5h)
 - [ ] Implement 2-layer `RGCNConv` module using PyG:
 
-$$
-h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
-$$
+  $$
+  h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+  $$
 
 - [ ] Basis-sharing regularization with $B = 8$ basis matrices to prevent parameter explosion:
 
-$$
-W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}
-$$
+  $$
+  W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}
+  $$
 
 - [ ] Add layer normalization, dropout ($p = 0.2$), and LeakyReLU activations ($d_{hidden} = 128$).
 
 #### Step 5.2: Bilinear Latent Relation Decoder (3.5h)
 - [ ] Implement a bilinear scoring head for hidden-relation triples $(u, r, v)$:
 
-$$
-\hat{y}_{uv} = \sigma \left( h_u^T W_{r} h_v + b_r \right)
-$$
+  $$
+  \hat{y}_{uv} = \sigma \left( h_u^T W_{r} h_v + b_r \right)
+  $$
 
 - [ ] Scope: this head solves **Problem 1, hidden-relation prediction**. Attacker–target reachability (Problem 2) is computed downstream from sampled completions (Step 7.1), **not** by multiplying edge probabilities, because hidden relations can be correlated.
 
 #### Step 5.3: Uncertainty Calibration (P1) (3.5h)
 - [ ] Temperature scaling on held-out validation environments:
 
-$$
-\hat{p}_{uv} = \sigma(z_{uv} / T)
-$$
+  $$
+  \hat{p}_{uv} = \sigma(z_{uv} / T)
+  $$
 
 - [ ] Fit $T$ by negative log-likelihood under the same masking condition used at test time; compute ECE and reliability diagrams.
 
@@ -297,22 +297,22 @@ $$
 - [ ] Sample $M$ completions $H_i \sim \mathbb{P}(H \mid G_o)$ from calibrated relation probabilities. Prototype: independent Bernoulli sampling, explicitly labeled as an approximation. Thesis: group-correlated sampling.
 - [ ] Estimate attack probability by Monte Carlo:
 
-$$
-\widehat{\mathbb{P}}[\text{attack}] = \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]
-$$
+  $$
+  \widehat{\mathbb{P}}[\text{attack}] = \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]
+  $$
 
 - [ ] On a few hand-built cases, compare against the naive product of edge probabilities to document the error from the independence assumption.
 - [ ] Repair objective:
 
-$$
-\min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \tfrac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
-$$
+  $$
+  \min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \tfrac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
+  $$
 
   subject to capability validity and log conformance on $\mathcal{D}^{T_1}$.
 
 #### Step 7.2: Uncertainty-Guided Candidate Pruning (P1) (4.0h)
 - [ ] Rank candidate cut relations by their contribution to attack paths across sampled completions; prune to a candidate subgraph.
-- [ ] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $\lt 3\text{ s}$ interactive latency is an engineering target only.
+- [ ] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $< 3\text{ s}$ interactive latency is an engineering target only.
 
 #### Step 7.3: Capability-Aware Greedy Repair Engine (P1) (5.0h)
 - [ ] Order candidate cuts by expected risk reduction over cost. Apply only admissible transformations according to $C(a, r, c)$: resource ARN scoping where permitted, otherwise action subtraction. (Condition injection is a P2 / thesis-phase tier.)

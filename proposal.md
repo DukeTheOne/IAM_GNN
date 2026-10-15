@@ -62,7 +62,10 @@ Current approaches in cloud security and academic literature divide into three d
 Rather than treating latent link prediction and policy repair as disconnected modules, this project unifies them into a coherent pipeline:
 
 $$
-G_o \xrightarrow{\text{Calibrated RGCN}} \mathbb{P}(H \mid G_o) \xrightarrow{\text{sample}} \{H_1,\dots,H_M\} \xrightarrow{\text{Uncertainty-Aware Repair}} \mathcal{P}^* \xrightarrow{\text{Verify on } G_o,\, G_o \cup H_i\text{; Temporal Replay}} \text{Repaired Policy + Stated Guarantee}
+\begin{aligned}
+G_o &\xrightarrow{\text{Calibrated RGCN}} \mathbb{P}(H \mid G_o) \xrightarrow{\text{Sample}} \{H_1, \dots, H_M\} \\
+    &\xrightarrow{\text{Uncertainty-Aware Repair}} \mathcal{P}^* \xrightarrow{\text{Verify on } G_o \cup H_i \text{ \& Replay}} \text{Repaired Policy + Guarantee}
+\end{aligned}
 $$
 
 The framework introduces three primary technical contributions:
@@ -70,11 +73,11 @@ The framework introduces three primary technical contributions:
 * **Contribution 1: Zero-Query Latent Relation Inference with Calibrated Uncertainty:**
   Instead of requiring complete configuration graphs or interactive operator queries, we model the missing authorization evidence as a latent set $H$ and use an RGCN to estimate $\mathbb{P}((u, r, v) \in H \mid G_o)$ for hidden relations under structured blind spots (cross-account silos, federated IdP boundaries, ephemeral delegations). Calibration (Expected Calibration Error, reliability diagrams) is evaluated so that predicted probabilities carry meaning for the downstream repair. We keep two prediction problems explicit and separate: (i) *hidden-relation prediction* and (ii) *attacker–target reachability*, the latter derived from sampled completions rather than from a product of edge probabilities.
 * **Contribution 2: Capability-Aware Repair under Uncertainty over Latent Completions:**
-  Edge probabilities do not define path probabilities, because hidden relations can be correlated. We therefore sample latent completions $H\_1,\dots,H\_M \sim \mathbb{P}(H \mid G_o)$ and estimate residual risk by Monte Carlo:
+  Edge probabilities do not define path probabilities, because hidden relations can be correlated. We therefore sample latent completions $H_1, \dots, H_M \sim \mathbb{P}(H \mid G_o)$ and estimate residual risk by Monte Carlo:
 
-$$
-\min_{\mathcal{P}} \text{RepairCost}(\mathcal{P}) \quad \text{s.t.} \quad \frac{1}{M}\sum_{i=1}^{M} \mathbf{1}\Big[\text{Attack}(s,t;\,(G_o \cup H_i) \oplus \mathcal{P})\Big] \le \delta,\quad \text{LogConformance}(\mathcal{P}, \mathcal{D}^{T_1}) = 1,\quad \text{CapabilityValid}(\mathcal{P})
-$$
+  $$
+  \min_{\mathcal{P}} \text{RepairCost}(\mathcal{P}) \quad \text{s.t.} \quad \frac{1}{M}\sum_{i=1}^{M} \mathbf{1}\Big[\text{Attack}(s,t;\,(G_o \cup H_i) \oplus \mathcal{P})\Big] \le \delta,\quad \text{LogConformance}(\mathcal{P}, \mathcal{D}^{T_1}) = 1,\quad \text{CapabilityValid}(\mathcal{P})
+  $$
 
   Every transformation must be valid under the AWS Action–Resource–Condition capability model $C(a, r, c)$ (Section 5.1).
 * **Contribution 3: Completion-Set Verification and Temporal-Holdout Validation:**
@@ -86,13 +89,13 @@ This research addresses three central, tightly scoped questions:
 
 * **RQ1 (Inference under Structured Missingness):** Can a zero-query RGCN improve latent attack-path recall under structured missingness (random, cross-account, federated, ephemeral, and adversarial-bridge masking) while producing calibrated probability estimates? *Comparisons:* versus deterministic BFS / exact traversal on recall and false-negative rate; versus classical ML (Random Forest/XGBoost) and a rule-based motif-completion heuristic on PR-AUC and Recall@K; calibration (ECE) is assessed only for probabilistic models, since BFS yields 0/1 reachability.
 * **RQ2 (Repair under Uncertainty):** When a critical attack-path relationship is hidden, does repair that accounts for latent-completion uncertainty achieve a better security–utility–repair-cost tradeoff than (1) no action on the observed graph, (2) coarse action deletion (IAMPERE-style), (3) log-only tightening (PolicyRefiner-style), and (4) point-estimate repair that thresholds the model's predictions?
-* **RQ3 (Candidate Pruning Quality and Safety):** Can uncertainty-guided candidate pruning reduce symbolic repair cost while retaining the quality and safety of the resulting repairs? *Measured by:* runtime, candidate recall, repair optimality gap relative to the unpruned solver, and security-guarantee coverage. An interactive-latency target ($\lt 3\text{ s}$) is an engineering goal, not the hypothesis.
+* **RQ3 (Candidate Pruning Quality and Safety):** Can uncertainty-guided candidate pruning reduce symbolic repair cost while retaining the quality and safety of the resulting repairs? *Measured by:* runtime, candidate recall, repair optimality gap relative to the unpruned solver, and security-guarantee coverage. An interactive-latency target (< 3 s) is an engineering goal, not the hypothesis.
 
 ---
 
 ### (5) Method
 
-```
+```text
 +---------------------------------------------------------------------------------------------------------+
 |                                    END-TO-END SYSTEM ARCHITECTURE                                       |
 +---------------------------------------------------------------------------------------------------------+
@@ -143,7 +146,7 @@ To ensure rigorous evaluation and avoid synthetic circularity:
 * **Two-Level Problem Formulation:** The learning task is explicitly split into:
   1. *Latent Relation Prediction:* Predicting probability $\mathbb{P}((u, r, v) \in H \mid G_o)$ of unobserved authorization edges.
   2. *Attack Reachability under Latent Graphs:* Evaluating multi-hop reachability $\mathbb{P}(s \xrightarrow{*} t \mid G_o, H)$ over plausible completed topologies.
-* **Environment-Level Graph Splits:** To prevent the model from simply memorizing synthetic generator artifacts, dataset splits are performed **strictly by environment/organization**, rather than randomly splitting edges within the same graph. The model is trained on Organization topologies $\mathcal{D}\_{\text{train}}$ and evaluated on completely unseen topologies $\mathcal{D}\_{\text{test}}$ with different departmental structures, branch factors, and identity distributions.
+* **Environment-Level Graph Splits:** To prevent the model from simply memorizing synthetic generator artifacts, dataset splits are performed **strictly by environment/organization**, rather than randomly splitting edges within the same graph. The model is trained on Organization topologies $\mathcal{D}_{\text{train}}$ and evaluated on completely unseen topologies $\mathcal{D}_{\text{test}}$ with different departmental structures, branch factors, and identity distributions.
 * **Tier 1 (Course Prototype - 10 Weeks):** Correctness over coverage. **P0 motifs (required):**
   1. `iam:PassRole` + `lambda:CreateFunction` / `lambda:InvokeFunction`
   2. `iam:CreateAccessKey` on a high-privilege user
@@ -169,7 +172,7 @@ $$
 $$
 
 * **Uncertainty Calibration:** Raw sigmoid outputs are calibrated using temperature scaling on a held-out validation set, minimizing Expected Calibration Error (ECE) to ensure that a predicted probability of 0.85 corresponds to an ~85% empirical presence of the latent link.
-* **From Edge Probabilities to Graph and Path Uncertainty:** $\mathbb{P}(e\_1 \wedge e\_2) \neq \mathbb{P}(e\_1) \cdot \mathbb{P}(e\_2)$ in general, since hidden relations may share a cause (e.g., all relations inside one unobservable account). Path- and graph-level risk is therefore estimated over *sampled latent completions* $H_i \sim \mathbb{P}(H \mid G_o)$:
+* **From Edge Probabilities to Graph and Path Uncertainty:** $\mathbb{P}(e_1 \wedge e_2) \neq \mathbb{P}(e_1) \cdot \mathbb{P}(e_2)$ in general, since hidden relations may share a cause (e.g., all relations inside one unobservable account). Path- and graph-level risk is therefore estimated over *sampled latent completions* $H_i \sim \mathbb{P}(H \mid G_o)$:
 
 $$
 \widehat{\mathbb{P}}\big[\text{attack path exists} \mid G_o\big] = \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]
@@ -182,9 +185,9 @@ $$
 * **Neural Candidate Space Pruning:** Calibrated model outputs and the sampled completions rank candidate bridge relations and cut points, reducing the repair search to a focused candidate subgraph (target $\sim 50$ edges). Pruning is treated as hypothesis generation: its quality is measured (candidate recall, optimality gap versus the unpruned solver) and it never bypasses the verifier.
 * **Uncertainty-Aware Repair Formulation:**
 
-$$
-\min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
-$$
+  $$
+  \min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
+  $$
 
   subject to capability validity $\forall a \in \mathcal{P}: C(a, r, c)$ admits the transformation, and log conformance $\forall \text{event} \in \mathcal{D}^{T_1}: \text{Authorized}(\text{event}, G_o \oplus \mathcal{P})$. The thesis additionally studies the chance-constrained form (residual attack frequency $\le \delta$).
 * **Repair Operations (in order of operational preference, subject to $C$):**
@@ -240,7 +243,7 @@ Methods 3 and 2 are simplified re-implementations of the *strategies* of PolicyR
 
 * Compare unpruned repair against uncertainty-guided pruned repair on graphs of 500 to 5,000 nodes.
 * Report **candidate recall** (does the pruned set contain the repair edges the unpruned solver uses?), **optimality gap**, **security-guarantee coverage** (fraction of verified-safe patches that remain safe in the ground truth), and wall-clock runtime.
-* An interactive-latency target ($\lt 3\text{ s}$) is tracked as an engineering goal only; speed is meaningless if pruning discards the correct repair.
+* An interactive-latency target (< 3 s) is tracked as an engineering goal only; speed is meaningless if pruning discards the correct repair.
 
 #### 6.4 Data Strategy and Claim Boundaries
 

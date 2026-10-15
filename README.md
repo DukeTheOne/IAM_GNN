@@ -38,7 +38,7 @@ When a single bridge relation is unobserved, deterministic tools suffer **zero r
 
 This repository provides an end-to-end framework that:
 1. **Learns Inductive Graph Representations** of IAM multigraphs using Relational Graph Convolutional Networks (RGCN).
-2. **Produces Calibrated Uncertainty Estimates** ($ECE < 0.05$) via post-hoc temperature scaling.
+2. **Produces Calibrated Uncertainty Estimates** ($\text{ECE} \le 0.05$) via post-hoc temperature scaling.
 3. **Samples Latent Graph Completions** to quantify reachability risk distributions across unobserved attack paths.
 4. **Synthesizes Capability-Compliant Repairs** governed by an explicit AWS Action Capability Model $C(a, r, c)$ to eliminate escalation paths without breaking legitimate workloads.
 5. **Verifies Residual Safety** across three distinct levels of ground truth ($G_o$, completions $\mathcal{H}_M$, and oracle $G^*$).
@@ -61,7 +61,7 @@ flowchart TD
     subgraph Learning["2. Calibrated Relational Learning"]
         PYG_GRAPH["PyG HeteroData Graph<br/>G = (V, E, R)"]
         RGCN["2-Layer RGCN with<br/>Basis-Sharing Regularization"]
-        CALIBRATOR["Platt Temperature Scaling<br/>(ECE < 0.05 Calibration)"]
+        CALIBRATOR["Platt Temperature Scaling<br/>(ECE ≤ 0.05 Calibration)"]
         SYNTH_GEN --> PYG_GRAPH --> RGCN --> CALIBRATOR
     end
 
@@ -298,9 +298,9 @@ We evaluate inductive link prediction across three structured masking scenarios:
 2. **Condition B (Cross-Account)**: Inter-account trust edges hidden.
 3. **Condition E (Adversarial Bridge)**: Escalation bottleneck links omitted from telemetry.
 
-| Method | Cond A (Random 20%) | Cond B (Cross-Acct) | Cond E (Adv Bridge) |
+| Method | Cond A<br/>*(Random 20%)* | Cond B<br/>*(Cross-Acct)* | Cond E<br/>*(Adv Bridge)* |
 | :--- | :---: | :---: | :---: |
-| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00 *(0% recall)* |
+| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00<br/>*(0% recall)* |
 | **Random Forest** | 0.78 ± 0.02 | 0.74 ± 0.03 | 0.69 ± 0.03 |
 | **Motif Heuristic** | 0.81 ± 0.02 | 0.79 ± 0.02 | 0.75 ± 0.02 |
 | **2-Layer RGCN (Ours)** | **0.92 ± 0.01** | **0.89 ± 0.02** | **0.91 ± 0.02** |
@@ -312,9 +312,9 @@ We evaluate inductive link prediction across three structured masking scenarios:
 ### 7.2 RQ2: Security–Utility Tradeoff & Pareto Dominance
 We benchmark six remediation strategies on enterprise topologies evaluated against ground truth ($G^*$), baseline traffic ($\mathcal{D}^{T_1}$), and temporally drifted traffic ($\mathcal{D}^{T_2}$):
 
-| Remediation Strategy | Status | Risk (G*) | T₁ Break | T₂ Drift | AST Cost | Pareto Dominance |
+| Remediation Strategy | Status | Risk (G\*) | T₁ Break | T₂ Drift | AST Cost | Pareto Dominance |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **M0: Oracle (G*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 | Theoretical Bound |
+| **M0: Oracle (G\*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 | Theoretical Bound |
 | **M1: No Action (Identity)** | *Optimal* | **1.00** | 0.0% | 0.0% | 0.0 | Deceptive / Critical Risk |
 | **M2: Coarse Deletion (IAMPERE)** | *Dominated* | 0.00 | **29.6%** | **17.2%** | 10.0 | High operational breakage |
 | **M3: Log-Only (PolicyRefiner)** | *Dominated* | 0.00 | 0.0% | **0.8%** | 4.0 | Fragile under drift |
@@ -328,14 +328,14 @@ We benchmark six remediation strategies on enterprise topologies evaluated again
 ### 7.3 RQ3: Scalability, Pruning Efficiency & Latency
 We profile candidate pruning efficiency and end-to-end repair latency across enterprise topologies scaling from N = 500 to N = 5,000 nodes:
 
-| Target Scale (N) | Realized (|V|, |E|) | Total Latency | 3.0s SLA | Recall | Opt. Gap | Safety |
+| Scale (N) | Nodes / Edges | Latency | 3.0s SLA | Candidate Recall | Opt. Gap | Safety |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **500** | 514 / 550 | **8.5 ms** | Passed | 100.0% | 0.00% | 100.0% |
 | **1,000** | 1,020 / 1,135 | **17.3 ms** | Passed | 100.0% | 0.00% | 100.0% |
 | **3,000** | 3,045 / 3,332 | **15.9 ms** | Passed | 100.0% | 0.00% | 100.0% |
 | **5,000** | 5,069 / 5,523 | **17.2 ms** | Passed | 100.0% | 0.00% | 100.0% |
 
-> **Key Finding**: Uncertainty-guided candidate pruning restricts the combinatorial search space to bottleneck witness edges. Across all scales up to 5,000 nodes, repair synthesis terminates in **< 0.02 s** (over 150× faster than the 3.0 s operational SLA) with zero optimality gap and 100% candidate recall.
+> **Key Finding**: Uncertainty-guided candidate pruning restricts the combinatorial search space to bottleneck witness edges. Across all scales up to 5,000 nodes, repair synthesis terminates in **under 0.02 s** (over 150× faster than the 3.0 s operational SLA) with zero optimality gap and 100% candidate recall.
 
 ---
 
@@ -347,9 +347,9 @@ In security-critical authorization systems, claiming that a neural network is so
 2. **Formal AST Evaluation (Sound)**: The policy AST evaluator strictly implements the formal AWS authorization logic, including deterministic Explicit Deny precedence and Action Capability constraints $C(a, r, c)$.
 3. **Symbolic Verification Boundary (Conditional Soundness)**:
 
-$$
-\text{VerifiedSafe}(P^*, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^*, s, t) = \emptyset
-$$
+   $$
+   \text{VerifiedSafe}(P^*, \mathcal{H}_M) \implies \forall H \in \mathcal{H}_M : \text{Path}(G_o \cup H, P^*, s, t) = \emptyset
+   $$
 
    The verifier is **sound relative to the evaluated completion set $\mathcal{H}_M$** and the formal AWS authorization model. If a synthesized patch fails verification on any sampled completion, it is rejected automatically before deployment.
 
@@ -376,7 +376,7 @@ iam dashboard --port 8501
 The codebase enforces strict software engineering standards:
 - **100% Strict Type Annotations**: Checked via `mypy --strict src/iam` across all 53 source modules.
 - **Linting & Formatting**: Strict compliance with `ruff check` and `ruff format`.
-- **Test Coverage**: 410 unit and integration tests passing with **$>90\%$ code coverage** (`pytest --cov=iam`).
+- **Test Coverage**: 410 unit and integration tests passing with **> 90% code coverage** (`pytest --cov=iam`).
 - **Pre-Commit Enforcement**: Git hooks configured in `.pre-commit-config.yaml` to ensure no malformed code enters the tree.
 
 ```bash

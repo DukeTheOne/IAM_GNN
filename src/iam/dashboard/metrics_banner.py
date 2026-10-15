@@ -141,7 +141,7 @@ def format_posture_markdown_summary(kpis: PostureKPIs) -> str:
 | **Total Scanned Identities** | `{kpis.total_identities}` | {kpis.total_users} Users, {kpis.total_roles} Roles |
 | **Evaluated Policy Documents** | `{kpis.total_policies}` | {kpis.total_resources} Monitored Cloud Resources |
 | **Flagged Latent Escalation Risks** | `{kpis.flagged_identities_count}` | {kpis.critical_risks_count} Critical, {kpis.high_risks_count} High |
-| **Misleading Safe (Static Analysis Blind)** | `{kpis.misleading_safe_count}` | Level 1: 0.0, Level 2: >0.70 |
+| **Misleading Safe (Static Analysis Blind)** | `{kpis.misleading_safe_count}` | Level 1: 0.0, Level 2: >= 0.70 |
 | **Average Latent Blast Radius** | `{kpis.average_latent_blast_radius:.2f}` | Crown Jewel Assets per Flagged Principal |
 | **Pareto Dominance (RQ2 Tradeoff)** | `CERTIFIED` | Uncertainty-Aware Repair strictly optimal |
 """.strip()

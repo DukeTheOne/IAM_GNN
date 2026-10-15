@@ -229,15 +229,17 @@ $$
 2. **Soft Constraint Optimization**:
    - [x] Uses Z3 `Optimize()` to solve MaxSAT: minimizes weighted cost function:
 
-$$
-\min \sum w_{\text{remove}} \cdot (1 - x_{\text{action\_keep}}) + \sum w_{\text{scope}} \cdot (x_{\text{action\_keep}} \land x_{\text{scoped\_arn}})
-$$
+   $$
+   \min \sum w_{\text{remove}} \cdot (1 - x_{\text{action\_keep}}) + \sum w_{\text{scope}} \cdot (x_{\text{action\_keep}} \land x_{\text{scoped\_arn}})
+   $$
 
-     with default weights $w_{\text{scope}} = 1.0$ and $w_{\text{remove}} = 5.0$.
+   with default weights $w_{\text{scope}} = 1.0$ and $w_{\text{remove}} = 5.0$.
 3. **Greedy vs. Z3 Optimality Gap Comparison**:
    - [x] Executes both greedy repair and Z3 exact solver on the canonical `PassRole` + Lambda motif instance.
    - [x] Mathematically verified that greedy repair achieves an identical patch selection (scoping `iam:PassRole` to the legitimate worker role ARN with cost $1.0$), establishing an optimality gap of exactly:
-     $$\text{Optimality Gap} = \text{Cost}_{\text{greedy}} - \text{Cost}_{\text{Z3}} = 1.0 - 1.0 = 0.0$$
+     $$
+     \text{Optimality Gap} = \text{Cost}_{\text{greedy}} - \text{Cost}_{\text{Z3}} = 1.0 - 1.0 = 0.0
+     $$
    - [x] Formally detects unsatisfiable trade-offs (`UNSAT`) when business workload requirements strictly overlap with un-scopable attack path steps.
 
 **Key Technical Achievements**:

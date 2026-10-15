@@ -79,12 +79,12 @@
 - **The AWS Action Capability Model $C(a, r, c)$**:
   - AWS authorization semantics are non-uniform: naive solvers generate invalid policies by applying resource constraints to actions that AWS forbids.
 
-$$
-\mathcal{T}(a) = \begin{cases}
-\text{ARN-Restricted} & \text{if } a \text{ supports resource-level permissions (e.g. s3:GetObject, iam:PassRole)} \\
-\text{Global-Only} & \text{if } a \text{ requires wildcard resources (e.g. iam:CreatePolicyVersion)}
-\end{cases}
-$$
+    $$
+    \mathcal{T}(a) = \begin{cases}
+    \text{ARN-Restricted} & \text{if } a \text{ supports resource-level permissions (e.g. s3:GetObject, iam:PassRole)} \\
+    \text{Global-Only} & \text{if } a \text{ requires wildcard resources (e.g. iam:CreatePolicyVersion)}
+    \end{cases}
+    $$
 
   - $C(a, r, c)$ strictly dictates valid remediation actions:
     1. If $\mathcal{T}(a) = \text{ARN-Restricted}$: Narrow resource ARN from `*` to verified operational prefix.
@@ -106,9 +106,9 @@ $$
 - **2-Layer Relational Graph Convolutional Network (RGCN)**:
   - Inductive message passing over heterogeneous relations $r \in \mathcal{R}$:
 
-$$
-h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
-$$
+    $$
+    h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
+    $$
 
   - Regularized with basis-sharing decomposition: $W_r = \sum_{b=1}^B a_{rb} V_b$ to prevent overfitting on rare escalation motifs.
 - **Link Prediction Decoder**:
@@ -135,9 +135,9 @@ $$
   - **Condition B (Cross-Account Masking)**: External trust edges hidden.
   - **Condition E (Adversarial Bridge Masking)**: Critical escalation bottleneck edges deliberately omitted from telemetry.
 
-| Method | Cond A (Random 20%) | Cond B (Cross-Acct) | Cond E (Adv Bridge) |
+| Method | Cond A<br/>*(Random 20%)* | Cond B<br/>*(Cross-Acct)* | Cond E<br/>*(Adv Bridge)* |
 | :--- | :---: | :---: | :---: |
-| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00 *(0% recall)* |
+| **BFS (PMapper)** | 0.62 ± 0.04 | 0.51 ± 0.03 | 0.50 ± 0.00<br/>*(0% recall)* |
 | **Random Forest** | 0.78 ± 0.02 | 0.74 ± 0.03 | 0.69 ± 0.03 |
 | **Motif Heuristic** | 0.81 ± 0.02 | 0.79 ± 0.02 | 0.75 ± 0.02 |
 | **2-Layer RGCN (Ours)** | **0.92 ± 0.01** | **0.89 ± 0.02** | **0.91 ± 0.02** |
@@ -160,13 +160,13 @@ $$
 ### Slide Content
 - **The Central Security–Utility Tradeoff**:
 
-$$
-\min_{P^*} \quad \text{Cost}(P \to P^*) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^*)]
-$$
+  $$
+  \min_{P^*} \quad \text{Cost}(P \to P^*) + \lambda \cdot \text{Breakage}(\mathcal{D}^{T_1}, \mathcal{D}^{T_2}) + \gamma \cdot \mathbb{E}_{H \sim \mathbb{P}(H \mid G_o)}[\text{Risk}(G_o \cup H, P^*)]
+  $$
 
-| Remediation Strategy | Status | Risk (G*) | T₁ Break | T₂ Drift | AST Cost |
+| Remediation Strategy | Status | Risk (G\*) | T₁ Break | T₂ Drift | AST Cost |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **M0: Oracle (G*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 |
+| **M0: Oracle (G\*)** | *Optimal* | 0.00 | 0.0% | 0.0% | 1.0 |
 | **M1: No Action (Identity)** | *Optimal* | **1.00** | 0.0% | 0.0% | 0.0 |
 | **M2: Coarse Deletion (IAMPERE)** | *Dominated* | 0.00 | **29.6%** | **17.2%** | 10.0 |
 | **M3: Log-Only (PolicyRefiner)** | *Dominated* | 0.00 | 0.0% | **0.8%** | 4.0 |
@@ -231,7 +231,7 @@ $$
   - Retain only high-probability bottleneck candidates: $\text{Freq}(e \in \text{Cut}) \ge \tau$.
 - **Empirical Scalability Across Enterprise Scales ($N \in [500, 5{,}000]$)**:
 
-| Scale (|V|) | Edges (|E|) | Total Latency | Candidate Recall | Optimality Gap | Safety Coverage |
+| Scale (Nodes) | Edges | Total Latency | Candidate Recall | Optimality Gap | Safety Coverage |
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | **500** | 550 | **8.5 ms** | 100.0% | 0.00% | 100.0% |
 | **1,000** | 1,135 | **17.3 ms** | 100.0% | 0.00% | 100.0% |
@@ -343,4 +343,4 @@ $$
 - **Code Quality Metrics**:
   - 100% `ruff` formatting & linting compliance.
   - 100% `mypy --strict` type checking coverage (53 source modules).
-  - 410 unit and integration tests passing ($93\%$ code coverage).
+  - 410 unit and integration tests passing (> 90% code coverage).

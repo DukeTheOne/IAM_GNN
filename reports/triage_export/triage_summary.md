@@ -3,7 +3,7 @@
 | **Total Scanned Identities** | `86` | 51 Users, 35 Roles |
 | **Evaluated Policy Documents** | `31` | 26 Monitored Cloud Resources |
 | **Flagged Latent Escalation Risks** | `1` | 1 Critical, 0 High |
-| **Misleading Safe (Static Analysis Blind)** | `1` | Level 1: 0.0, Level 2: >0.70 |
+| **Misleading Safe (Static Analysis Blind)** | `1` | Level 1: 0.0, Level 2: >= 0.70 |
 | **Average Latent Blast Radius** | `1.00` | Crown Jewel Assets per Flagged Principal |
 | **Pareto Dominance (RQ2 Tradeoff)** | `CERTIFIED` | Uncertainty-Aware Repair strictly optimal |
 

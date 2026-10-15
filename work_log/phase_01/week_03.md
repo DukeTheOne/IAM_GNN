@@ -184,7 +184,7 @@ Before beginning implementation, consider the core architectural requirements de
 
 **Verification & Acceptance Results**:
 - **PyG Schema Validation**: All converted instances pass `data.validate()` without schema violations.
-- **Reverse Relation Symmetry**: Verified $\text{data}[u, r, v].\text{num\_edges} == \text{data}[v, \text{Rev}(r), u].\text{num\_edges}$ across all edge types.
+- **Reverse Relation Symmetry**: Verified `data[u, r, v].num_edges == data[v, Rev(r), u].num_edges` across all edge types.
 - **Bridge Edge Isolation**: 100% of injected PE bottleneck relations are marked `edge_is_bridge = True` in forward edges and `False` in reverse edges.
 - **Performance**: Full conversion of $N = 1{,}000$ enterprise graph completed in **0.038 s** (budget: $< 0.20\text{ s}$).
 - **Test Suite Results**: **9 / 9 passed** in `test_converter.py` (**28 / 28 passed** across `iam.models`, **137 / 137 passed** across full repo).
@@ -314,8 +314,8 @@ Before beginning implementation, consider the core architectural requirements de
 - [`tests/test_masking.py`](file:///c:/Users/jack6/IAM/IAM_GNN/tests/test_masking.py): Comprehensive test suite with 19 tests validating edge accounting invariants, reverse symmetry, each of the 5 conditions, supervision tensor generation, and symbolic graph masking.
 
 **Verification & Acceptance Results**:
-- **Edge Accounting Invariance**: Formally verified $|E_{\text{observed}}| + |E_{\text{hidden}}| == |E_{\text{unmasked}}|$ across all 5 conditions.
-- **Reverse Relation Symmetry**: Verified $|E_{\text{obs\_fwd}}| == |E_{\text{obs\_rev}}|$ with 0 active bridge flags on reverse conduits across all conditions.
+- **Edge Accounting Invariance**: Formally verified $|E_{\text{observed}}| + |E_{\text{hidden}}| = |E_{\text{unmasked}}|$ across all 5 conditions.
+- **Reverse Relation Symmetry**: Verified $|E_{\text{obs\_fwd}}| = |E_{\text{obs\_rev}}|$ with 0 active bridge flags on reverse conduits across all conditions.
 - **Condition E Reachability Disruption**: Proved that deterministic reachability to crown jewel targets drops to 0% after bridge excision.
 - **Test Suite Results**: **19 / 19 passed** in `test_masking.py` (**63 / 63 passed** across `iam.models`, **172 / 172 passed** across full repo in 43.64s).
 - **Code Coverage**: Achieved **89% coverage** on `masking.py` (**92% overall coverage** across `iam.models`).

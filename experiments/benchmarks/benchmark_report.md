@@ -12,7 +12,7 @@ This report compiles the definitive experimental findings across **Dataset Scale
 
 ## 2. Multi-Scale Topology Ingestion & Generation Scalability
 
-| Scale | Realized (|V|, |E|) | Gen Time | Policies | Users | Roles | Resources | PE Chains |
+| Scale | Realized (Nodes / Edges) | Gen Time | Policies | Users | Roles | Resources | PE Chains |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **50** | 63 / 70 | 3.0 ms | 18 | 15 | 14 | 9 | 2 |
 | **100** | 114 / 119 | 2.0 ms | 21 | 34 | 25 | 24 | 2 |
