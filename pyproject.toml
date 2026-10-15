@@ -87,6 +87,8 @@ module = [
     "z3.*",
     "pyvis.*",
     "streamlit.*",
+    "pandas.*",
+    "altair.*",
     "orjson.*",
 ]
 ignore_missing_imports = true
