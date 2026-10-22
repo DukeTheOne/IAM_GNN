@@ -1,0 +1,364 @@
+{
+  "catalog_version": "1.0.0",
+  "description": "Curated catalog of 35 real-world and TAC-Bench AWS Terraform repositories for Tier 2 evaluation",
+  "target_count": 35,
+  "categories": [
+    "iam_identity",
+    "container_kubernetes",
+    "data_serverless",
+    "cicd_devops",
+    "tac_bench_reference"
+  ],
+  "repositories": [
+    {
+      "repo_id": "tf-aws-iam",
+      "category": "iam_identity",
+      "name": "terraform-aws-modules/terraform-aws-iam",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-iam",
+      "default_branch": "master",
+      "description": "Canonical community AWS IAM module for users, roles, groups, and cross-account delegation",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_user", "aws_iam_group", "aws_iam_policy", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "cp-iam-role",
+      "category": "iam_identity",
+      "name": "cloudposse/terraform-aws-iam-role",
+      "url": "https://github.com/cloudposse/terraform-aws-iam-role",
+      "default_branch": "master",
+      "description": "Production IAM role provisioning with assume_role trust policies and MFA gating",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "cp-iam-system-user",
+      "category": "iam_identity",
+      "name": "cloudposse/terraform-aws-iam-system-user",
+      "url": "https://github.com/cloudposse/terraform-aws-iam-system-user",
+      "default_branch": "master",
+      "description": "Provisioning of automated system users with managed access keys and inline policies",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_user", "aws_iam_user_policy", "aws_iam_access_key"]
+    },
+    {
+      "repo_id": "cp-iam-policy",
+      "category": "iam_identity",
+      "name": "cloudposse/terraform-aws-iam-policy",
+      "url": "https://github.com/cloudposse/terraform-aws-iam-policy",
+      "default_branch": "master",
+      "description": "Customer managed policies module with document templating and condition evaluation",
+      "complexity": "low",
+      "key_resources": ["aws_iam_policy", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "truss-cross-account",
+      "category": "iam_identity",
+      "name": "trussworks/terraform-aws-iam-cross-account-role",
+      "url": "https://github.com/trussworks/terraform-aws-iam-cross-account-role",
+      "default_branch": "master",
+      "description": "Cross-account IAM role assumption patterns with external IDs and session tagging",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "tf-aws-security-group",
+      "category": "iam_identity",
+      "name": "terraform-aws-modules/terraform-aws-security-group",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-security-group",
+      "default_branch": "master",
+      "description": "Enterprise network authorization and security group baseline modules",
+      "complexity": "medium",
+      "key_resources": ["aws_security_group", "aws_security_group_rule"]
+    },
+    {
+      "repo_id": "defense-uds-iam",
+      "category": "iam_identity",
+      "name": "defenseunicorns/terraform-aws-uds-iam",
+      "url": "https://github.com/defenseunicorns/terraform-aws-uds-iam",
+      "default_branch": "main",
+      "description": "Mission-critical zero-trust IAM baselines compliant with FedRAMP High",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_iam_group"]
+    },
+    {
+      "repo_id": "tf-aws-eks",
+      "category": "container_kubernetes",
+      "name": "terraform-aws-modules/terraform-aws-eks",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-eks",
+      "default_branch": "master",
+      "description": "EKS cluster provisioning with Pod Identity and IRSA OIDC role trust federations",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy_attachment", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "tf-aws-ecs",
+      "category": "container_kubernetes",
+      "name": "terraform-aws-modules/terraform-aws-ecs",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-ecs",
+      "default_branch": "master",
+      "description": "ECS container task execution and task role authorization models",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "cp-eks-cluster",
+      "category": "container_kubernetes",
+      "name": "cloudposse/terraform-aws-eks-cluster",
+      "url": "https://github.com/cloudposse/terraform-aws-eks-cluster",
+      "default_branch": "master",
+      "description": "Kubernetes cluster security boundaries and node group instance profile roles",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_instance_profile"]
+    },
+    {
+      "repo_id": "aws-ia-eks-blueprints",
+      "category": "container_kubernetes",
+      "name": "aws-ia/terraform-aws-eks-blueprints",
+      "url": "https://github.com/aws-ia/terraform-aws-eks-blueprints",
+      "default_branch": "main",
+      "description": "Official AWS Solutions Architects multi-tenant enterprise EKS blueprint",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "cookpad-eks",
+      "category": "container_kubernetes",
+      "name": "cookpad/terraform-aws-eks",
+      "url": "https://github.com/cookpad/terraform-aws-eks",
+      "default_branch": "master",
+      "description": "High-throughput production microservices infrastructure on AWS EKS",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "tf-aws-ecr",
+      "category": "container_kubernetes",
+      "name": "terraform-aws-modules/terraform-aws-ecr",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-ecr",
+      "default_branch": "master",
+      "description": "ECR container registry resource-based policies and push/pull access controls",
+      "complexity": "low",
+      "key_resources": ["aws_ecr_repository", "aws_ecr_repository_policy"]
+    },
+    {
+      "repo_id": "tf-aws-app-runner",
+      "category": "container_kubernetes",
+      "name": "terraform-aws-modules/terraform-aws-app-runner",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-app-runner",
+      "default_branch": "master",
+      "description": "Fully managed container application execution and build service roles",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_apprunner_service"]
+    },
+    {
+      "repo_id": "tf-aws-lambda",
+      "category": "data_serverless",
+      "name": "terraform-aws-modules/terraform-aws-lambda",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-lambda",
+      "default_branch": "master",
+      "description": "Serverless execution roles, cross-service invocations, and VPC network policies",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_lambda_function"]
+    },
+    {
+      "repo_id": "tf-aws-s3-bucket",
+      "category": "data_serverless",
+      "name": "terraform-aws-modules/terraform-aws-s3-bucket",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-s3-bucket",
+      "default_branch": "master",
+      "description": "Enterprise cloud storage bucket policies with KMS encryption and TLS enforcement",
+      "complexity": "medium",
+      "key_resources": ["aws_s3_bucket", "aws_s3_bucket_policy", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "cp-glue",
+      "category": "data_serverless",
+      "name": "cloudposse/terraform-aws-glue",
+      "url": "https://github.com/cloudposse/terraform-aws-glue",
+      "default_branch": "master",
+      "description": "AWS Glue ETL catalog, crawler execution roles, and data lake endpoints",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_glue_crawler", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "cp-sagemaker",
+      "category": "data_serverless",
+      "name": "cloudposse/terraform-aws-sagemaker",
+      "url": "https://github.com/cloudposse/terraform-aws-sagemaker",
+      "default_branch": "master",
+      "description": "Machine learning notebook instance execution roles and training job policies",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_sagemaker_notebook_instance", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "cp-emr-cluster",
+      "category": "data_serverless",
+      "name": "cloudposse/terraform-aws-emr-cluster",
+      "url": "https://github.com/cloudposse/terraform-aws-emr-cluster",
+      "default_branch": "master",
+      "description": "Big data analytics EMR cluster service roles and job flow instance profiles",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_instance_profile", "aws_emr_cluster"]
+    },
+    {
+      "repo_id": "tf-aws-dms",
+      "category": "data_serverless",
+      "name": "terraform-aws-modules/terraform-aws-dms",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-dms",
+      "default_branch": "master",
+      "description": "Database Migration Service replication instance roles and endpoint credentials",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_dms_replication_instance"]
+    },
+    {
+      "repo_id": "cp-athena",
+      "category": "data_serverless",
+      "name": "cloudposse/terraform-aws-athena",
+      "url": "https://github.com/cloudposse/terraform-aws-athena",
+      "default_branch": "master",
+      "description": "Serverless interactive query workgroups and query execution role policies",
+      "complexity": "low",
+      "key_resources": ["aws_athena_workgroup", "aws_s3_bucket", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "cp-codebuild",
+      "category": "cicd_devops",
+      "name": "cloudposse/terraform-aws-codebuild",
+      "url": "https://github.com/cloudposse/terraform-aws-codebuild",
+      "default_branch": "master",
+      "description": "Continuous integration build containers with privileged execution roles",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_codebuild_project", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "cp-codepipeline",
+      "category": "cicd_devops",
+      "name": "cloudposse/terraform-aws-codepipeline",
+      "url": "https://github.com/cloudposse/terraform-aws-codepipeline",
+      "default_branch": "master",
+      "description": "Deployment orchestrator service roles and cross-stage artifact passrole models",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_codepipeline", "aws_iam_role_policy"]
+    },
+    {
+      "repo_id": "tf-aws-github-runners",
+      "category": "cicd_devops",
+      "name": "terraform-aws-modules/terraform-aws-github-runners",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-github-runners",
+      "default_branch": "main",
+      "description": "Ephemeral self-hosted CI runners on AWS EC2/Lambda with fine-grained tokens",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_iam_instance_profile"]
+    },
+    {
+      "repo_id": "philips-github-runner",
+      "category": "cicd_devops",
+      "name": "philips-labs/terraform-aws-github-runner",
+      "url": "https://github.com/philips-labs/terraform-aws-github-runner",
+      "default_branch": "master",
+      "description": "Enterprise-scale auto-scaling CI runner fleet with restricted least-privilege",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_role_policy", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "cp-cloudtrail",
+      "category": "cicd_devops",
+      "name": "cloudposse/terraform-aws-cloudtrail",
+      "url": "https://github.com/cloudposse/terraform-aws-cloudtrail",
+      "default_branch": "master",
+      "description": "Security audit logging trail S3 bucket policies and CloudWatch delivery roles",
+      "complexity": "medium",
+      "key_resources": ["aws_cloudtrail", "aws_iam_role", "aws_s3_bucket_policy"]
+    },
+    {
+      "repo_id": "tf-aws-kms",
+      "category": "cicd_devops",
+      "name": "terraform-aws-modules/terraform-aws-kms",
+      "url": "https://github.com/terraform-aws-modules/terraform-aws-kms",
+      "default_branch": "master",
+      "description": "KMS cryptographic key resource policies and administrator delegation",
+      "complexity": "medium",
+      "key_resources": ["aws_kms_key", "aws_kms_alias", "data.aws_iam_policy_document"]
+    },
+    {
+      "repo_id": "truss-bootstrap",
+      "category": "cicd_devops",
+      "name": "trussworks/terraform-aws-bootstrap",
+      "url": "https://github.com/trussworks/terraform-aws-bootstrap",
+      "default_branch": "master",
+      "description": "Foundational multi-account state locking and administrative deployment roles",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_s3_bucket"]
+    },
+    {
+      "repo_id": "tac-multi-account-pe",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/synthetic-multi-account-pe",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "Multi-hop cross-account privilege escalation chaining via intermediate jump roles",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_iam_role_policy_attachment"]
+    },
+    {
+      "repo_id": "tac-cross-account-delegation",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/cross-account-delegation",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "Organizational unit trust boundaries with transitive assume-role chaining",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "tac-data-lake-governance",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/data-lake-governance",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "Data lake Lake Formation and S3 bucket access control matrix with masking",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_s3_bucket_policy", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "tac-microservices-zero-trust",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/microservices-zero-trust",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "Microservice pod identity least-privilege configurations with condition constraints",
+      "complexity": "high",
+      "key_resources": ["aws_iam_role", "aws_iam_policy"]
+    },
+    {
+      "repo_id": "tac-cicd-compromise",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/ci-cd-compromise",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "CodeBuild/Lambda service role hijacking scenario leading to crown jewel breach",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_policy", "aws_codebuild_project"]
+    },
+    {
+      "repo_id": "tac-dormant-policy-rollback",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/dormant-policy-rollback",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "Dormant administrative policy version rollback vulnerability pattern",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_policy", "aws_iam_user_policy_attachment"]
+    },
+    {
+      "repo_id": "tac-federated-identity-pivot",
+      "category": "tac_bench_reference",
+      "name": "TAC-Bench/federated-identity-pivot",
+      "url": "https://github.com/aws-samples/iam-policy-benchmark",
+      "default_branch": "main",
+      "description": "OIDC identity provider role assumption boundary violation",
+      "complexity": "medium",
+      "key_resources": ["aws_iam_role", "aws_iam_policy"]
+    }
+  ]
+}

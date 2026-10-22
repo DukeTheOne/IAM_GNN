@@ -10,6 +10,7 @@ import pytest
 import torch
 from torch_geometric.data import HeteroData
 
+from iam.models.rgcn import get_default_in_channels_dict
 from iam.models.untyped_gcn import (
     UntypedGCNConfig,
     UntypedGCNEncoder,
@@ -43,15 +44,20 @@ class TestUntypedGCNEncoder:
     """Tests for UntypedGCNEncoder forward pass and gradient flow."""
 
     @pytest.fixture
+    def in_channels(self) -> dict[str, int]:
+        return get_default_in_channels_dict()
+
+    @pytest.fixture
     def sample_data(
         self,
+        in_channels: dict[str, int],
     ) -> tuple[dict[str, torch.Tensor], dict[tuple[str, str, str], torch.Tensor]]:
         """Construct synthetic node features and multirelational edges."""
         torch.manual_seed(42)
         x_dict = {
-            "User": torch.randn(5, 51),
-            "Role": torch.randn(4, 52),
-            "Policy": torch.randn(3, 39),
+            "User": torch.randn(5, in_channels["User"]),
+            "Role": torch.randn(4, in_channels["Role"]),
+            "Policy": torch.randn(3, in_channels["Policy"]),
         }
         edge_index_dict = {
             ("User", "AssumesRole", "Role"): torch.tensor([[0, 1, 2], [1, 2, 3]], dtype=torch.long),
@@ -98,7 +104,8 @@ class TestUntypedGCNEncoder:
         assert empty_out == {}
 
         # Disconnected nodes (no edges)
-        x_dict = {"User": torch.randn(3, 51)}
+        in_channels = get_default_in_channels_dict()
+        x_dict = {"User": torch.randn(3, in_channels["User"])}
         out = encoder(x_dict=x_dict, edge_index_dict={})
         assert out["User"].shape == (3, 128)
 
@@ -111,9 +118,10 @@ class TestUntypedLinkPredictionModel:
         torch.manual_seed(42)
         model = UntypedLinkPredictionModel()
 
+        in_channels = get_default_in_channels_dict()
         data = HeteroData()
-        data["User"].x = torch.randn(4, 51)
-        data["Role"].x = torch.randn(3, 52)
+        data["User"].x = torch.randn(4, in_channels["User"])
+        data["Role"].x = torch.randn(3, in_channels["Role"])
         data[("User", "AssumesRole", "Role")].edge_index = torch.tensor(
             [[0, 1], [1, 2]], dtype=torch.long
         )

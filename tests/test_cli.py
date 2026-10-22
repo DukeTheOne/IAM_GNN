@@ -28,6 +28,8 @@ class TestIAMCommandLineInterface:
             "dashboard",
             "export",
             "benchmark",
+            "ingest-iac",
+            "benchmark-iac",
         ]
         for sub in subcommands:
             assert sub in parser.format_help()
@@ -93,6 +95,69 @@ class TestIAMCommandLineInterface:
         assert "run_dashboard.py" in called_cmd[0][1]
         assert "--port" in called_cmd[0]
         assert "8502" in called_cmd[0]
+
+    def test_cli_ingest_iac_missing_args(self) -> None:
+        exit_code = main(["ingest-iac"])
+        assert exit_code == 1
+
+    def test_cli_ingest_iac_file(self, tmp_path: Path) -> None:
+        tf_file = tmp_path / "single_user.tf"
+        tf_file.write_text(
+            'resource "aws_iam_user" "analyst" { name = "security-analyst" }',
+            encoding="utf-8",
+        )
+        out_json = tmp_path / "graph_single.json"
+        exit_code = main(["ingest-iac", "--file", str(tf_file), "--output", str(out_json)])
+        assert exit_code == 0
+        assert out_json.exists()
+
+        data = json.loads(out_json.read_text(encoding="utf-8"))
+        assert data["num_nodes"] >= 1
+        assert any(n["id"] == "user:security-analyst" for n in data["nodes"])
+
+    def test_cli_ingest_iac_dir(self, tmp_path: Path) -> None:
+        from iam.parser.repository import IaCRepositoryManager
+
+        fixture_dir = tmp_path / "fixture_repo"
+        IaCRepositoryManager().generate_fixture_repository(
+            fixture_dir, variant="privilege_escalation_vulnerable"
+        )
+        out_json = tmp_path / "graph_dir.json"
+        exit_code = main(["ingest-iac", "--dir", str(fixture_dir), "--output", str(out_json)])
+        assert exit_code == 0
+        assert out_json.exists()
+
+        data = json.loads(out_json.read_text(encoding="utf-8"))
+        assert data["num_nodes"] >= 4
+        assert data["num_edges"] >= 3
+
+    def test_cli_benchmark_iac_list(self, capsys: pytest.CaptureFixture[str]) -> None:
+        exit_code = main(["benchmark-iac", "--list"])
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        assert "IaC Repository Catalog" in captured.err or "REPO ID" in captured.out
+        assert "cp-iam-role" in captured.out
+        assert "cloudposse/terraform-aws-iam-role" in captured.out
+
+    def test_cli_benchmark_iac_fixture_with_ingest(self, tmp_path: Path) -> None:
+        out_dir = tmp_path / "benchmarks_storage"
+        exit_code = main(
+            [
+                "benchmark-iac",
+                "--fixture-variant",
+                "tac_bench_reference",
+                "--output-dir",
+                str(out_dir),
+                "--ingest",
+            ]
+        )
+        assert exit_code == 0
+        graph_file = out_dir / "tac_bench_reference" / "graph.json"
+        assert graph_file.exists()
+
+        data = json.loads(graph_file.read_text(encoding="utf-8"))
+        assert data["num_nodes"] >= 4
+        assert any(n["id"] == "user:security-auditor" for n in data["nodes"])
 
 
 class TestRunDashboardScript:

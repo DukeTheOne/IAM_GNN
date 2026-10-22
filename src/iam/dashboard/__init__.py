@@ -24,6 +24,7 @@ from iam.dashboard.state import (
     SeverityTier,
     TriageRecord,
     create_demo_dashboard_state,
+    create_iac_dashboard_state,
 )
 
 __all__ = [
@@ -37,6 +38,7 @@ __all__ = [
     "SeverityTier",
     "TriageRecord",
     "create_demo_dashboard_state",
+    "create_iac_dashboard_state",
     "format_posture_markdown_summary",
     "render_capability_badge",
     "render_ego_canvas_html",

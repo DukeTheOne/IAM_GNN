@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "snapshot_date": "2026-10-07",
     "source": "AWS Service Authorization Reference",
-    "services": ["iam", "sts", "lambda", "ec2", "s3", "kms"],
+    "services": ["iam", "sts", "lambda", "ec2", "s3", "kms", "glue", "codebuild", "sagemaker"],
     "description": "Versioned AWS Action-Resource-Condition Capability Model for Tier 1 Prototype & Thesis"
   },
   "global_condition_keys": [
@@ -275,6 +275,55 @@
       "service": "kms",
       "wildcard_only": false,
       "resource_types": ["key"],
+      "condition_keys": []
+    },
+    "iam:updateassumerolepolicy": {
+      "action": "iam:UpdateAssumeRolePolicy",
+      "service": "iam",
+      "wildcard_only": false,
+      "resource_types": ["role"],
+      "condition_keys": []
+    },
+    "glue:createdevendpoint": {
+      "action": "glue:CreateDevEndpoint",
+      "service": "glue",
+      "wildcard_only": false,
+      "resource_types": ["devendpoint"],
+      "condition_keys": []
+    },
+    "glue:getdevendpoint": {
+      "action": "glue:GetDevEndpoint",
+      "service": "glue",
+      "wildcard_only": false,
+      "resource_types": ["devendpoint"],
+      "condition_keys": []
+    },
+    "codebuild:startbuild": {
+      "action": "codebuild:StartBuild",
+      "service": "codebuild",
+      "wildcard_only": false,
+      "resource_types": ["project"],
+      "condition_keys": []
+    },
+    "codebuild:createproject": {
+      "action": "codebuild:CreateProject",
+      "service": "codebuild",
+      "wildcard_only": false,
+      "resource_types": ["project"],
+      "condition_keys": []
+    },
+    "sagemaker:createnotebookinstance": {
+      "action": "sagemaker:CreateNotebookInstance",
+      "service": "sagemaker",
+      "wildcard_only": false,
+      "resource_types": ["notebook-instance"],
+      "condition_keys": []
+    },
+    "sagemaker:createpresignednotebookinstanceurl": {
+      "action": "sagemaker:CreatePresignedNotebookInstanceUrl",
+      "service": "sagemaker",
+      "wildcard_only": false,
+      "resource_types": ["notebook-instance"],
       "condition_keys": []
     }
   }

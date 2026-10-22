@@ -12,6 +12,11 @@ from iam.baselines.bfs import (
 from iam.baselines.features import (
     EdgePairFeaturizer,
 )
+from iam.baselines.iampere import (
+    IAMPEREBaselineEngine,
+    IAMPEREPathWitness,
+    IAMPEREReachabilityResult,
+)
 from iam.baselines.metrics import (
     BaselineBenchmarkSuite,
     BaselineMetricsResult,
@@ -33,6 +38,9 @@ from iam.baselines.oracle import (
 from iam.baselines.random_forest import (
     RandomForestLinkPredictor,
 )
+from iam.baselines.tac_gb import (
+    TACGBLinkPredictor,
+)
 
 __all__ = [
     "BFSPathWitness",
@@ -42,10 +50,14 @@ __all__ = [
     "DeterministicBFSEngine",
     "EdgePairFeaturizer",
     "ExactReachabilityOracle",
+    "IAMPEREBaselineEngine",
+    "IAMPEREPathWitness",
+    "IAMPEREReachabilityResult",
     "MotifCompletionHeuristic",
     "OraclePathWitness",
     "OracleReachabilityResult",
     "RandomForestLinkPredictor",
+    "TACGBLinkPredictor",
     "compute_attack_path_recovery",
     "compute_false_negative_rate",
     "compute_mean_reciprocal_rank",

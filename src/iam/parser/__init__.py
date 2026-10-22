@@ -15,7 +15,22 @@ from iam.parser.evaluator import (
     PolicyEvaluator,
     statement_matches_request,
 )
+from iam.parser.repository import (
+    IaCRepositoryCatalog,
+    IaCRepositoryManager,
+    IaCRepositoryMetadata,
+)
 from iam.parser.schema import Effect, PolicyDocument, Principal, Statement
+from iam.parser.terraform import (
+    TerraformAttachment,
+    TerraformGroup,
+    TerraformIAMEnvironment,
+    TerraformMembership,
+    TerraformParser,
+    TerraformPolicy,
+    TerraformRole,
+    TerraformUser,
+)
 from iam.parser.wildcard import (
     WildcardResolver,
     action_matches_pattern,
@@ -30,10 +45,21 @@ __all__ = [
     "Effect",
     "EvalDecision",
     "EvalResult",
+    "IaCRepositoryCatalog",
+    "IaCRepositoryManager",
+    "IaCRepositoryMetadata",
     "PolicyDocument",
     "PolicyEvaluator",
     "Principal",
     "Statement",
+    "TerraformAttachment",
+    "TerraformGroup",
+    "TerraformIAMEnvironment",
+    "TerraformMembership",
+    "TerraformParser",
+    "TerraformPolicy",
+    "TerraformRole",
+    "TerraformUser",
     "TransformationValidation",
     "WildcardResolver",
     "action_matches_pattern",

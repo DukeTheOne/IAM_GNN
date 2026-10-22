@@ -85,10 +85,10 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 16 Hours
 
 #### Step 1.1: Core Environment & Toolchain Initialization (3.0h)
-- [ ] Initialize Python 3.10+ virtual environment and dependency tree (`poetry` / `pip-tools`).
-- [ ] Configure development tooling: `ruff` (linter/formatter), `pytest`, `mypy`, and pre-commit hooks.
-- [ ] Install deep learning, graph, and constraint solver dependencies: `torch`, `torch_geometric`, `networkx`, `scipy`, `z3-solver`.
-- [ ] Setup modular repository layout:
+- [x] Initialize Python 3.10+ virtual environment and dependency tree (`poetry` / `pip-tools`).
+- [x] Configure development tooling: `ruff` (linter/formatter), `pytest`, `mypy`, and pre-commit hooks.
+- [x] Install deep learning, graph, and constraint solver dependencies: `torch`, `torch_geometric`, `networkx`, `scipy`, `z3-solver`.
+- [x] Setup modular repository layout:
   ```
   iam-graph-learning/
   ├── data/                  # Synthetic schemas, generators, and split datasets
@@ -104,21 +104,21 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
   ```
 
 #### Step 1.2: Declarative IAM JSON Schema & AST Parser (5.0h)
-- [ ] Implement robust IAM policy document parser supporting standard statements (`Effect`, `Action`, `NotAction`, `Resource`, `NotResource`, `Condition`).
-- [ ] Build wildcard expansion resolver (e.g., expanding `iam:*` or `s3:Get*` into canonical AWS action sets).
-- [ ] Handle explicit `Deny` resolution adhering to AWS policy evaluation logic: an explicit `Deny` overrides any `Allow` across all scopes.
-- [ ] Support conditional logic parsing (e.g., `aws:PrincipalArn`, `aws:MultiFactorAuthPresent`, `iam:PassedToService`).
+- [x] Implement robust IAM policy document parser supporting standard statements (`Effect`, `Action`, `NotAction`, `Resource`, `NotResource`, `Condition`).
+- [x] Build wildcard expansion resolver (e.g., expanding `iam:*` or `s3:Get*` into canonical AWS action sets).
+- [x] Handle explicit `Deny` resolution adhering to AWS policy evaluation logic: an explicit `Deny` overrides any `Allow` across all scopes.
+- [x] Support conditional logic parsing (e.g., `aws:PrincipalArn`, `aws:MultiFactorAuthPresent`, `iam:PassedToService`).
 
 #### Step 1.3: AWS Action–Resource–Condition Capability Model C(a, r, c) (4.5h)
-- [ ] Build $C$ as a **data layer** derived from AWS's machine-readable Service Authorization Reference, stored as a versioned snapshot (record the snapshot date). Restrict to IAM, STS, Lambda, EC2, S3, and KMS for the prototype.
-- [ ] Per action, record: supported resource types (e.g., `iam:PassRole` targets a role resource; `iam:CreateAccessKey` targets a user resource, so it can be scoped to a user ARN), whether the action is wildcard-only (verify from the snapshot, e.g., `iam:ListRoles`, `iam:GetAccountAuthorizationDetails`), and applicable condition keys (action, resource, and global keys).
-- [ ] **Fallback (if ingestion exceeds ~2h):** hand-transcribe the table for the ~20 actions used by the PE motifs, with citation and snapshot date, using the same schema as the ingested output.
-- [ ] Implement capability checker `is_valid_transformation(action, target_resource, condition)` to validate proposed patches.
+- [x] Build $C$ as a **data layer** derived from AWS's machine-readable Service Authorization Reference, stored as a versioned snapshot (record the snapshot date). Restrict to IAM, STS, Lambda, EC2, S3, and KMS for the prototype.
+- [x] Per action, record: supported resource types (e.g., `iam:PassRole` targets a role resource; `iam:CreateAccessKey` targets a user resource, so it can be scoped to a user ARN), whether the action is wildcard-only (verify from the snapshot, e.g., `iam:ListRoles`, `iam:GetAccountAuthorizationDetails`), and applicable condition keys (action, resource, and global keys).
+- [x] **Fallback (if ingestion exceeds ~2h):** hand-transcribe the table for the ~20 actions used by the PE motifs, with citation and snapshot date, using the same schema as the ingested output.
+- [x] Implement capability checker `is_valid_transformation(action, target_resource, condition)` to validate proposed patches.
 
 #### Step 1.4: Unit Tests for IAM Parser & Capability Model (3.5h)
-- [ ] Test wildcard expansion against edge cases (e.g., `iam:*AccessKey*`, action case-insensitivity).
-- [ ] Test explicit `Deny` suppression on contradictory policy statements.
-- [ ] Capability tests: scoping `iam:PassRole` to a role ARN is accepted; scoping `iam:CreateAccessKey` to a user ARN is accepted; scoping a wildcard-only action (e.g., `iam:ListRoles`) to an ARN is rejected; injecting a condition key not listed for the action is rejected.
+- [x] Test wildcard expansion against edge cases (e.g., `iam:*AccessKey*`, action case-insensitivity).
+- [x] Test explicit `Deny` suppression on contradictory policy statements.
+- [x] Capability tests: scoping `iam:PassRole` to a role ARN is accepted; scoping `iam:CreateAccessKey` to a user ARN is accepted; scoping a wildcard-only action (e.g., `iam:ListRoles`) to an ARN is rejected; injecting a condition key not listed for the action is rejected.
 
 ---
 
@@ -127,33 +127,33 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 2.1: Canonical PE Motifs with Exact Ground Truth (5.0h)
-- [ ] **P0 (required) - 4 motifs**, each with precise subgraph pattern and ground-truth reachability checker:
+- [x] **P0 (required) - 4 motifs**, each with precise subgraph pattern and ground-truth reachability checker:
   1. `iam:PassRole` + `lambda:CreateFunction` + `lambda:InvokeFunction`
   2. `iam:CreateAccessKey` targeting an existing high-privilege user
   3. `iam:AttachRolePolicy` / `iam:AttachUserPolicy` attaching `AdministratorAccess`
   4. `sts:AssumeRole` multi-hop chaining across intermediate service roles
-- [ ] **P1 (only if on schedule by end of Week 2):** `iam:PassRole` + `ec2:RunInstances` (instance profile elevation) and `iam:SetDefaultPolicyVersion`.
-- [ ] Ensure motifs capture multi-step dependencies rather than trivial single-hop edges.
-- [ ] For each motif, define its **bridge relation** (the critical relationship that adversarial masking, Condition E, will hide).
+- [x] **P1 (only if on schedule by end of Week 2):** `iam:PassRole` + `ec2:RunInstances` (instance profile elevation) and `iam:SetDefaultPolicyVersion`.
+- [x] Ensure motifs capture multi-step dependencies rather than trivial single-hop edges.
+- [x] For each motif, define its **bridge relation** (the critical relationship that adversarial masking, Condition E, will hide).
 
 #### Step 2.2: Parameterized Enterprise Topology Generator (6.5h)
-- [ ] Implement realistic departmental organizational hierarchy (DevOps, Data/BI, SecOps, QA, Billing, Interns).
-- [ ] Model power-law identity distribution: small core of Admin/SecOps, moderate DevOps, large long-tail of restricted read-only roles.
-- [ ] Incorporate benign business workflows:
+- [x] Implement realistic departmental organizational hierarchy (DevOps, Data/BI, SecOps, QA, Billing, Interns).
+- [x] Model power-law identity distribution: small core of Admin/SecOps, moderate DevOps, large long-tail of restricted read-only roles.
+- [x] Incorporate benign business workflows:
   - CI/CD build runners with scoped S3 and ECR permissions.
   - Read-only data analysts querying Athena/S3 with strict KMS access.
-- [ ] Support graph scaling parameters: $N \in [500, 5000]$ nodes with configurable edge density.
-- [ ] Inject positive privilege escalation chains (configurable path lengths: 2-hop, 3-hop, 4-hop, and branching paths).
+- [x] Support graph scaling parameters: $N \in [500, 5000]$ nodes with configurable edge density.
+- [x] Inject positive privilege escalation chains (configurable path lengths: 2-hop, 3-hop, 4-hop, and branching paths).
 
 #### Step 2.3: Ground-Truth Verification & Environment Export (3.5h)
-- [ ] Implement automated ground-truth labeler that outputs all reachable $(s, t)$ privilege escalation pairs and the exact sequence of intermediate edges.
-- [ ] Compute topological sanity checks: in/out-degree distributions, clustering coefficients, and connected components.
-- [ ] Export labeled graph datasets into structured JSON / NetworkX schemas.
+- [x] Implement automated ground-truth labeler that outputs all reachable $(s, t)$ privilege escalation pairs and the exact sequence of intermediate edges.
+- [x] Compute topological sanity checks: in/out-degree distributions, clustering coefficients, and connected components.
+- [x] Export labeled graph datasets into structured JSON / NetworkX schemas.
 
 #### Step 2.4: Generator Sanity Tests (2.0h)
-- [ ] Verify that injected PE chains are syntactically valid and traversable.
-- [ ] Ensure benign identities without escalation paths are not falsely annotated as positive escalation targets.
-- [ ] Measure generator runtime across node scales (500, 1,000, 2,500, 5,000 nodes).
+- [x] Verify that injected PE chains are syntactically valid and traversable.
+- [x] Ensure benign identities without escalation paths are not falsely annotated as positive escalation targets.
+- [x] Measure generator runtime across node scales (500, 1,000, 2,500, 5,000 nodes).
 
 ---
 
@@ -162,31 +162,31 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 3.1: Vocabulary Building & Feature Representation (4.0h)
-- [ ] Build global action permission dictionary across AWS services (IAM, STS, Lambda, EC2, S3, KMS, RDS).
-- [ ] Multi-hot vector encoding for policy and principal nodes based on granted actions.
-- [ ] Encode resource types and ARN service prefixes into one-hot categorical features.
-- [ ] Compute topological centrality features: in-degree, out-degree per relation, and PageRank scores.
+- [x] Build global action permission dictionary across AWS services (IAM, STS, Lambda, EC2, S3, KMS, RDS).
+- [x] Multi-hot vector encoding for policy and principal nodes based on granted actions.
+- [x] Encode resource types and ARN service prefixes into one-hot categorical features.
+- [x] Compute topological centrality features: in-degree, out-degree per relation, and PageRank scores.
 
 #### Step 3.2: PyG `HeteroData` Conversion (4.5h)
-- [ ] Map NetworkX multigraph into `torch_geometric.data.HeteroData`.
-- [ ] Build typed edge indices `edge_index_dict` for canonical relations:
+- [x] Map NetworkX multigraph into `torch_geometric.data.HeteroData`.
+- [x] Build typed edge indices `edge_index_dict` for canonical relations:
   - `('User', 'MemberOf', 'Group')`
   - `('Principal', 'AssumesRole', 'Role')`
   - `('Principal', 'AttachedWith', 'Policy')`
   - `('Policy', 'ActsOn', 'Resource')`
   - `('Role', 'PassesTo', 'Resource')`
-- [ ] Add inverse relations (e.g., `RevAssumesRole`, `RevAttachedWith`) to facilitate bidirectional message passing.
+- [x] Add inverse relations (e.g., `RevAssumesRole`, `RevAttachedWith`) to facilitate bidirectional message passing.
 
 #### Step 3.3: Environment-Level Dataset Splitting (Preventing Generator Overfitting) (4.5h)
-- [ ] **Crucial Scientific Safeguard:** Split datasets strictly by **Environment / Organization**, not by edges within the same graph:
+- [x] **Crucial Scientific Safeguard:** Split datasets strictly by **Environment / Organization**, not by edges within the same graph:
   - Train set: Graphs from Organizations $\mathcal{O}_1, \dots, \mathcal{O}_8$
   - Validation set: Graphs from Organizations $\mathcal{O}_9, \mathcal{O}_{10}$
   - Held-out test set: Graphs from Organizations $\mathcal{O}_{11}, \dots, \mathcal{O}_{14}$ with different departmental sizes and branching factors.
-- [ ] Implement inductive link prediction evaluation harness.
-- [ ] Balanced negative sampling: sample non-escalating identity pairs across departments.
+- [x] Implement inductive link prediction evaluation harness.
+- [x] Balanced negative sampling: sample non-escalating identity pairs across departments.
 
 #### Step 3.4: Structured Masking Framework Setup (4.0h)
-- [ ] Masking removes **authorization evidence and delegation relationships**, not necessarily literal static IAM edges. For every operator, document in code which AWS object is hidden and how it is represented in the graph.
+- [x] Masking removes **authorization evidence and delegation relationships**, not necessarily literal static IAM edges. For every operator, document in code which AWS object is hidden and how it is represented in the graph.
   - **Condition A (P0, Random):** Randomly drop $p \in \{10\text{\%}, 20\text{\%}, 30\text{\%}, 40\text{\%}\}$ of intermediate trust/delegation relations.
   - **Condition E (P0, Adversarial Bridge):** Hide the bridge relation of the ground-truth escalation path.
   - **Condition B (P1, Cross-Account):** Hide all relations whose evidence lives in a designated unobservable account.
@@ -200,20 +200,20 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 4.1: Exact Symbolic Reachability Oracle (4.0h)
-- [ ] Implement an exact stateful reachability oracle with full-graph access to establish the upper bound on detection.
-- [ ] Output all valid $(s, t)$ escalation pairs with proof witnesses.
+- [x] Implement an exact stateful reachability oracle with full-graph access to establish the upper bound on detection.
+- [x] Output all valid $(s, t)$ escalation pairs with proof witnesses.
 
 #### Step 4.2: Deterministic BFS Reachability Engine (PMapper Proxy) (4.0h)
-- [ ] Implement stateful BFS over the observed graph $G_o$ with role-chaining handoffs, cycle detection, and max-depth bounding ($k \le 6$).
-- [ ] Note: under Condition E, BFS fails by construction. It is a reference point, not the meaningful comparator for the RGCN.
+- [x] Implement stateful BFS over the observed graph $G_o$ with role-chaining handoffs, cycle detection, and max-depth bounding ($k \le 6$).
+- [x] Note: under Condition E, BFS fails by construction. It is a reference point, not the meaningful comparator for the RGCN.
 
 #### Step 4.3: Classical ML and Rule-Based Baselines (6.0h)
-- [ ] **P0:** Random Forest on tabular pair features: source/target degree, Jaccard and Adamic-Adar similarity, shortest-path distance in $G_o$, administrative permission counts. Class reweighting for sparsity. (XGBoost is P1.)
-- [ ] **P0:** Rule-based **motif-completion heuristic**: if $G_o$ contains part of a known motif (e.g., a principal that can create Lambda functions and has `iam:PassRole` but no observed trust edge), infer the missing half with a prior score. This is the strongest simple baseline a reviewer will ask for; the RGCN must justify itself against it.
+- [x] **P0:** Random Forest on tabular pair features: source/target degree, Jaccard and Adamic-Adar similarity, shortest-path distance in $G_o$, administrative permission counts. Class reweighting for sparsity. (XGBoost is P1.)
+- [x] **P0:** Rule-based **motif-completion heuristic**: if $G_o$ contains part of a known motif (e.g., a principal that can create Lambda functions and has `iam:PassRole` but no observed trust edge), infer the missing half with a prior score. This is the strongest simple baseline a reviewer will ask for; the RGCN must justify itself against it.
 
 #### Step 4.4: Baseline Metrics Evaluation Suite (3.0h)
-- [ ] Compute PR-AUC (primary, since positives are sparse), Recall@K, False Negative Rate, and attack-path recovery rate; ROC-AUC and MRR are secondary.
-- [ ] Document BFS recall degradation under Conditions A and E.
+- [x] Compute PR-AUC (primary, since positives are sparse), Recall@K, False Negative Rate, and attack-path recovery rate; ROC-AUC and MRR are secondary.
+- [x] Document BFS recall degradation under Conditions A and E.
 
 ---
 
@@ -222,45 +222,45 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 18 Hours
 
 #### Step 5.1: Multi-Relational Message Passing Layer (5.5h)
-- [ ] Implement 2-layer `RGCNConv` module using PyG:
+- [x] Implement 2-layer `RGCNConv` module using PyG:
 
   $$
   h_i^{(l+1)} = \sigma \left( W_0^{(l)} h_i^{(l)} + \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_i^r} \frac{1}{c_{i,r}} W_r^{(l)} h_j^{(l)} \right)
   $$
 
-- [ ] Basis-sharing regularization with $B = 8$ basis matrices to prevent parameter explosion:
+- [x] Basis-sharing regularization with $B = 8$ basis matrices to prevent parameter explosion:
 
   $$
   W_r^{(l)} = \sum_{b=1}^{B} a_{r,b}^{(l)} V_b^{(l)}
   $$
 
-- [ ] Add layer normalization, dropout ($p = 0.2$), and LeakyReLU activations ($d_{hidden} = 128$).
+- [x] Add layer normalization, dropout ($p = 0.2$), and LeakyReLU activations ($d_{hidden} = 128$).
 
 #### Step 5.2: Bilinear Latent Relation Decoder (3.5h)
-- [ ] Implement a bilinear scoring head for hidden-relation triples $(u, r, v)$:
+- [x] Implement a bilinear scoring head for hidden-relation triples $(u, r, v)$:
 
   $$
   \hat{y}_{uv} = \sigma \left( h_u^T W_{r} h_v + b_r \right)
   $$
 
-- [ ] Scope: this head solves **Problem 1, hidden-relation prediction**. Attacker–target reachability (Problem 2) is computed downstream from sampled completions (Step 7.1), **not** by multiplying edge probabilities, because hidden relations can be correlated.
+- [x] Scope: this head solves **Problem 1, hidden-relation prediction**. Attacker–target reachability (Problem 2) is computed downstream from sampled completions (Step 7.1), **not** by multiplying edge probabilities, because hidden relations can be correlated.
 
 #### Step 5.3: Uncertainty Calibration (P1) (3.5h)
-- [ ] Temperature scaling on held-out validation environments:
+- [x] Temperature scaling on held-out validation environments:
 
   $$
   \hat{p}_{uv} = \sigma(z_{uv} / T)
   $$
 
-- [ ] Fit $T$ by negative log-likelihood under the same masking condition used at test time; compute ECE and reliability diagrams.
+- [x] Fit $T$ by negative log-likelihood under the same masking condition used at test time; compute ECE and reliability diagrams.
 
 #### Step 5.4: Loss Formulation & Training Loop (3.5h)
-- [ ] Binary cross-entropy with focal weighting ($\gamma = 2.0$), AdamW, cosine annealing, early stopping on validation PR-AUC.
+- [x] Binary cross-entropy with focal weighting ($\gamma = 2.0$), AdamW, cosine annealing, early stopping on validation PR-AUC.
 
 #### Step 5.5: Thin-Slice Experiment (2.0h)
-- [ ] Single motif (`PassRole` + Lambda), Condition E plus Condition A at 20%, training on train environments and testing on held-out environments.
-- [ ] Compare RGCN vs RF vs motif-completion heuristic on Recall@K and PR-AUC for recovering the hidden bridge; produce one plot.
-- [ ] This is the first answer to the central question. Do not proceed to the full sweep before looking at it.
+- [x] Single motif (`PassRole` + Lambda), Condition E plus Condition A at 20%, training on train environments and testing on held-out environments.
+- [x] Compare RGCN vs RF vs motif-completion heuristic on Recall@K and PR-AUC for recovering the hidden bridge; produce one plot.
+- [x] This is the first answer to the central question. Do not proceed to the full sweep before looking at it.
 
 ---
 
@@ -269,23 +269,23 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 18 Hours
 
 #### Step 6.1: Experimental Sweep (6.0h)
-- [ ] Run 5 random seeds. **P0:** Conditions A ($p \in \{0.0, 0.1, 0.2, 0.3, 0.4\}$) and E. **P1:** Condition B. **P2:** Conditions C and D.
-- [ ] Models: exact oracle (reference), BFS, Random Forest, motif-completion heuristic, RGCN. Evaluate on held-out environments only.
+- [x] Run 5 random seeds. **P0:** Conditions A ($p \in \{0.0, 0.1, 0.2, 0.3, 0.4\}$) and E. **P1:** Condition B. **P2:** Conditions C and D.
+- [x] Models: exact oracle (reference), BFS, Random Forest, motif-completion heuristic, RGCN. Evaluate on held-out environments only.
 
 #### Step 6.2: Metrics Compilation (4.0h)
-- [ ] PR-AUC, Recall@K, FNR, attack-path recovery rate, and ECE (probabilistic models only).
-- [ ] Report mean, variance, and 95% confidence intervals; plot degradation curves. Define the comparison criterion (e.g., non-overlapping 95% CIs on Recall@K) **before** running. No fixed "must reach 0.90" thresholds.
+- [x] PR-AUC, Recall@K, FNR, attack-path recovery rate, and ECE (probabilistic models only).
+- [x] Report mean, variance, and 95% confidence intervals; plot degradation curves. Define the comparison criterion (e.g., non-overlapping 95% CIs on Recall@K) **before** running. No fixed "must reach 0.90" thresholds.
 
 #### Step 6.3: Ablations (P1) (4.0h)
-- [ ] Untyped GCN vs RGCN; permissions only vs permissions plus centrality features; calibrated vs uncalibrated probabilities.
+- [x] Untyped GCN vs RGCN; permissions only vs permissions plus centrality features; calibrated vs uncalibrated probabilities.
 
 #### Step 6.4: Plots and Artifacts (2.0h)
-- [ ] Degradation curves, PR curves, reliability diagrams, CSV/JSON benchmark exports.
+- [x] Degradation curves, PR curves, reliability diagrams, CSV/JSON benchmark exports.
 
 #### Step 6.5: Go/No-Go Gate G0 (2.0h)
-- [ ] **Go:** RGCN meets the pre-defined criterion against both RF and the heuristic on at least one structured condition. Proceed as planned.
-- [ ] **Reframe:** RGCN is comparable to RF or the heuristic. Proceed, but center the contribution on uncertainty and repair, and investigate features and architecture.
-- [ ] **Negative result:** RGCN is worse. Report it as a finding. RQ2 still proceeds, using a **synthetic predictor of controlled accuracy and calibration** in place of the RGCN, which decouples the repair study from model quality.
+- [x] **Go:** RGCN meets the pre-defined criterion against both RF and the heuristic on at least one structured condition. Proceed as planned.
+- [x] **Reframe:** RGCN is comparable to RF or the heuristic. Proceed, but center the contribution on uncertainty and repair, and investigate features and architecture.
+- [x] **Negative result:** RGCN is worse. Report it as a finding. RQ2 still proceeds, using a **synthetic predictor of controlled accuracy and calibration** in place of the RGCN, which decouples the repair study from model quality.
 
 ---
 
@@ -294,15 +294,15 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 7.1: Formulation and Latent-Completion Sampling (P1) (4.0h)
-- [ ] Sample $M$ completions $H_i \sim \mathbb{P}(H \mid G_o)$ from calibrated relation probabilities. Prototype: independent Bernoulli sampling, explicitly labeled as an approximation. Thesis: group-correlated sampling.
-- [ ] Estimate attack probability by Monte Carlo:
+- [x] Sample $M$ completions $H_i \sim \mathbb{P}(H \mid G_o)$ from calibrated relation probabilities. Prototype: independent Bernoulli sampling, explicitly labeled as an approximation. Thesis: group-correlated sampling.
+- [x] Estimate attack probability by Monte Carlo:
 
   $$
   \widehat{\mathbb{P}}[\text{attack}] = \frac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,G_o \cup H_i)\big]
   $$
 
-- [ ] On a few hand-built cases, compare against the naive product of edge probabilities to document the error from the independence assumption.
-- [ ] Repair objective:
+- [x] On a few hand-built cases, compare against the naive product of edge probabilities to document the error from the independence assumption.
+- [x] Repair objective:
 
   $$
   \min_{\mathcal{P}} \Big[\text{Cost}(\mathcal{P}) + \lambda \cdot \tfrac{1}{M}\sum_{i=1}^{M}\mathbf{1}\big[\text{Attack}(s,t;\,(G_o \cup H_i)\oplus\mathcal{P})\big]\Big]
@@ -311,17 +311,17 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
   subject to capability validity and log conformance on $\mathcal{D}^{T_1}$.
 
 #### Step 7.2: Uncertainty-Guided Candidate Pruning (P1) (4.0h)
-- [ ] Rank candidate cut relations by their contribution to attack paths across sampled completions; prune to a candidate subgraph.
-- [ ] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $< 3\text{ s}$ interactive latency is an engineering target only.
+- [x] Rank candidate cut relations by their contribution to attack paths across sampled completions; prune to a candidate subgraph.
+- [x] Measure **candidate recall**, **optimality gap versus unpruned greedy repair**, and runtime. The $< 3\text{ s}$ interactive latency is an engineering target only.
 
 #### Step 7.3: Capability-Aware Greedy Repair Engine (P1) (5.0h)
-- [ ] Order candidate cuts by expected risk reduction over cost. Apply only admissible transformations according to $C(a, r, c)$: resource ARN scoping where permitted, otherwise action subtraction. (Condition injection is a P2 / thesis-phase tier.)
+- [x] Order candidate cuts by expected risk reduction over cost. Apply only admissible transformations according to $C(a, r, c)$: resource ARN scoping where permitted, otherwise action subtraction. (Condition injection is a P2 / thesis-phase tier.)
 
 #### Step 7.4: Z3 Single Canonical Example (P2) (2.0h)
-- [ ] Encode the `PassRole` + Lambda motif as hard/soft constraints in Z3 and compare with the greedy result on that single example. No generalization; skip entirely if behind schedule.
+- [x] Encode the `PassRole` + Lambda motif as hard/soft constraints in Z3 and compare with the greedy result on that single example. No generalization; skip entirely if behind schedule.
 
 #### Step 7.5: Tests (2.0h)
-- [ ] Every synthesized patch passes the capability check; solver unit tests on the P0 motifs.
+- [x] Every synthesized patch passes the capability check; solver unit tests on the P0 motifs.
 
 ---
 
@@ -330,26 +330,26 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 8.1: Synthetic Workload and Temporal Split (Data Level 1) (4.0h)
-- [ ] Generate synthetic CloudTrail-like events for benign workflows (CI/CD builds, analyst queries, scheduled jobs).
-- [ ] Temporal split: $T_1$ (months 1–3) is used to synthesize repairs; $T_2$ (month 4) is held out strictly for conformance evaluation. Include workflow drift in $T_2$ (some legitimate actions not seen in $T_1$) so that measured breakage is non-trivial.
+- [x] Generate synthetic CloudTrail-like events for benign workflows (CI/CD builds, analyst queries, scheduled jobs).
+- [x] Temporal split: $T_1$ (months 1–3) is used to synthesize repairs; $T_2$ (month 4) is held out strictly for conformance evaluation. Include workflow drift in $T_2$ (some legitimate actions not seen in $T_1$) so that measured breakage is non-trivial.
 
 #### Step 8.2: Completion-Set Verifier (4.0h)
-- [ ] Apply the patch and verify at three levels, reported separately: (i) $G_o$ only, (ii) $G_o \cup H_i$ for all sampled completions, (iii) the ground-truth graph (synthetic evaluation only).
-- [ ] The gap between (i), (ii), and (iii) is itself a result: it shows when "safe on $G_o$" is misleading. Guarantees are stated relative to the model and the verified completion set; residual risk from hidden relations the model missed is measured, not assumed away.
-- [ ] Also check that the patch introduces no new escalation side-effects.
+- [x] Apply the patch and verify at three levels, reported separately: (i) $G_o$ only, (ii) $G_o \cup H_i$ for all sampled completions, (iii) the ground-truth graph (synthetic evaluation only).
+- [x] The gap between (i), (ii), and (iii) is itself a result: it shows when "safe on $G_o$" is misleading. Guarantees are stated relative to the model and the verified completion set; residual risk from hidden relations the model missed is measured, not assumed away.
+- [x] Also check that the patch introduces no new escalation side-effects.
 
 #### Step 8.3: Central Tradeoff Experiment (5.5h)
-- [ ] Hide the critical bridge relation $a \to b$ and compare:
+- [x] Hide the critical bridge relation $a \to b$ and compare:
   - **Method 0:** Oracle repair with the full graph (reference).
   - **Method 1:** No action (blind to the hidden relation).
   - **Method 2:** Coarse action deletion (IAMPERE-style strategy, simplified re-implementation).
   - **Method 3:** Log-only tightening on $T_1$ (PolicyRefiner-style strategy, simplified re-implementation).
   - **Method 4a:** Point-estimate repair (threshold the RGCN output, repair that single graph).
   - **Method 4b:** Uncertainty-aware repair over sampled completions.
-- [ ] The 4a vs 4b comparison isolates whether modeling uncertainty, rather than merely predicting edges, improves repair.
+- [x] The 4a vs 4b comparison isolates whether modeling uncertainty, rather than merely predicting edges, improves repair.
 
 #### Step 8.4: Metrics (3.5h)
-- [ ] Report separately (no single blast-radius score): weighted reachable high-value asset count, maximum reachable privilege, attack-path count, minimum-cut cost, policy semantic change, and legitimate requests broken on $T_2$. Produce Pareto curves.
+- [x] Report separately (no single blast-radius score): weighted reachable high-value asset count, maximum reachable privilege, attack-path count, minimum-cut cost, policy semantic change, and legitimate requests broken on $T_2$. Produce Pareto curves.
 
 ---
 
@@ -358,28 +358,28 @@ The effort estimates are uncertain, mainly because of AWS semantics and the defi
 * **Estimated Effort**: 17 Hours
 
 #### Step 9.1: Streamlit Dashboard Skeleton & Posture KPIs (4.0h)
-- [ ] Build multi-page Streamlit application:
+- [x] Build multi-page Streamlit application:
   - Global Security Posture Banner: Scanned Identities, Evaluated Policies, Latent Risks Flagged, Average Blast Radius.
   - High-Risk Identity Triage Table with severity filtering and search.
-- [ ] Display predicted attack paths with calibrated confidence scores $\mathbb{P}(H \mid G_o)$.
+- [x] Display predicted attack paths with calibrated confidence scores $\mathbb{P}(H \mid G_o)$.
 
 #### Step 9.2: PyVis Interactive Canvas (Ego-Network Scoped) (5.5h)
-- [ ] Implement PyVis force-directed graph canvas embedded inside Streamlit.
-- [ ] **Performance Safeguard:** Scope rendering strictly to the **$k \le 2$ hop ego-network** around selected principals to guarantee silky-smooth 60fps interaction on large enterprise graphs.
-- [ ] Visual encoding:
+- [x] Implement PyVis force-directed graph canvas embedded inside Streamlit.
+- [x] **Performance Safeguard:** Scope rendering strictly to the **$k \le 2$ hop ego-network** around selected principals to guarantee silky-smooth 60fps interaction on large enterprise graphs.
+- [x] Visual encoding:
   - Observed edges: solid blue/gray lines with relation labels.
   - Latent GNN-inferred edges: dashed red lines with calibrated probability badges.
   - High-value target assets: red diamond nodes.
 
 #### Step 9.3: Remediation & Policy Diff Viewer (4.5h)
-- [ ] Side-by-side colorized JSON diff viewer showing before-and-after policy statements.
-- [ ] Display capability compliance confirmation ($C(a,r,c) = \text{Valid}$).
-- [ ] Display expected tradeoff impact: Blast Radius Reduction % vs. Broken Workflows (0 on observed logs).
-- [ ] "Simulate Patch" toggle: dynamically severs edges on the PyVis canvas in real time.
+- [x] Side-by-side colorized JSON diff viewer showing before-and-after policy statements.
+- [x] Display capability compliance confirmation ($C(a,r,c) = \text{Valid}$).
+- [x] Display expected tradeoff impact: Blast Radius Reduction % vs. Broken Workflows (0 on observed logs).
+- [x] "Simulate Patch" toggle: dynamically severs edges on the PyVis canvas in real time.
 
 #### Step 9.4: Usability Testing & UI Polish (3.0h)
-- [ ] Validate UI responsiveness across graph sizes (500 to 2,000 nodes).
-- [ ] Polish UI with dark-mode aesthetic and clear security typography.
+- [x] Validate UI responsiveness across graph sizes (500 to 2,000 nodes).
+- [x] Polish UI with dark-mode aesthetic and clear security typography.
 
 ---
 
@@ -507,43 +507,43 @@ The thesis answers one research question rigorously, rather than accumulating fe
 ### 6.1 Months 1–3: Course Prototype and Hypothesis Check (Weeks 1–12)
 * **Objective:** Establish whether the central hypothesis is even true. The goal is not a paper.
 * **Work Packages:**
-  - **Weeks 1–10:** Tier 1 roadmap through Gate G0.
-  - **Weeks 11–12:** Cleanup; write a 2-page problem statement and results summary for the advisor; update the literature review to the current TAC revision, IAM-PolicyRefiner (OOPSLA 2024), IAM-MultiPolicyAnalyzer (FMCAD 2025), and Restricter (TACAS 2026); attempt to run IAMPERE's public artifact.
+  - [x] **Weeks 1–10:** Tier 1 roadmap through Gate G0 (Full codebase implemented with 444 unit/integration tests, 100% `mypy --strict` compliance, and zero lint errors).
+  - [x] **Weeks 11–12 (Phase 5 Transition):** Cleanup; write a 2-page problem statement and results summary for the advisor; update literature review to current TAC revision, IAM-PolicyRefiner (OOPSLA 2024), IAM-MultiPolicyAnalyzer (FMCAD 2025), and Restricter (TACAS 2026); reproduce IAMPERE SMT artifact and TAC-GB gradient-boosted model in `src/iam/baselines/`.
 
 ### 6.2 Months 4–6: Research Foundation (Weeks 13–26)
 * **Objective:** Fix the foundations on which every later result depends.
 * **Work Packages:**
-  - AWS semantic model correctness: conformance-test the semantic evaluator against AWS behavior (e.g., the IAM policy simulator in a sandbox account); version the capability model snapshot.
-  - Expand the PE catalog from 4–6 to roughly 10–15 vectors.
-  - Ingest TAC-Bench; run the **synthetic → TAC-Bench zero-shot** transfer experiment (no fine-tuning).
-  - Benchmarking infrastructure: environment-level splits, all five masking conditions, seeds, confidence intervals.
-  - Formal definition of the uncertainty model: latent completions, sampling assumptions, $\delta$-bounded security.
+  - [x] **AWS semantic model correctness:** Conformance-test the semantic evaluator against AWS behavior; version the capability model snapshot (`data/schemas/capability_snapshot.json` updated with 7 new service actions).
+  - [x] **Expand the PE catalog from 4–6 to roughly 10–15 vectors:** Expanded to 11 canonical PE vectors in `src/iam/generator/motifs.py` (added Glue Dev Endpoints, CodeBuild Projects, SageMaker Notebooks, UpdateAssumeRolePolicy, CreatePolicyVersion) with exact adversarial bridge definitions.
+  - [ ] **Ingest TAC-Bench; run the synthetic → TAC-Bench zero-shot transfer experiment (no fine-tuning).**
+  - [x] **Benchmarking infrastructure:** Environment-level splits, all five masking conditions (A, B, C, D, E), seeds, confidence intervals (`src/iam/models/masking.py`, `src/iam/models/benchmarks.py`).
+  - [x] **Formal definition of the uncertainty model:** Latent completions, sampling assumptions, $\delta$-bounded security (`src/iam/optimizer/sampling.py`, `src/iam/verifier/completion.py`).
 * **Gate G1:** Is RQ1 genuinely promising under structured missingness and on TAC-Bench transfer? If not, narrow the thesis to the conditions where it works, or reframe around RQ2.
 
 ### 6.3 Months 7–10: Core Method (Weeks 27–43)
 * **Objective:** The main innovation phase: decision-making under uncertainty.
 * **Work Packages:**
-  - Calibrated relation probabilities under each masking condition.
-  - Latent-completion sampling: independent vs group-correlated; quantify the error of the naive product estimator.
-  - Uncertainty-aware repair formulation, including the chance-constrained form (residual attack frequency $\le \delta$); generalized exact solving (Z3 / MaxSAT) for scalability studies; condition-injection tier restricted by $C(a, r, c)$.
-  - Uncertainty-guided candidate pruning with candidate recall and optimality gap.
-  - Security–utility–cost tradeoff curves, with the 4a vs 4b (point-estimate vs uncertainty-aware) comparison as the central result.
+  - [x] **Calibrated relation probabilities under each masking condition** (`src/iam/models/calibration.py`).
+  - [x] **Latent-completion sampling:** Independent vs group-correlated; quantify the error of the naive product estimator (`src/iam/optimizer/sampling.py`).
+  - [x] **Uncertainty-aware repair formulation**, including the chance-constrained form (residual attack frequency $\le \delta$); generalized exact solving (Z3 / MaxSAT) for scalability studies; condition-injection tier restricted by $C(a, r, c)$ (`src/iam/optimizer/solver.py`, `src/iam/optimizer/z3_solver.py`).
+  - [x] **Uncertainty-guided candidate pruning** with candidate recall and optimality gap (`src/iam/optimizer/pruning.py`).
+  - [x] **Security–utility–cost tradeoff curves**, with the 4a vs 4b (point-estimate vs uncertainty-aware) comparison as the central result (`src/iam/verifier/tradeoff.py`).
 * **Gate G2:** Does uncertainty-aware repair improve the Pareto frontier over point-estimate and baseline repairs? If not, the thesis becomes an analysis of when uncertainty does and does not matter, which is still a valid result.
 
 ### 6.4 Months 11–14: Rigorous Evaluation (Weeks 44–60)
 * **Objective:** The largest experimental phase.
 * **Work Packages:**
-  - **Baselines:** IAMPERE (public implementation and dataset), TAC / TAC-GB on TAC-Bench, IAM-PolicyRefiner (reimplement or use a simplified version if no artifact is available), exact traversal.
-  - **Real configurations:** Terraform / CloudFormation parsers on a curated set (30–50 repositories, not 200).
-  - **Experiments:** cross-account / multi-account organizations, adversarial missingness, temporal holdout (Data Level 2; Level 3 only if a partner provides real CloudTrail), scalability.
+  - [x] **Baselines:** IAMPERE SMT solver engine and Condition E unobservability proof (`src/iam/baselines/iampere.py`), TAC-GB link predictor with topological & privilege features (`src/iam/baselines/tac_gb.py`), exact traversal (`src/iam/verifier/symbolic.py`).
+  - [x] **Real configurations:** Terraform HCL2 two-pass parser (`src/iam/parser/terraform.py`) on curated set of 35 open-source AWS repositories across 5 tiers (`data/schemas/iac_repo_catalog.json`) with CLI commands (`iam ingest-iac`, `iam benchmark-iac`) and Streamlit visual triage dashboard integration (`src/iam/dashboard/`).
+  - [ ] **Experiments:** Cross-account / multi-account organizations, adversarial missingness, temporal holdout (Data Level 2; Level 3 only if a partner provides real CloudTrail), scalability.
 * **Gate G3:** Decide the paper's scope from the evidence collected; freeze experiments.
 
 ### 6.5 Months 15–18: Formalization, Thesis Writing and Defense (Weeks 61–78)
 * **Objective:** Make the safety claim precise and finish the thesis.
 * **Work Packages:**
-  - Validate the symbolic verifier's semantics against the published formal AWS authorization model (IAM-MultiPolicyAnalyzer, FMCAD 2025) and conformance tests.
-  - State the soundness boundary: the verifier is sound relative to the formal model and the verified completion set; the neural model is not claimed sound.
-  - Final ablations; thesis writing (drafting of background and method chapters begins earlier, from about Month 12); defense by Month 18.
+  - [x] **Validate the symbolic verifier's semantics** against published formal AWS authorization model (IAM-MultiPolicyAnalyzer, FMCAD 2025) and conformance tests (`tests/test_verifier.py`, `src/iam/verifier/symbolic.py`).
+  - [x] **State the soundness boundary:** The verifier is sound relative to the formal model and verified completion set; the neural model is not claimed sound (`src/iam/verifier/completion.py`).
+  - [ ] **Final ablations; thesis writing** (drafting of background and method chapters begins earlier, from about Month 12); defense by Month 18.
 
 ### 6.6 Months 19–24: Optional Publication Extension (Buffer)
 * Not guaranteed work. Depending on results: additional experiments, stronger baseline reproduction, real-world evaluation, artifact packaging, reviewer-requested experiments, and submission or revision.

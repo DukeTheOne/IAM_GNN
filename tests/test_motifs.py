@@ -5,15 +5,20 @@ import pytest
 from iam.generator import (
     AssumeRoleChainMotif,
     AttachPolicyMotif,
+    CodeBuildProjectMotif,
     CreateAccessKeyMotif,
+    CreatePolicyVersionMotif,
     EdgeRelation,
+    GlueDevEndpointMotif,
     GraphEdge,
     GraphNode,
     IAMGraph,
     NodeType,
     PassRoleEC2Motif,
     PassRoleLambdaMotif,
+    SageMakerNotebookMotif,
     SetDefaultPolicyVersionMotif,
+    UpdateAssumeRolePolicyMotif,
     default_motif_registry,
 )
 from iam.parser import CapabilityModel, load_default_capability_model
@@ -141,11 +146,11 @@ class TestMotifRegistry:
     """Tests verifying the dynamic motif registry."""
 
     def test_registry_contains_canonical_motifs(self) -> None:
-        assert len(default_motif_registry) == 6
+        assert len(default_motif_registry) == 11
         p0_motifs = default_motif_registry.list_motifs(tier="P0")
         assert len(p0_motifs) == 4
         p1_motifs = default_motif_registry.list_motifs(tier="P1")
-        assert len(p1_motifs) == 2
+        assert len(p1_motifs) == 7
 
     def test_registry_lookup_and_unknown_key(self) -> None:
         motif = default_motif_registry.get("passrole_lambda")
@@ -161,7 +166,7 @@ class TestMotifRegistry:
 
 
 class TestCanonicalPEMotifs:
-    """Comprehensive verification of all 4 P0 and 2 P1 motifs."""
+    """Comprehensive verification of all 4 P0 and 7 P1 motifs."""
 
     @pytest.fixture
     def capability_model(self) -> CapabilityModel:
@@ -282,6 +287,101 @@ class TestCanonicalPEMotifs:
                 for stmt in node.policy_document.statements:
                     assert capability_model.validate_statement(stmt) == []
 
+    def test_p1_motif_glue_dev_endpoint(self, capability_model: CapabilityModel) -> None:
+        graph = IAMGraph()
+        motif = GlueDevEndpointMotif()
+        instance = motif.inject(graph, suffix="test7")
+
+        assert instance.motif_type == "passrole_glue"
+        assert instance.tier == "P1"
+        assert "glue:CreateDevEndpoint" in instance.required_actions
+
+        verification = motif.verify_ground_truth(graph, instance)
+        assert verification.is_valid is True
+        assert verification.path_exists is True
+        assert verification.bridge_breaks_path is True
+
+        for node in graph.get_nodes_by_type(NodeType.POLICY):
+            if node.policy_document:
+                for stmt in node.policy_document.statements:
+                    assert capability_model.validate_statement(stmt) == []
+
+    def test_p1_motif_codebuild_project(self, capability_model: CapabilityModel) -> None:
+        graph = IAMGraph()
+        motif = CodeBuildProjectMotif()
+        instance = motif.inject(graph, suffix="test8")
+
+        assert instance.motif_type == "passrole_codebuild"
+        assert instance.tier == "P1"
+        assert "codebuild:StartBuild" in instance.required_actions
+
+        verification = motif.verify_ground_truth(graph, instance)
+        assert verification.is_valid is True
+        assert verification.path_exists is True
+        assert verification.bridge_breaks_path is True
+
+        for node in graph.get_nodes_by_type(NodeType.POLICY):
+            if node.policy_document:
+                for stmt in node.policy_document.statements:
+                    assert capability_model.validate_statement(stmt) == []
+
+    def test_p1_motif_sagemaker_notebook(self, capability_model: CapabilityModel) -> None:
+        graph = IAMGraph()
+        motif = SageMakerNotebookMotif()
+        instance = motif.inject(graph, suffix="test9")
+
+        assert instance.motif_type == "passrole_sagemaker"
+        assert instance.tier == "P1"
+        assert "sagemaker:CreateNotebookInstance" in instance.required_actions
+
+        verification = motif.verify_ground_truth(graph, instance)
+        assert verification.is_valid is True
+        assert verification.path_exists is True
+        assert verification.bridge_breaks_path is True
+
+        for node in graph.get_nodes_by_type(NodeType.POLICY):
+            if node.policy_document:
+                for stmt in node.policy_document.statements:
+                    assert capability_model.validate_statement(stmt) == []
+
+    def test_p1_motif_update_assume_role_policy(self, capability_model: CapabilityModel) -> None:
+        graph = IAMGraph()
+        motif = UpdateAssumeRolePolicyMotif()
+        instance = motif.inject(graph, suffix="test10")
+
+        assert instance.motif_type == "update_assume_role_policy"
+        assert instance.tier == "P1"
+        assert "iam:UpdateAssumeRolePolicy" in instance.required_actions
+
+        verification = motif.verify_ground_truth(graph, instance)
+        assert verification.is_valid is True
+        assert verification.path_exists is True
+        assert verification.bridge_breaks_path is True
+
+        for node in graph.get_nodes_by_type(NodeType.POLICY):
+            if node.policy_document:
+                for stmt in node.policy_document.statements:
+                    assert capability_model.validate_statement(stmt) == []
+
+    def test_p1_motif_create_policy_version(self, capability_model: CapabilityModel) -> None:
+        graph = IAMGraph()
+        motif = CreatePolicyVersionMotif()
+        instance = motif.inject(graph, suffix="test11")
+
+        assert instance.motif_type == "create_policy_version"
+        assert instance.tier == "P1"
+        assert "iam:CreatePolicyVersion" in instance.required_actions
+
+        verification = motif.verify_ground_truth(graph, instance)
+        assert verification.is_valid is True
+        assert verification.path_exists is True
+        assert verification.bridge_breaks_path is True
+
+        for node in graph.get_nodes_by_type(NodeType.POLICY):
+            if node.policy_document:
+                for stmt in node.policy_document.statements:
+                    assert capability_model.validate_statement(stmt) == []
+
     def test_multi_motif_coexistence_in_single_graph(self) -> None:
         """Verify multiple motifs can be injected into the same graph without conflict."""
         graph = IAMGraph(graph_id="multi_motif_graph")
@@ -292,10 +392,10 @@ class TestCanonicalPEMotifs:
             inst = motif.inject(graph, suffix=f"batch_{i}")
             instances.append((motif, inst))
 
-        # Graph should now contain all 6 distinct motifs
-        assert len(instances) == 6
-        assert graph.num_nodes > 25
-        assert len(graph.get_bridge_edges()) == 6
+        # Graph should now contain all 11 distinct motifs
+        assert len(instances) == 11
+        assert graph.num_nodes > 40
+        assert len(graph.get_bridge_edges()) == 11
 
         # Verify ground truth for every injected motif independently
         for motif, inst in instances:

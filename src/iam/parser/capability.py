@@ -66,7 +66,19 @@ class ActionCapability(BaseModel):
                 return True
             if r == "instance" and ":instance/" in arn_lower:
                 return True
-            if r in ("image", "subnet", "security-group", "volume") and f":{r}/" in arn_lower:
+            if (
+                r
+                in (
+                    "image",
+                    "subnet",
+                    "security-group",
+                    "volume",
+                    "devendpoint",
+                    "project",
+                    "notebook-instance",
+                )
+                and f":{r}/" in arn_lower
+            ):
                 return True
 
         return False

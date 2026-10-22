@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from enum import Enum
+from pathlib import Path
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field
@@ -503,4 +504,253 @@ def create_demo_dashboard_state(num_nodes: int = 150, seed: int = 42) -> Dashboa
         verification_reports=verification_reports,
         transformations=transformations,
         selected_principal_id=source_id,
+    )
+
+
+def create_iac_dashboard_state(
+    variant: str = "privilege_escalation_vulnerable",
+    storage_dir: Path | str | None = None,
+) -> DashboardState:
+    """Construct a DashboardState from a parsed real-world Terraform IaC repository fixture.
+
+    Supports:
+    - 'privilege_escalation_vulnerable': PassRole + Lambda execution vector
+    - 'tac_bench_reference': Multi-hop cross-account delegation (security-auditor -> jump -> prod gateway)
+    - 'enterprise_microservices': Core multi-role microservices topology
+    """
+    from iam.parser.repository import IaCRepositoryManager
+    from iam.verifier.verifier import SideEffectResult, WorkloadReplayResult
+
+    if storage_dir is None:
+        storage_path = (
+            Path(__file__).resolve().parent.parent.parent.parent
+            / "data"
+            / "iac_repositories"
+            / "_dashboard_fixtures"
+            / variant
+        )
+    else:
+        storage_path = Path(storage_dir) / variant
+
+    manager = IaCRepositoryManager()
+    manager.generate_fixture_repository(storage_path, variant=variant)
+    _env, graph = manager.ingest_repository(storage_path, graph_id=f"iac_{variant}")
+
+    candidate_edges: list[CandidateEdge] = []
+    transformations: dict[str, list[PolicyTransformation]] = {}
+    verification_reports: dict[str, VerificationReport] = {}
+    selected_principal: str | None = None
+
+    if variant == "privilege_escalation_vulnerable":
+        selected_principal = "user:intern-dev"
+        target_asset = "resource:arn_aws_s3___confidential-crown-jewels_*"
+
+        if target_asset in graph.nx_graph.nodes:
+            graph.nx_graph.nodes[target_asset]["is_high_value"] = True
+
+        candidate_edges = [
+            CandidateEdge(
+                source="user:intern-dev",
+                target="role:lambda-superadmin-exec",
+                relation=EdgeRelation.PASSES_TO,
+                probability=0.94,
+                is_bridge=True,
+            ),
+            CandidateEdge(
+                source="role:lambda-superadmin-exec",
+                target=target_asset,
+                relation=EdgeRelation.ACTS_ON,
+                probability=0.98,
+            ),
+        ]
+
+        transformations[selected_principal] = [
+            ScopeResourceTransformation(
+                policy_id="policy:intern_escalator_policy",
+                statement_index=0,
+                action="iam:PassRole",
+                target_resources=["arn:aws:iam::123456789012:role/scoped-intern-lambda-role"],
+                original_resources=["arn:aws:iam::123456789012:role/lambda-superadmin-exec"],
+                cost=1.0,
+                description="Scope action 'iam:PassRole' to dedicated unprivileged intern role ARN",
+            )
+        ]
+
+        verification_reports[selected_principal] = VerificationReport(
+            source_id=selected_principal,
+            target_id=target_asset,
+            level1_risk_observed=0.0,
+            level2_risk_completion_set=0.94,
+            level3_risk_ground_truth=1.0,
+            level1_safe=True,
+            level2_safe=False,
+            level3_safe=False,
+            overall_status=SafetyStatus.MISLEADING_SAFE,
+            is_misleading=True,
+            side_effects=SideEffectResult(
+                has_side_effects=False,
+                new_escalation_pairs=[],
+                num_pairs_checked=25,
+                details="Zero new privilege escalation side-effects in Terraform environment.",
+            ),
+            t1_replay=WorkloadReplayResult(
+                window_name="T1",
+                total_requests=120,
+                allowed_requests=120,
+                denied_requests=0,
+                breakage_rate=0.0,
+                is_conforming=True,
+            ),
+            t2_replay=WorkloadReplayResult(
+                window_name="T2",
+                total_requests=40,
+                allowed_requests=39,
+                denied_requests=1,
+                breakage_rate=0.025,
+                is_conforming=False,
+            ),
+            execution_time_sec=0.0031,
+            metadata={"motif": "PassRoleLambda", "source": "Terraform_IaC"},
+        )
+    elif variant == "tac_bench_reference":
+        selected_principal = "user:security-auditor"
+        target_asset = "resource:arn_aws_kms_us-east-1_123456789012_key_production-vault-key"
+        if target_asset in graph.nx_graph.nodes:
+            graph.nx_graph.nodes[target_asset]["is_high_value"] = True
+
+        candidate_edges = [
+            CandidateEdge(
+                source="role:staging-jump-role",
+                target="role:prod-gateway-role",
+                relation=EdgeRelation.ASSUMES_ROLE,
+                probability=0.89,
+                is_bridge=True,
+            ),
+            CandidateEdge(
+                source="role:prod-gateway-role",
+                target=target_asset,
+                relation=EdgeRelation.ACTS_ON,
+                probability=0.96,
+            ),
+        ]
+
+        transformations[selected_principal] = [
+            ScopeResourceTransformation(
+                policy_id="policy:VaultSecretsAccess",
+                statement_index=0,
+                action="kms:Decrypt",
+                target_resources=["arn:aws:kms:us-east-1:123456789012:key/staging-vault-key"],
+                original_resources=["arn:aws:kms:us-east-1:123456789012:key/production-vault-key"],
+                cost=1.5,
+                description="Restrict KMS decryption to staging key boundary across account trust boundary",
+            )
+        ]
+
+        verification_reports[selected_principal] = VerificationReport(
+            source_id=selected_principal,
+            target_id=target_asset,
+            level1_risk_observed=0.0,
+            level2_risk_completion_set=0.89,
+            level3_risk_ground_truth=1.0,
+            level1_safe=True,
+            level2_safe=False,
+            level3_safe=False,
+            overall_status=SafetyStatus.MISLEADING_SAFE,
+            is_misleading=True,
+            side_effects=SideEffectResult(
+                has_side_effects=False,
+                new_escalation_pairs=[],
+                num_pairs_checked=20,
+                details="Zero cross-account trust violations.",
+            ),
+            t1_replay=WorkloadReplayResult(
+                window_name="T1",
+                total_requests=85,
+                allowed_requests=85,
+                denied_requests=0,
+                breakage_rate=0.0,
+                is_conforming=True,
+            ),
+            t2_replay=WorkloadReplayResult(
+                window_name="T2",
+                total_requests=30,
+                allowed_requests=29,
+                denied_requests=1,
+                breakage_rate=0.033,
+                is_conforming=False,
+            ),
+            execution_time_sec=0.0028,
+            metadata={"motif": "CrossAccountDelegation", "source": "TAC-Bench"},
+        )
+    else:  # enterprise_microservices
+        selected_principal = "user:lead-engineer"
+        target_asset = "resource:arn_aws_s3___corporate-customer-assets"
+        if target_asset in graph.nx_graph.nodes:
+            graph.nx_graph.nodes[target_asset]["is_high_value"] = True
+
+        candidate_edges = [
+            CandidateEdge(
+                source="user:lead-engineer",
+                target="role:app-backend-role",
+                relation=EdgeRelation.ASSUMES_ROLE,
+                probability=0.76,
+                is_bridge=False,
+            )
+        ]
+
+        transformations[selected_principal] = [
+            ScopeResourceTransformation(
+                policy_id="policy:S3CustomerAssetsReadOnly",
+                statement_index=0,
+                action="s3:GetObject",
+                target_resources=["arn:aws:s3:::corporate-customer-assets/engineering/*"],
+                original_resources=["arn:aws:s3:::corporate-customer-assets/*"],
+                cost=1.0,
+                description="Scope read access to departmental prefix /engineering/*",
+            )
+        ]
+
+        verification_reports[selected_principal] = VerificationReport(
+            source_id=selected_principal,
+            target_id=target_asset,
+            level1_risk_observed=0.5,
+            level2_risk_completion_set=0.76,
+            level3_risk_ground_truth=1.0,
+            level1_safe=False,
+            level2_safe=False,
+            level3_safe=False,
+            overall_status=SafetyStatus.UNSAFE,
+            is_misleading=False,
+            side_effects=SideEffectResult(
+                has_side_effects=False,
+                new_escalation_pairs=[],
+                num_pairs_checked=30,
+                details="Safe operational baseline maintained.",
+            ),
+            t1_replay=WorkloadReplayResult(
+                window_name="T1",
+                total_requests=200,
+                allowed_requests=200,
+                denied_requests=0,
+                breakage_rate=0.0,
+                is_conforming=True,
+            ),
+            t2_replay=WorkloadReplayResult(
+                window_name="T2",
+                total_requests=50,
+                allowed_requests=50,
+                denied_requests=0,
+                breakage_rate=0.0,
+                is_conforming=True,
+            ),
+            execution_time_sec=0.0035,
+            metadata={"motif": "EnterpriseMicroservices", "source": "Terraform_IaC"},
+        )
+
+    return DashboardState(
+        graph=graph,
+        candidate_edges=candidate_edges,
+        verification_reports=verification_reports,
+        transformations=transformations,
+        selected_principal_id=selected_principal,
     )

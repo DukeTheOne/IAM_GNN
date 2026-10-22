@@ -64,12 +64,12 @@ class TestActionVocabulary:
     """Tests for ActionVocabulary construction, OOV handling, wildcard expansion, and serialization."""
 
     def test_default_vocabulary_loading(self, default_vocab: ActionVocabulary) -> None:
-        """Verify default vocabulary contains OOV index 0 plus 30 canonical AWS actions."""
-        # 1 OOV token + 30 canonical actions = 31 total
-        assert default_vocab.vocab_size == 31
+        """Verify default vocabulary contains OOV index 0 plus canonical AWS actions."""
+        # 1 OOV token + 37 canonical actions = 38 total
+        assert default_vocab.vocab_size == 38
         assert default_vocab.get_action(0) == "<OOV>"
         assert default_vocab.get_index("<OOV>") == 0
-        assert len(default_vocab.canonical_actions) == 30
+        assert len(default_vocab.canonical_actions) == 37
 
     def test_case_insensitive_lookup_and_contains(self, default_vocab: ActionVocabulary) -> None:
         """Verify actions can be retrieved case-insensitively."""
@@ -132,11 +132,11 @@ class TestActionVocabulary:
     def test_feature_dimension_config(self, default_vocab: ActionVocabulary) -> None:
         """Verify fixed dimension contracts calculated from ActionVocabulary."""
         dim_cfg = get_feature_dimension_config(default_vocab)
-        assert dim_cfg.action_vocab_size == 31
-        assert dim_cfg.user_dim == 20 + 31  # 51
-        assert dim_cfg.role_dim == 21 + 31  # 52
-        assert dim_cfg.policy_dim == 8 + 31  # 39
-        assert dim_cfg.group_dim == 11 + 31  # 42
+        assert dim_cfg.action_vocab_size == 38
+        assert dim_cfg.user_dim == 20 + 38  # 58
+        assert dim_cfg.role_dim == 21 + 38  # 59
+        assert dim_cfg.policy_dim == 8 + 38  # 46
+        assert dim_cfg.group_dim == 11 + 38  # 49
         assert dim_cfg.resource_dim == 20
 
 

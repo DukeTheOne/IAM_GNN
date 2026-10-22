@@ -25,6 +25,7 @@ from iam.dashboard.metrics_banner import render_posture_banner_html
 from iam.dashboard.state import (
     DashboardState,
     create_demo_dashboard_state,
+    create_iac_dashboard_state,
 )
 from iam.parser.schema import PolicyDocument
 
@@ -32,8 +33,18 @@ logger = logging.getLogger(__name__)
 
 
 @st.cache_resource(show_spinner="Initializing IAM Topology & Calibrated Models...")
-def get_cached_dashboard_state(num_nodes: int = 150, seed: int = 42) -> DashboardState:
+def get_cached_dashboard_state(
+    topology_type: str = "Synthetic Enterprise (Default)",
+    num_nodes: int = 150,
+    seed: int = 42,
+) -> DashboardState:
     """Instantiate and cache the immutable DashboardState in process memory."""
+    if topology_type == "IaC: Privilege Escalation Vulnerable":
+        return create_iac_dashboard_state(variant="privilege_escalation_vulnerable")
+    elif topology_type == "IaC: TAC-Bench Cross-Account Delegation":
+        return create_iac_dashboard_state(variant="tac_bench_reference")
+    elif topology_type == "IaC: Enterprise Microservices":
+        return create_iac_dashboard_state(variant="enterprise_microservices")
     return create_demo_dashboard_state(num_nodes=num_nodes, seed=seed)
 
 
@@ -116,14 +127,34 @@ def main() -> None:
         "Uncertainty-Aware Least-Privilege Repair under Partial Observability · Phase 4 Prototype Deliverable"
     )
 
+    # Sidebar: Global Controls and Filtering
+    st.sidebar.header("🌐 Topology Source")
+    topology_options = [
+        "Synthetic Enterprise (Default)",
+        "IaC: Privilege Escalation Vulnerable",
+        "IaC: TAC-Bench Cross-Account Delegation",
+        "IaC: Enterprise Microservices",
+    ]
+    raw_topology = st.sidebar.selectbox(
+        "Select Authorization Topology",
+        topology_options,
+        index=0,
+        help="Switch between synthetic enterprise multi-account topologies and real-world parsed Terraform IaC infrastructure.",
+    )
+    selected_topology: str = str(raw_topology) if raw_topology is not None else topology_options[0]
+    if selected_topology.startswith("IaC:"):
+        st.sidebar.caption(
+            "📁 **IaC Environment Active**: Parsed from Terraform HCL2 specifications."
+        )
+
     # Initialize / retrieve state
-    state = get_cached_dashboard_state()
+    state = get_cached_dashboard_state(topology_type=selected_topology)
 
     # Render Posture KPI Banner
     kpis = state.get_posture_kpis()
     st.html(render_posture_banner_html(kpis))
 
-    # Sidebar: Global Controls and Filtering
+    st.sidebar.divider()
     st.sidebar.header("🔍 Triage Filters")
 
     departments = ["ALL"] + sorted(
@@ -196,6 +227,12 @@ def main() -> None:
             return
 
         st.subheader(f"🔍 Ego-Network: `{current_record.principal_id}`")
+        node_attrs = state.graph.nx_graph.nodes.get(current_record.principal_id, {})
+        source_file = node_attrs.get("metadata", {}).get("source_file") or node_attrs.get(
+            "source_file"
+        )
+        if source_file:
+            st.caption(f"📄 **IaC Source Block**: `{source_file}`")
 
         # Status & Misleading Safe Banner
         c_status, c_sim = st.columns([1.5, 1.0])
@@ -238,8 +275,14 @@ def main() -> None:
             # Determine severed edges if simulation is active
             severed_set: set[tuple[str, str, str]] = set()
             if state.simulation_active:
+                for cand in state.candidate_edges:
+                    rel_val = (
+                        cand.relation.value
+                        if hasattr(cand.relation, "value")
+                        else str(cand.relation)
+                    )
+                    severed_set.add((cand.source, cand.target, rel_val))
                 for _trans in state.get_selected_transformations():
-                    # Sever the candidate latent link associated with the target action
                     severed_set.add(
                         (current_record.principal_id, "Role_ExecutionEngine", "PassesTo")
                     )
@@ -268,27 +311,37 @@ def main() -> None:
             transformations = state.get_selected_transformations()
             diff_viewer = PolicyDiffViewer()
 
-            # Construct representative baseline policy for diff visualization
-            base_policy = PolicyDocument.from_dict(
-                {
-                    "Version": "2012-10-17",
-                    "Id": "Policy_DeveloperExecution",
-                    "Statement": [
-                        {
-                            "Sid": "AllowPassRoleExecution",
-                            "Effect": "Allow",
-                            "Action": ["iam:PassRole"],
-                            "Resource": ["*"],  # Overly broad wildcard before repair
-                        },
-                        {
-                            "Sid": "AllowLambdaInvokeRoutine",
-                            "Effect": "Allow",
-                            "Action": ["lambda:InvokeFunction"],
-                            "Resource": ["arn:aws:lambda:us-east-1:123456789012:function:test-*"],
-                        },
-                    ],
-                }
-            )
+            # Locate policy attached to selected principal or fallback to default
+            base_policy: PolicyDocument | None = None
+            for succ in state.graph.nx_graph.successors(current_record.principal_id):
+                succ_node = state.graph.get_node(succ)
+                if succ_node and succ_node.policy_document:
+                    base_policy = succ_node.policy_document
+                    break
+
+            if base_policy is None:
+                base_policy = PolicyDocument.from_dict(
+                    {
+                        "Version": "2012-10-17",
+                        "Id": "Policy_DeveloperExecution",
+                        "Statement": [
+                            {
+                                "Sid": "AllowPassRoleExecution",
+                                "Effect": "Allow",
+                                "Action": ["iam:PassRole"],
+                                "Resource": ["*"],  # Overly broad wildcard before repair
+                            },
+                            {
+                                "Sid": "AllowLambdaInvokeRoutine",
+                                "Effect": "Allow",
+                                "Action": ["lambda:InvokeFunction"],
+                                "Resource": [
+                                    "arn:aws:lambda:us-east-1:123456789012:function:test-*"
+                                ],
+                            },
+                        ],
+                    }
+                )
 
             diff_result = diff_viewer.generate_diff(base_policy, transformations)
 

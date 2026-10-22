@@ -1,6 +1,6 @@
-"""Unit tests for DashboardState, TriageRecord, and KPI caching."""
-
 from __future__ import annotations
+
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -11,6 +11,7 @@ from iam.dashboard.state import (
     SeverityTier,
     TriageRecord,
     create_demo_dashboard_state,
+    create_iac_dashboard_state,
 )
 
 
@@ -114,3 +115,56 @@ class TestDashboardStateOperations:
         assert sample_state.simulation_active is True
         sample_state.toggle_simulation(False)
         assert sample_state.simulation_active is False
+
+
+class TestIaCDashboardState:
+    """Tests for real-world and synthetic IaC dashboard state ingestion and triage."""
+
+    def test_iac_state_pe_vulnerable(self, tmp_path: Path) -> None:
+
+        state = create_iac_dashboard_state("privilege_escalation_vulnerable", storage_dir=tmp_path)
+        assert state.graph.num_nodes >= 4
+        assert state.selected_principal_id == "user:intern-dev"
+
+        rec = state.get_selected_record()
+        assert rec is not None
+        assert rec.is_misleading is True
+        assert rec.severity == SeverityTier.CRITICAL
+        assert (
+            "intern_escalator_policy" in rec.recommended_action
+            or "PassRole" in rec.recommended_action
+        )
+
+        # Check candidate bridge edges
+        assert len(state.candidate_edges) >= 1
+        bridge = next(e for e in state.candidate_edges if e.is_bridge)
+        assert bridge.source == "user:intern-dev"
+        assert bridge.target == "role:lambda-superadmin-exec"
+
+        # Check transformation and verification report
+        trans = state.get_selected_transformations()
+        assert len(trans) == 1
+        assert trans[0].action == "iam:PassRole"
+
+        report = state.get_selected_verification_report()
+        assert report is not None
+        assert report.is_misleading is True
+
+    def test_iac_state_tac_bench_reference(self, tmp_path: Path) -> None:
+        state = create_iac_dashboard_state("tac_bench_reference", storage_dir=tmp_path)
+        assert state.graph.num_nodes >= 4
+        assert state.selected_principal_id == "user:security-auditor"
+
+        rec = state.get_selected_record()
+        assert rec is not None
+        assert rec.severity == SeverityTier.CRITICAL
+        assert any(e.source == "role:staging-jump-role" for e in state.candidate_edges)
+
+    def test_iac_state_enterprise_microservices(self, tmp_path: Path) -> None:
+        state = create_iac_dashboard_state("enterprise_microservices", storage_dir=tmp_path)
+        assert state.graph.num_nodes >= 5
+        assert state.selected_principal_id == "user:lead-engineer"
+
+        kpis = state.get_posture_kpis()
+        assert kpis.total_identities >= 3
+        assert kpis.total_policies >= 1

@@ -1332,6 +1332,989 @@ class SetDefaultPolicyVersionMotif(PEMotif):
         )
 
 
+class GlueDevEndpointMotif(PEMotif):
+    """Tier 2 Motif 7: iam:PassRole + glue:CreateDevEndpoint.
+
+    Attacker creates an AWS Glue development endpoint and passes an existing high-privilege
+    Glue service role to it, executing arbitrary analytical code with that role's credentials.
+    Bridge relation: (source, admin_role, PassesTo).
+    """
+
+    motif_type = "passrole_glue"
+    name = "iam:PassRole with Glue CreateDevEndpoint"
+    description = (
+        "Principal creates an AWS Glue development endpoint associated with a high-privilege "
+        "Glue service role and executes scripts in the endpoint context."
+    )
+    tier = "P1"
+    required_actions = ["iam:PassRole", "glue:CreateDevEndpoint"]
+
+    def inject(
+        self,
+        graph: IAMGraph,
+        source_id: str | None = None,
+        target_id: str | None = None,
+        suffix: str = "",
+        account_id: str = "123456789012",
+        **_kwargs: Any,
+    ) -> MotifInstance:
+        cap_model = load_default_capability_model()
+        uid = suffix or "default"
+
+        # 1. Source principal
+        if source_id is None:
+            source_id = f"user:glue-dev-{uid}"
+            source_node = GraphNode(
+                id=source_id,
+                node_type=NodeType.USER,
+                arn=f"arn:aws:iam::{account_id}:user/glue-dev-{uid}",
+                name=f"glue-dev-{uid}",
+                account_id=account_id,
+                department="DataBI",
+            )
+            graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
+
+        # 2. Target high-value asset
+        if target_id is None:
+            target_id = f"resource:s3-lake-{uid}"
+            target_node = GraphNode(
+                id=target_id,
+                node_type=NodeType.RESOURCE,
+                arn=f"arn:aws:s3:::enterprise-data-lake-{uid}",
+                name=f"enterprise-data-lake-{uid}",
+                account_id=account_id,
+                department="DataBI",
+                is_high_value=True,
+            )
+            graph.add_node(target_node)
+        else:
+            found = graph.get_node(target_id)
+            if found is None:
+                raise KeyError(f"Target node '{target_id}' not found in graph.")
+            target_node = found
+
+        # 3. High-privilege Glue role
+        admin_role_id = f"role:glue-admin-role-{uid}"
+        admin_role_arn = f"arn:aws:iam::{account_id}:role/glue-admin-role-{uid}"
+        glue_trust_doc = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate({"Service": ["glue.amazonaws.com"]}),
+                )
+            ]
+        )
+        admin_role = GraphNode(
+            id=admin_role_id,
+            node_type=NodeType.ROLE,
+            arn=admin_role_arn,
+            name=f"glue-admin-role-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            is_admin=True,
+            trust_policy=glue_trust_doc,
+        )
+        graph.add_node(admin_role)
+
+        # 4. Admin policy granting target access
+        admin_pol_id = f"policy:glue-lake-access-{uid}"
+        admin_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["s3:GetObject", "s3:PutObject"],
+            Resource=[f"{target_node.arn}/*"],
+        )
+        assert cap_model.validate_statement(admin_stmt) == []
+        admin_pol = GraphNode(
+            id=admin_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/glue-lake-access-{uid}",
+            name=f"glue-lake-access-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            is_admin=True,
+            policy_document=PolicyDocument(Statement=[admin_stmt]),
+        )
+        graph.add_node(admin_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=admin_role_id,
+                target=admin_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=admin_pol_id,
+                target=target_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["s3:GetObject"],
+            )
+        )
+
+        # 5. Glue DevEndpoint resource
+        glue_res_id = f"resource:glue-devendpoint-{uid}"
+        glue_node = GraphNode(
+            id=glue_res_id,
+            node_type=NodeType.RESOURCE,
+            arn=f"arn:aws:glue:us-east-1:{account_id}:devendpoint/endpoint-{uid}",
+            name=f"endpoint-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            metadata={"dev_endpoint_role": admin_role_arn},
+        )
+        graph.add_node(glue_node)
+
+        # 6. Source policy granting passrole and createdevendpoint
+        source_pol_id = f"policy:glue-launcher-{uid}"
+        pass_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["iam:PassRole"],
+            Resource=[admin_role_arn],
+        )
+        create_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["glue:CreateDevEndpoint"],
+            Resource=[f"arn:aws:glue:us-east-1:{account_id}:devendpoint/*"],
+        )
+        assert cap_model.validate_statement(pass_stmt) == []
+        assert cap_model.validate_statement(create_stmt) == []
+        source_pol = GraphNode(
+            id=source_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/glue-launcher-{uid}",
+            name=f"glue-launcher-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            policy_document=PolicyDocument(Statement=[pass_stmt, create_stmt]),
+        )
+        graph.add_node(source_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=source_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=glue_res_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["glue:CreateDevEndpoint"],
+            )
+        )
+
+        # 7. Bridge relation: PassesTo from source to admin role
+        bridge_rel = (source_id, admin_role_id, EdgeRelation.PASSES_TO.value)
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=admin_role_id,
+                relation=EdgeRelation.PASSES_TO,
+                is_bridge=True,
+                motif_id=f"passrole_glue_{uid}",
+                actions=["iam:PassRole"],
+            )
+        )
+
+        path_edges = [
+            (source_id, admin_role_id, EdgeRelation.PASSES_TO.value),
+            (admin_role_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
+            (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        ]
+
+        return MotifInstance(
+            instance_id=f"passrole_glue_{uid}",
+            motif_type=self.motif_type,
+            tier=self.tier,
+            source_id=source_id,
+            target_id=target_id,
+            intermediate_node_ids=[admin_role_id, admin_pol_id, glue_res_id],
+            path_edges=path_edges,
+            bridge_relation=bridge_rel,
+            required_actions=self.required_actions,
+        )
+
+
+class CodeBuildProjectMotif(PEMotif):
+    """Tier 2 Motif 8: iam:PassRole + codebuild:StartBuild.
+
+    Attacker triggers a CodeBuild project build passing a high-privilege service role,
+    executing arbitrary build commands that access sensitive target resources.
+    Bridge relation: (source, admin_role, PassesTo).
+    """
+
+    motif_type = "passrole_codebuild"
+    name = "iam:PassRole with CodeBuild StartBuild"
+    description = (
+        "Principal triggers a CodeBuild execution associated with a high-privilege service role "
+        "and executes arbitrary commands within the build container."
+    )
+    tier = "P1"
+    required_actions = ["iam:PassRole", "codebuild:StartBuild"]
+
+    def inject(
+        self,
+        graph: IAMGraph,
+        source_id: str | None = None,
+        target_id: str | None = None,
+        suffix: str = "",
+        account_id: str = "123456789012",
+        **_kwargs: Any,
+    ) -> MotifInstance:
+        cap_model = load_default_capability_model()
+        uid = suffix or "default"
+
+        # 1. Source principal
+        if source_id is None:
+            source_id = f"user:build-dev-{uid}"
+            source_node = GraphNode(
+                id=source_id,
+                node_type=NodeType.USER,
+                arn=f"arn:aws:iam::{account_id}:user/build-dev-{uid}",
+                name=f"build-dev-{uid}",
+                account_id=account_id,
+                department="DevOps",
+            )
+            graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
+
+        # 2. Target high-value asset
+        if target_id is None:
+            target_id = f"resource:s3-vault-{uid}"
+            target_node = GraphNode(
+                id=target_id,
+                node_type=NodeType.RESOURCE,
+                arn=f"arn:aws:s3:::ci-secrets-vault-{uid}",
+                name=f"ci-secrets-vault-{uid}",
+                account_id=account_id,
+                department="SecOps",
+                is_high_value=True,
+            )
+            graph.add_node(target_node)
+        else:
+            found = graph.get_node(target_id)
+            if found is None:
+                raise KeyError(f"Target node '{target_id}' not found in graph.")
+            target_node = found
+
+        # 3. CodeBuild admin service role
+        admin_role_id = f"role:codebuild-service-role-{uid}"
+        admin_role_arn = f"arn:aws:iam::{account_id}:role/codebuild-service-role-{uid}"
+        cb_trust_doc = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate({"Service": ["codebuild.amazonaws.com"]}),
+                )
+            ]
+        )
+        admin_role = GraphNode(
+            id=admin_role_id,
+            node_type=NodeType.ROLE,
+            arn=admin_role_arn,
+            name=f"codebuild-service-role-{uid}",
+            account_id=account_id,
+            department="DevOps",
+            is_admin=True,
+            trust_policy=cb_trust_doc,
+        )
+        graph.add_node(admin_role)
+
+        # 4. Admin policy
+        admin_pol_id = f"policy:codebuild-vault-access-{uid}"
+        admin_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["s3:GetObject", "s3:PutObject"],
+            Resource=[f"{target_node.arn}/*"],
+        )
+        assert cap_model.validate_statement(admin_stmt) == []
+        admin_pol = GraphNode(
+            id=admin_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/codebuild-vault-access-{uid}",
+            name=f"codebuild-vault-access-{uid}",
+            account_id=account_id,
+            department="SecOps",
+            is_admin=True,
+            policy_document=PolicyDocument(Statement=[admin_stmt]),
+        )
+        graph.add_node(admin_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=admin_role_id,
+                target=admin_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=admin_pol_id,
+                target=target_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["s3:GetObject"],
+            )
+        )
+
+        # 5. CodeBuild project resource
+        cb_res_id = f"resource:codebuild-project-{uid}"
+        cb_node = GraphNode(
+            id=cb_res_id,
+            node_type=NodeType.RESOURCE,
+            arn=f"arn:aws:codebuild:us-east-1:{account_id}:project/build-project-{uid}",
+            name=f"build-project-{uid}",
+            account_id=account_id,
+            department="DevOps",
+            metadata={"service_role": admin_role_arn},
+        )
+        graph.add_node(cb_node)
+
+        # 6. Source policy granting passrole and startbuild
+        source_pol_id = f"policy:codebuild-trigger-{uid}"
+        pass_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["iam:PassRole"],
+            Resource=[admin_role_arn],
+        )
+        start_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["codebuild:StartBuild"],
+            Resource=[f"arn:aws:codebuild:us-east-1:{account_id}:project/*"],
+        )
+        assert cap_model.validate_statement(pass_stmt) == []
+        assert cap_model.validate_statement(start_stmt) == []
+        source_pol = GraphNode(
+            id=source_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/codebuild-trigger-{uid}",
+            name=f"codebuild-trigger-{uid}",
+            account_id=account_id,
+            department="DevOps",
+            policy_document=PolicyDocument(Statement=[pass_stmt, start_stmt]),
+        )
+        graph.add_node(source_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=source_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=cb_res_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["codebuild:StartBuild"],
+            )
+        )
+
+        # 7. Bridge relation: PassesTo from source to admin role
+        bridge_rel = (source_id, admin_role_id, EdgeRelation.PASSES_TO.value)
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=admin_role_id,
+                relation=EdgeRelation.PASSES_TO,
+                is_bridge=True,
+                motif_id=f"passrole_codebuild_{uid}",
+                actions=["iam:PassRole"],
+            )
+        )
+
+        path_edges = [
+            (source_id, admin_role_id, EdgeRelation.PASSES_TO.value),
+            (admin_role_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
+            (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        ]
+
+        return MotifInstance(
+            instance_id=f"passrole_codebuild_{uid}",
+            motif_type=self.motif_type,
+            tier=self.tier,
+            source_id=source_id,
+            target_id=target_id,
+            intermediate_node_ids=[admin_role_id, admin_pol_id, cb_res_id],
+            path_edges=path_edges,
+            bridge_relation=bridge_rel,
+            required_actions=self.required_actions,
+        )
+
+
+class SageMakerNotebookMotif(PEMotif):
+    """Tier 2 Motif 9: iam:PassRole + sagemaker:CreateNotebookInstance.
+
+    Attacker creates a SageMaker Jupyter notebook passing a privileged execution role,
+    accessing root bash shells within the notebook container to pivot to target resources.
+    Bridge relation: (source, admin_role, PassesTo).
+    """
+
+    motif_type = "passrole_sagemaker"
+    name = "iam:PassRole with SageMaker CreateNotebookInstance"
+    description = (
+        "Principal launches a SageMaker notebook instance associated with an administrative role "
+        "and executes commands via the interactive terminal to harvest credentials."
+    )
+    tier = "P1"
+    required_actions = ["iam:PassRole", "sagemaker:CreateNotebookInstance"]
+
+    def inject(
+        self,
+        graph: IAMGraph,
+        source_id: str | None = None,
+        target_id: str | None = None,
+        suffix: str = "",
+        account_id: str = "123456789012",
+        **_kwargs: Any,
+    ) -> MotifInstance:
+        cap_model = load_default_capability_model()
+        uid = suffix or "default"
+
+        # 1. Source principal
+        if source_id is None:
+            source_id = f"user:ml-researcher-{uid}"
+            source_node = GraphNode(
+                id=source_id,
+                node_type=NodeType.USER,
+                arn=f"arn:aws:iam::{account_id}:user/ml-researcher-{uid}",
+                name=f"ml-researcher-{uid}",
+                account_id=account_id,
+                department="DataBI",
+            )
+            graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
+
+        # 2. Target high-value asset
+        if target_id is None:
+            target_id = f"resource:s3-models-{uid}"
+            target_node = GraphNode(
+                id=target_id,
+                node_type=NodeType.RESOURCE,
+                arn=f"arn:aws:s3:::production-ml-models-{uid}",
+                name=f"production-ml-models-{uid}",
+                account_id=account_id,
+                department="DataBI",
+                is_high_value=True,
+            )
+            graph.add_node(target_node)
+        else:
+            found = graph.get_node(target_id)
+            if found is None:
+                raise KeyError(f"Target node '{target_id}' not found in graph.")
+            target_node = found
+
+        # 3. High-privilege SageMaker execution role
+        admin_role_id = f"role:sagemaker-exec-role-{uid}"
+        admin_role_arn = f"arn:aws:iam::{account_id}:role/sagemaker-exec-role-{uid}"
+        sm_trust_doc = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate({"Service": ["sagemaker.amazonaws.com"]}),
+                )
+            ]
+        )
+        admin_role = GraphNode(
+            id=admin_role_id,
+            node_type=NodeType.ROLE,
+            arn=admin_role_arn,
+            name=f"sagemaker-exec-role-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            is_admin=True,
+            trust_policy=sm_trust_doc,
+        )
+        graph.add_node(admin_role)
+
+        # 4. Admin policy granting target access
+        admin_pol_id = f"policy:sagemaker-vault-access-{uid}"
+        admin_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["s3:GetObject", "s3:PutObject"],
+            Resource=[f"{target_node.arn}/*"],
+        )
+        assert cap_model.validate_statement(admin_stmt) == []
+        admin_pol = GraphNode(
+            id=admin_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/sagemaker-vault-access-{uid}",
+            name=f"sagemaker-vault-access-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            is_admin=True,
+            policy_document=PolicyDocument(Statement=[admin_stmt]),
+        )
+        graph.add_node(admin_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=admin_role_id,
+                target=admin_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=admin_pol_id,
+                target=target_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["s3:GetObject"],
+            )
+        )
+
+        # 5. SageMaker notebook resource
+        sm_res_id = f"resource:sagemaker-notebook-{uid}"
+        sm_node = GraphNode(
+            id=sm_res_id,
+            node_type=NodeType.RESOURCE,
+            arn=f"arn:aws:sagemaker:us-east-1:{account_id}:notebook-instance/notebook-{uid}",
+            name=f"notebook-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            metadata={"execution_role": admin_role_arn},
+        )
+        graph.add_node(sm_node)
+
+        # 6. Source policy granting passrole and createnotebookinstance
+        source_pol_id = f"policy:sagemaker-launcher-{uid}"
+        pass_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["iam:PassRole"],
+            Resource=[admin_role_arn],
+        )
+        create_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["sagemaker:CreateNotebookInstance"],
+            Resource=[f"arn:aws:sagemaker:us-east-1:{account_id}:notebook-instance/*"],
+        )
+        assert cap_model.validate_statement(pass_stmt) == []
+        assert cap_model.validate_statement(create_stmt) == []
+        source_pol = GraphNode(
+            id=source_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/sagemaker-launcher-{uid}",
+            name=f"sagemaker-launcher-{uid}",
+            account_id=account_id,
+            department="DataBI",
+            policy_document=PolicyDocument(Statement=[pass_stmt, create_stmt]),
+        )
+        graph.add_node(source_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=source_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=sm_res_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["sagemaker:CreateNotebookInstance"],
+            )
+        )
+
+        # 7. Bridge relation: PassesTo from source to admin role
+        bridge_rel = (source_id, admin_role_id, EdgeRelation.PASSES_TO.value)
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=admin_role_id,
+                relation=EdgeRelation.PASSES_TO,
+                is_bridge=True,
+                motif_id=f"passrole_sagemaker_{uid}",
+                actions=["iam:PassRole"],
+            )
+        )
+
+        path_edges = [
+            (source_id, admin_role_id, EdgeRelation.PASSES_TO.value),
+            (admin_role_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
+            (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        ]
+
+        return MotifInstance(
+            instance_id=f"passrole_sagemaker_{uid}",
+            motif_type=self.motif_type,
+            tier=self.tier,
+            source_id=source_id,
+            target_id=target_id,
+            intermediate_node_ids=[admin_role_id, admin_pol_id, sm_res_id],
+            path_edges=path_edges,
+            bridge_relation=bridge_rel,
+            required_actions=self.required_actions,
+        )
+
+
+class UpdateAssumeRolePolicyMotif(PEMotif):
+    """Tier 2 Motif 10: iam:UpdateAssumeRolePolicy trust modification.
+
+    Attacker modifies the trust policy of an existing administrative role, granting themselves
+    permission to assume the role via sts:AssumeRole and pivoting to crown jewels.
+    Bridge relation: (source, target_role, AssumesRole).
+    """
+
+    motif_type = "update_assume_role_policy"
+    name = "iam:UpdateAssumeRolePolicy trust modification"
+    description = (
+        "Principal updates the trust policy of an existing administrative role to add their own "
+        "identity as a trusted principal, then assumes the role to escalate privileges."
+    )
+    tier = "P1"
+    required_actions = ["iam:UpdateAssumeRolePolicy", "sts:AssumeRole"]
+
+    def inject(
+        self,
+        graph: IAMGraph,
+        source_id: str | None = None,
+        target_id: str | None = None,
+        suffix: str = "",
+        account_id: str = "123456789012",
+        **_kwargs: Any,
+    ) -> MotifInstance:
+        cap_model = load_default_capability_model()
+        uid = suffix or "default"
+
+        # 1. Source principal
+        if source_id is None:
+            source_id = f"user:secops-auditor-{uid}"
+            source_node = GraphNode(
+                id=source_id,
+                node_type=NodeType.USER,
+                arn=f"arn:aws:iam::{account_id}:user/secops-auditor-{uid}",
+                name=f"secops-auditor-{uid}",
+                account_id=account_id,
+                department="SecOps",
+            )
+            graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
+
+        # 2. Target high-value asset
+        if target_id is None:
+            target_id = f"resource:s3-compliance-vault-{uid}"
+            target_node = GraphNode(
+                id=target_id,
+                node_type=NodeType.RESOURCE,
+                arn=f"arn:aws:s3:::compliance-audit-vault-{uid}",
+                name=f"compliance-audit-vault-{uid}",
+                account_id=account_id,
+                department="SecOps",
+                is_high_value=True,
+            )
+            graph.add_node(target_node)
+        else:
+            found = graph.get_node(target_id)
+            if found is None:
+                raise KeyError(f"Target node '{target_id}' not found in graph.")
+            target_node = found
+
+        # 3. High-privilege administrative role to hijack
+        admin_role_id = f"role:secops-privileged-admin-{uid}"
+        admin_role_arn = f"arn:aws:iam::{account_id}:role/secops-privileged-admin-{uid}"
+        # Initially only trusted by SecOps lead
+        initial_trust = PolicyDocument(
+            Statement=[
+                Statement(
+                    Effect=Effect.ALLOW,
+                    Action=["sts:AssumeRole"],
+                    Principal=Principal.model_validate(
+                        {"AWS": [f"arn:aws:iam::{account_id}:root"]}
+                    ),
+                )
+            ]
+        )
+        admin_role = GraphNode(
+            id=admin_role_id,
+            node_type=NodeType.ROLE,
+            arn=admin_role_arn,
+            name=f"secops-privileged-admin-{uid}",
+            account_id=account_id,
+            department="SecOps",
+            is_admin=True,
+            trust_policy=initial_trust,
+        )
+        graph.add_node(admin_role)
+
+        # 4. Admin policy
+        admin_pol_id = f"policy:secops-vault-admin-{uid}"
+        admin_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["s3:GetObject", "s3:PutObject"],
+            Resource=[f"{target_node.arn}/*"],
+        )
+        assert cap_model.validate_statement(admin_stmt) == []
+        admin_pol = GraphNode(
+            id=admin_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/secops-vault-admin-{uid}",
+            name=f"secops-vault-admin-{uid}",
+            account_id=account_id,
+            department="SecOps",
+            is_admin=True,
+            policy_document=PolicyDocument(Statement=[admin_stmt]),
+        )
+        graph.add_node(admin_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=admin_role_id,
+                target=admin_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=admin_pol_id,
+                target=target_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["s3:GetObject"],
+            )
+        )
+
+        # 5. Source policy granting iam:UpdateAssumeRolePolicy and sts:AssumeRole
+        source_pol_id = f"policy:trust-manager-{uid}"
+        update_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["iam:UpdateAssumeRolePolicy", "sts:AssumeRole"],
+            Resource=[admin_role_arn],
+        )
+        assert cap_model.validate_statement(update_stmt) == []
+        source_pol = GraphNode(
+            id=source_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/trust-manager-{uid}",
+            name=f"trust-manager-{uid}",
+            account_id=account_id,
+            department="SecOps",
+            policy_document=PolicyDocument(Statement=[update_stmt]),
+        )
+        graph.add_node(source_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=source_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+
+        # 6. Bridge relation: AssumesRole from source to admin role
+        bridge_rel = (source_id, admin_role_id, EdgeRelation.ASSUMES_ROLE.value)
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=admin_role_id,
+                relation=EdgeRelation.ASSUMES_ROLE,
+                is_bridge=True,
+                motif_id=f"update_assume_role_{uid}",
+                actions=["iam:UpdateAssumeRolePolicy", "sts:AssumeRole"],
+            )
+        )
+
+        path_edges = [
+            (source_id, admin_role_id, EdgeRelation.ASSUMES_ROLE.value),
+            (admin_role_id, admin_pol_id, EdgeRelation.ATTACHED_WITH.value),
+            (admin_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        ]
+
+        return MotifInstance(
+            instance_id=f"update_assume_role_{uid}",
+            motif_type=self.motif_type,
+            tier=self.tier,
+            source_id=source_id,
+            target_id=target_id,
+            intermediate_node_ids=[admin_role_id, admin_pol_id],
+            path_edges=path_edges,
+            bridge_relation=bridge_rel,
+            required_actions=self.required_actions,
+        )
+
+
+class CreatePolicyVersionMotif(PEMotif):
+    """Tier 2 Motif 11: iam:CreatePolicyVersion privilege escalation.
+
+    Attacker creates a new version of an existing policy attached to themselves, granting
+    access to sensitive target resources and setting the new version as default.
+    Bridge relation: (policy, target, ActsOn).
+    """
+
+    motif_type = "create_policy_version"
+    name = "iam:CreatePolicyVersion privilege escalation"
+    description = (
+        "Principal creates a new version of an attached customer-managed policy with expanded "
+        "permissions and sets it as the active default version to escalate privileges."
+    )
+    tier = "P1"
+    required_actions = ["iam:CreatePolicyVersion", "iam:SetDefaultPolicyVersion"]
+
+    def inject(
+        self,
+        graph: IAMGraph,
+        source_id: str | None = None,
+        target_id: str | None = None,
+        suffix: str = "",
+        account_id: str = "123456789012",
+        **_kwargs: Any,
+    ) -> MotifInstance:
+        cap_model = load_default_capability_model()
+        uid = suffix or "default"
+
+        # 1. Source principal
+        if source_id is None:
+            source_id = f"user:app-developer-{uid}"
+            source_node = GraphNode(
+                id=source_id,
+                node_type=NodeType.USER,
+                arn=f"arn:aws:iam::{account_id}:user/app-developer-{uid}",
+                name=f"app-developer-{uid}",
+                account_id=account_id,
+                department="DevOps",
+            )
+            graph.add_node(source_node)
+        else:
+            found_s = graph.get_node(source_id)
+            if found_s is None:
+                raise KeyError(f"Source node '{source_id}' not found in graph.")
+            source_node = found_s
+
+        # 2. Target high-value asset
+        if target_id is None:
+            target_id = f"resource:s3-vault-{uid}"
+            target_node = GraphNode(
+                id=target_id,
+                node_type=NodeType.RESOURCE,
+                arn=f"arn:aws:s3:::app-secret-vault-{uid}",
+                name=f"app-secret-vault-{uid}",
+                account_id=account_id,
+                department="SecOps",
+                is_high_value=True,
+            )
+            graph.add_node(target_node)
+        else:
+            found = graph.get_node(target_id)
+            if found is None:
+                raise KeyError(f"Target node '{target_id}' not found in graph.")
+            target_node = found
+
+        # 3. Customer managed policy attached to user (version 2 escalation)
+        cust_pol_id = f"policy:dev-expandable-pol-{uid}"
+        cust_pol_arn = f"arn:aws:iam::{account_id}:policy/dev-expandable-pol-{uid}"
+        escalated_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["s3:GetObject", "s3:PutObject"],
+            Resource=[f"{target_node.arn}/*"],
+        )
+        assert cap_model.validate_statement(escalated_stmt) == []
+        cust_pol = GraphNode(
+            id=cust_pol_id,
+            node_type=NodeType.POLICY,
+            arn=cust_pol_arn,
+            name=f"dev-expandable-pol-{uid}",
+            account_id=account_id,
+            department="DevOps",
+            policy_document=PolicyDocument(Statement=[escalated_stmt]),
+        )
+        graph.add_node(cust_pol)
+
+        # 4. User policy granting permission to create policy version
+        editor_pol_id = f"policy:policy-version-creator-{uid}"
+        edit_stmt = Statement(
+            Effect=Effect.ALLOW,
+            Action=["iam:CreatePolicyVersion", "iam:SetDefaultPolicyVersion"],
+            Resource=[cust_pol_arn],
+        )
+        assert cap_model.validate_statement(edit_stmt) == []
+        editor_pol = GraphNode(
+            id=editor_pol_id,
+            node_type=NodeType.POLICY,
+            arn=f"arn:aws:iam::{account_id}:policy/policy-version-creator-{uid}",
+            name=f"policy-version-creator-{uid}",
+            account_id=account_id,
+            department="DevOps",
+            policy_document=PolicyDocument(Statement=[edit_stmt]),
+        )
+        graph.add_node(editor_pol)
+
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=editor_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=cust_pol_id,
+                relation=EdgeRelation.ACTS_ON,
+                actions=["iam:CreatePolicyVersion"],
+            )
+        )
+        graph.add_edge(
+            GraphEdge(
+                source=source_id,
+                target=cust_pol_id,
+                relation=EdgeRelation.ATTACHED_WITH,
+            )
+        )
+
+        # 5. Bridge relation: ActsOn from customer policy to target asset
+        bridge_rel = (cust_pol_id, target_id, EdgeRelation.ACTS_ON.value)
+        graph.add_edge(
+            GraphEdge(
+                source=cust_pol_id,
+                target=target_id,
+                relation=EdgeRelation.ACTS_ON,
+                is_bridge=True,
+                motif_id=f"create_policy_version_{uid}",
+                actions=["s3:GetObject"],
+            )
+        )
+
+        path_edges = [
+            (source_id, cust_pol_id, EdgeRelation.ATTACHED_WITH.value),
+            (cust_pol_id, target_id, EdgeRelation.ACTS_ON.value),
+        ]
+
+        return MotifInstance(
+            instance_id=f"create_policy_version_{uid}",
+            motif_type=self.motif_type,
+            tier=self.tier,
+            source_id=source_id,
+            target_id=target_id,
+            intermediate_node_ids=[cust_pol_id],
+            path_edges=path_edges,
+            bridge_relation=bridge_rel,
+            required_actions=self.required_actions,
+        )
+
+
 # ==============================================================================
 # Motif Registry
 # ==============================================================================
@@ -1349,6 +2332,11 @@ class MotifRegistry:
         self.register(AssumeRoleChainMotif())
         self.register(PassRoleEC2Motif())
         self.register(SetDefaultPolicyVersionMotif())
+        self.register(GlueDevEndpointMotif())
+        self.register(CodeBuildProjectMotif())
+        self.register(SageMakerNotebookMotif())
+        self.register(UpdateAssumeRolePolicyMotif())
+        self.register(CreatePolicyVersionMotif())
 
     def register(self, motif: PEMotif) -> None:
         """Register a new motif handler."""
