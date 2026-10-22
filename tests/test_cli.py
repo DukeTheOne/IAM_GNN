@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
+import scripts.run_dashboard as rd
 
 from iam.cli import build_parser, main
 
@@ -74,3 +78,66 @@ class TestIAMCommandLineInterface:
         exit_code = main(["benchmark", "--fast", "--output-dir", str(out_dir)])
         assert exit_code == 0
         assert (out_dir / "benchmark_report.md").exists()
+
+    def test_cli_dashboard_command(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        called_cmd: list[list[str]] = []
+
+        def mock_call(cmd: list[str]) -> int:
+            called_cmd.append(cmd)
+            return 0
+
+        monkeypatch.setattr("subprocess.call", mock_call)
+        exit_code = main(["dashboard", "--port", "8502"])
+        assert exit_code == 0
+        assert len(called_cmd) == 1
+        assert "run_dashboard.py" in called_cmd[0][1]
+        assert "--port" in called_cmd[0]
+        assert "8502" in called_cmd[0]
+
+
+class TestRunDashboardScript:
+    """Tests for scripts/run_dashboard.py argument parsing and streamlit invocation."""
+
+    def test_run_dashboard_translates_port_flag(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        executed_cmds: list[list[str]] = []
+
+        def mock_run(
+            cmd: list[str], *_args: Any, **_kwargs: Any
+        ) -> subprocess.CompletedProcess[bytes]:
+            executed_cmds.append(cmd)
+            return subprocess.CompletedProcess(args=cmd, returncode=0)
+
+        monkeypatch.setattr("subprocess.run", mock_run)
+        monkeypatch.setattr(sys, "argv", ["run_dashboard.py", "--port", "8503"])
+
+        with pytest.raises(SystemExit) as exc_info:
+            rd.main()
+        assert exc_info.value.code == 0
+        assert len(executed_cmds) == 1
+        cmd = executed_cmds[0]
+        assert "--server.port" in cmd
+        port_idx = cmd.index("--server.port")
+        assert cmd[port_idx + 1] == "8503"
+        assert "--port" not in cmd
+
+    def test_run_dashboard_translates_host_flag(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        executed_cmds: list[list[str]] = []
+
+        def mock_run(
+            cmd: list[str], *_args: Any, **_kwargs: Any
+        ) -> subprocess.CompletedProcess[bytes]:
+            executed_cmds.append(cmd)
+            return subprocess.CompletedProcess(args=cmd, returncode=0)
+
+        monkeypatch.setattr("subprocess.run", mock_run)
+        monkeypatch.setattr(sys, "argv", ["run_dashboard.py", "--host", "0.0.0.0"])
+
+        with pytest.raises(SystemExit) as exc_info:
+            rd.main()
+        assert exc_info.value.code == 0
+        assert len(executed_cmds) == 1
+        cmd = executed_cmds[0]
+        assert "--server.port" in cmd
+        assert "--server.address" in cmd
+        addr_idx = cmd.index("--server.address")
+        assert cmd[addr_idx + 1] == "0.0.0.0"

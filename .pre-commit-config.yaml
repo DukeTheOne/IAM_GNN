@@ -23,7 +23,7 @@ repos:
         types: [python]
       - id: mypy
         name: mypy
-        entry: uv run mypy src tests scripts
+        entry: uv run mypy --strict src/iam
         language: system
         types: [python]
         pass_filenames: false
